@@ -47,7 +47,7 @@ public class UserInfoKey {
     public static String OPEN_DOOR_ROOM_ID = "open_door_room_id"; // 房间号
     public static String OPEN_DOOR_DIRECTION_ID = "open_door_direction_id"; // (大门)朝向
     public static String OPEN_DOOR_ENTER_EXIT_ID = "open_door_enter_exit_id"; // 进门或者出门
-
+    public static String OPEN_DOOR_NUM = "open_door_num"; // 保存门的个数
     /**拍照保存路径*/
     public static String BILLBOARD_PICTURE_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/camera"; // 拍照保存路径
     public static String BILLBOARD_VIDEO_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/video"; // 视频保存路径

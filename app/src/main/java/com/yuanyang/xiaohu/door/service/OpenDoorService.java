@@ -52,6 +52,7 @@ public class OpenDoorService extends Service {
 
     private StringBuffer stringBuffer;
 
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -91,10 +92,9 @@ public class OpenDoorService extends Service {
         @Override
         public void run() {
             while (flag) {
-                String params = AppSharePreferenceMgr.get(OpenDoorService.this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
-                List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
-                if (list.size() > 0) {
-                    for (int i = 0; i < list.size(); i++) {
+                int  door_num = (int) AppSharePreferenceMgr.get(OpenDoorService.this, UserInfoKey.OPEN_DOOR_NUM,0);
+                if (door_num > 0) {
+                    for (int i = 0; i < door_num; i++) {
                         int j = i + 1;
                         sendPortData(serialControlA, ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
                         try {

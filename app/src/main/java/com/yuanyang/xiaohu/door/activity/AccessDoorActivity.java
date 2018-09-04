@@ -264,6 +264,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                     ToastManager.showShort(context, "请设置参数");
                     return false;
                 }
+                int door_num  = adapter.getDataSource().size();
+                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_NUM, door_num);
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, villageId.getText().toString());
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, directionDoor.getText().toString());
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_BUILDING, building.getText().toString());
