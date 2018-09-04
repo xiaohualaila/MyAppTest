@@ -103,7 +103,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         );
     }
 
-
     /**
      * 设置title
      */
@@ -128,17 +127,16 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         param.setAdapter(getAdapter());
     }
 
-
     private void setLayoutManager(XRecyclerView recyclerView) {
         recyclerView.verticalLayoutManager(context);
     }
+
     private SimpleRecAdapter getAdapter() {
         if (adapter == null) {
             adapter = new AccessDoorAdapter(context, true);
         }
         return adapter;
     }
-
 
     private void initViewData() {
         if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString()))
@@ -206,10 +204,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 break;
         }
     }
-
-
-
-
 
     /**
      * 选择大门朝向或者楼栋
