@@ -140,7 +140,7 @@ public class OpenDoorService extends Service {
             } else if (ComRecData.sComPort.equals("/dev/ttyS2")) {
 //            } else if (ComRecData.sComPort.equals("/dev/ttyS1")) {
                 String returnHex = ChangeTool.ByteArrToHex(ComRecData.bRec).replace(" ", "");
-                Log.i("sss",">>>>>>>>>" + returnHex);
+//                Log.i("sss",">>>>>>>>>" + returnHex);
                 if (ComRecData.bRec.length > 8) {
                     stringBuffer.append(returnHex);
                     if (stringBuffer.toString().length() >= 212) {
@@ -166,7 +166,7 @@ public class OpenDoorService extends Service {
      */
     private void decryptData(String doorData, int num) {
         try {
-            Log.i("sss","doorData====" + doorData);
+        //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
             Log.i("sss","data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");

@@ -12,12 +12,6 @@ public class EventModel implements IBus.IEvent{
         this.value = value;
     }
 
-    public EventModel(String value,int num) {
-        this.value = value;
-
-    }
-
-
     @Override
     public int getTag() {
         return 10;
