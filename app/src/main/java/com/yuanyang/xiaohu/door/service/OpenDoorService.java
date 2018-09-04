@@ -8,16 +8,23 @@ import android.util.Log;
 import android.view.View;
 
 import com.yuanyang.xiaohu.door.activity.MainActivity;
+import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.model.EventModel;
+import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.serialPortUtil.ChangeTool;
 import com.yuanyang.xiaohu.door.serialPortUtil.ComBean;
 import com.yuanyang.xiaohu.door.serialPortUtil.SerialPortHelper;
+import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.GsonProvider;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
+import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -75,10 +82,10 @@ public class OpenDoorService extends Service {
         @Override
         public void run() {
             while (flag) {
-//                String params = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
-//                List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
-                if (1 > 0) {
-                    for (int i = 0; i < 2; i++) {
+                String params = AppSharePreferenceMgr.get(OpenDoorService.this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+                List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
+                if (list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
                         int j = i + 1;
                         sendPortData(serialControlA, ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
                         try {
@@ -162,6 +169,7 @@ public class OpenDoorService extends Service {
                 Log.i("sss","检测是否门已开");
                 //    checkIsOpenDoor(strings, num);
 //                startMusic(2);
+
                 openDoor(strings);
             }
         } catch (Exception e) {
@@ -218,6 +226,7 @@ public class OpenDoorService extends Service {
             @Override
             public void onComplete() {
                 Log.i("sss",strings[0].trim().equals("001") ? "Success!开门成功！" : "预约开门成功");
+                BusProvider.getBus().post(new EventModel(strings[0].trim().equals("001") ? "Success!开门成功！" : "预约开门成功"));
             }
         });
     }
