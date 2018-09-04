@@ -4,12 +4,17 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
 import com.yuanyang.xiaohu.door.activity.MainActivity;
 import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.EventModel;
+import com.yuanyang.xiaohu.door.model.MusicModel;
+import com.yuanyang.xiaohu.door.model.UploadModel;
+import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.serialPortUtil.ChangeTool;
 import com.yuanyang.xiaohu.door.serialPortUtil.ComBean;
@@ -25,7 +30,11 @@ import java.util.concurrent.TimeUnit;
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
+import cn.com.library.net.ApiSubscriber;
+import cn.com.library.net.NetError;
+import cn.com.library.net.XApi;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -162,37 +171,74 @@ public class OpenDoorService extends Service {
             Log.i("sss","data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
-                Log.i("sss","二维码失效，请刷新二维码");
-//                windowTip("二维码失效，请刷新二维码");
-//                startMusic(3);
+                BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
+                BusProvider.getBus().post(new MusicModel(3));
             } else {
                 Log.i("sss","检测是否门已开");
-                //    checkIsOpenDoor(strings, num);
-//                startMusic(2);
-
-                openDoor(strings);
+                checkIsOpenDoor(strings, num);
+                BusProvider.getBus().post(new MusicModel(2));
             }
         } catch (Exception e) {
             e.printStackTrace();
             Log.i("sss","号门开门失败");
-            // windowTip(num + "号门开门失败");
+            BusProvider.getBus().post(new EventModel("号门开门失败"));
         }
+    }
+
+    /**
+     * 判断是否开门
+     */
+    private void checkIsOpenDoor(String[] strings, int num) {
+        String village = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
+        String directionDoor = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
+        String building = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_BUILDING, "").toString();
+        String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+        List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
+        AccessModel model = null;
+        if (list.size() > 0) {
+            model = getModel(list, num);
+        }
+        if (!TextUtils.isEmpty(village) && !TextUtils.isEmpty(directionDoor) && list.size() > 0) {
+            if (!TextUtils.isEmpty(building)) {
+                if (village.equals(strings[1]) && ((building + model.getDoorNum()).equals(strings[2]))) {//测试 strings[1]610103001
+                    openDoor(strings, model);
+                }
+            } else {
+                if (village.equals(strings[1])) {
+                    openDoor(strings, model);
+                } else {
+                    BusProvider.getBus().post(new EventModel("资料匹配失败，请确认小区是否正确"));
+                }
+            }
+        } else {
+            BusProvider.getBus().post(new EventModel("主板未参数未设置，请设置主板参数"));
+        }
+    }
+
+    /**
+     * 获取当前扫码盒对应的数据
+     *
+     * @param list 扫码盒列表
+     * @param door 扫码盒号
+     * @return
+     */
+    private AccessModel getModel(List<AccessModel> list, int door) {
+        AccessModel model = null;
+        for (AccessModel accessModel : list) {
+            if (accessModel.getErCode() == door) {
+                model = accessModel;
+                break;
+            }
+        }
+        return model;
     }
 
 
     /**
      * 开门代码
      */
-    private void openDoor(final String[] strings) {
-        int num = 2;
-        /**六个的继电器*/
-//        byte[] sendArr = new byte[1];//0xFF 打开继电器指令
-//        sendArr[0] =  (byte) (num == 1 ? 0x01 : num == 2 ? 0x02  : num == 3 ? 0x03  : num == 4 ? 0x04  : num == 5 ? 0x05  :  0x06 );//单个打开
-//        sendArr[0] =  (byte) 0xFF; //全部打开
-//        byte[] sendArr_ = new byte[1];//0x00 复位继电器指令
-//        sendArr_[0] = (byte) (num == 1 ? 0xF1 : num == 2 ? 0xF2  : num == 3 ? 0xF3  : num == 4 ? 0xF4  : num == 5 ? 0xF5  :  0xF6 ); //单个复位
-//        sendArr_[0] = (byte) 0x00; //全部复位
-
+    private void openDoor(final String[] strings, final AccessModel model) {
+        int num = model.getRelay();
         /**四个继电器的*/
         byte[] sendArr = new byte[5];//打开继电器指令
         sendArr[0] = (byte) 0xFF;
@@ -225,26 +271,24 @@ public class OpenDoorService extends Service {
 
             @Override
             public void onComplete() {
-                Log.i("sss",strings[0].trim().equals("001") ? "Success!开门成功！" : "预约开门成功");
                 BusProvider.getBus().post(new EventModel(strings[0].trim().equals("001") ? "Success!开门成功！" : "预约开门成功"));
+                BusProvider.getBus().post(new UploadModel(strings,model));
             }
         });
     }
+
 
     //----------------------------------------------------打开串口
     private void OpenComPort(SerialPortHelper ComPort) {
         try {
             ComPort.open();
         } catch (SecurityException e) {
-            // ToastManager.showShort(getV(), "打开串口失败:没有串口读/写权限!");
-            Log.i("sss","打开串口失败:没有串口读/写权限!");
+            BusProvider.getBus().post(new EventModel("打开串口失败:没有串口读/写权限!"));
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("sss","打开串口失败:未知错误!");
-            //  ToastManager.showShort(getV(), "打开串口失败:未知错误!");
+            BusProvider.getBus().post(new EventModel("打开串口失败:未知错误!"));
         } catch (InvalidParameterException e) {
-            // ToastManager.showShort(getV(), "打开串口失败:参数错误!");
-            Log.i("sss","打开串口失败:参数错误!");
+            BusProvider.getBus().post(new EventModel("打开串口失败:参数错误!"));
         }
     }
 

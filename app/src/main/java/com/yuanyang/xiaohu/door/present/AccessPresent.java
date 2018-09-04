@@ -6,6 +6,11 @@ import android.text.TextUtils;
 
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
+import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.model.BaseBean;
+import com.yuanyang.xiaohu.door.net.BillboardApi;
+import com.yuanyang.xiaohu.door.net.UserInfoKey;
+import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
@@ -39,7 +44,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
     /**
      * 播放音乐
      */
-    private void startMusic(int select) {
+    public void startMusic(int select) {
         mediaPlayer = new MediaPlayer();
         AssetFileDescriptor file = getV().getResources().openRawResourceFd(select == 1 ? R.raw.dingdong : select == 2 ? R.raw.success : R.raw.fail);
         try {
@@ -56,18 +61,32 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
 
 
 
+    /**
+     * 上传门禁日志
+     */
+    public void uploadLog(String[] strings, AccessModel model) {
+        String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
+        BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
+                "", "", "").compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        ToastManager.showShort(getV(), "上传日志失败！");
+                    }
 
-
-
-    //添加Toast提示
-    private void windowTip(final String tip) {
-        getV().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ToastManager.showShort(getV(), tip);
-            }
-        });
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            ToastManager.showShort(getV(), "上传日志成功！");
+                        } else {
+                            ToastManager.showShort(getV(), model.getDescribe());
+                        }
+                    }
+                });
     }
+
 
     /**
      * 退出页面销毁

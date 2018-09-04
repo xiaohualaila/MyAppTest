@@ -6,9 +6,15 @@ public class EventModel implements IBus.IEvent{
 
     public String value;
 
+
     public EventModel(String value) {
 
         this.value = value;
+    }
+
+    public EventModel(String value,int num) {
+        this.value = value;
+
     }
 
 

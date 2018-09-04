@@ -2,9 +2,7 @@ package com.yuanyang.xiaohu.door.activity;
 
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -16,21 +14,19 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
+import com.yuanyang.xiaohu.door.model.MusicModel;
+import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.OpenDoorService;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-
 import java.util.List;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
@@ -38,6 +34,7 @@ import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.droidlover.xrecyclerview.XRecyclerView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 public class AccessDoorActivity extends XActivity<AccessPresent> {
@@ -78,12 +75,29 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         getP().initMusic();
 
         startService(new Intent(this,OpenDoorService.class));
-        BusProvider.getBus().toFlowable(EventModel.class).subscribe(
+        BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
                     @Override
                     public void accept(EventModel eventModel) throws Exception {
                         XLog.e("EventModel===" + eventModel.value);
                         //      tv.setText(eventModel.value);
+                        ToastManager.showShort(AccessDoorActivity.this, eventModel.value);
+                    }
+                }
+        );
+        BusProvider.getBus().toFlowable(MusicModel.class).subscribe(
+                new Consumer<MusicModel>() {
+                    @Override
+                    public void accept(MusicModel musicModel) throws Exception {
+                        getP().startMusic(musicModel.num);
+                    }
+                }
+        );
+        BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
+                new Consumer<UploadModel>() {
+                    @Override
+                    public void accept(UploadModel uploadModel) throws Exception {
+                        getP().uploadLog(uploadModel.strings,uploadModel.model);
                     }
                 }
         );
