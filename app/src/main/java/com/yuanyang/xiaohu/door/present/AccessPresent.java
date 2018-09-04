@@ -3,6 +3,7 @@ package com.yuanyang.xiaohu.door.present;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
