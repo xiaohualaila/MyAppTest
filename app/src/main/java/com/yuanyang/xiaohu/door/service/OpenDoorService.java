@@ -309,5 +309,4 @@ public class OpenDoorService extends Service {
     }
 
 
-
 }
