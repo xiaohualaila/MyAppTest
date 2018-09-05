@@ -6,43 +6,34 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-
-import com.yuanyang.xiaohu.door.activity.MainActivity;
+import com.bjw.utils.FuncUtil;
+import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.model.AccessModel;
-import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.MusicModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
-import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.serialPortUtil.ChangeTool;
-import com.yuanyang.xiaohu.door.serialPortUtil.ComBean;
-import com.yuanyang.xiaohu.door.serialPortUtil.SerialPortHelper;
+import com.yuanyang.xiaohu.door.serialPortUtil.Constants;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import android_serialport_api.SerialPortFinder;
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
-import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
-import cn.com.library.net.ApiSubscriber;
-import cn.com.library.net.NetError;
-import cn.com.library.net.XApi;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class OpenDoorService extends Service {
+public class DoorService extends Service {
 
-    private SerialControl serialControlA, serialControlB;//串口
+    private SerialPortFinder serialPortFinder;
 
     private String openDoorLastData = "";
 
@@ -51,6 +42,11 @@ public class OpenDoorService extends Service {
     private boolean flag = true;
 
     private StringBuffer stringBuffer;
+
+
+    private SerialHelper serialHelper;
+    private SerialHelper serialHelperScan;
+
 
 
     @Nullable
@@ -63,85 +59,33 @@ public class OpenDoorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        open_chuanko();
-    }
-
-    //打开串口
-    public void open_chuanko() {
-        serialControlA = new SerialControl();
-        serialControlB = new SerialControl();
-
-        serialControlA.setPort("/dev/ttyS2");//836 rs232
-        serialControlA.setBaudRate(9600);
-        OpenComPort(serialControlA);
-
-        serialControlB.setPort("/dev/ttyS3");//836 ttl232
-        serialControlB.setBaudRate(9600);
-        OpenComPort(serialControlB);
-
+        init();
         sendData = new SendData();
         sendData.start();
-
     }
 
 
     /**
-     * 发送取值命令
+     * 初始化串口
      */
-    private class SendData extends Thread {
-        @Override
-        public void run() {
-            while (flag) {
-                int  door_num = (int) AppSharePreferenceMgr.get(OpenDoorService.this, UserInfoKey.OPEN_DOOR_NUM,0);
-                if (door_num > 0) {
-                    for (int i = 0; i < door_num; i++) {
-                        int j = i + 1;
-                        sendPortData(serialControlA, ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+    private void init() {
+        serialPortFinder = new SerialPortFinder();
+        serialHelper = new SerialHelper() {
+            @Override
+            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
+
             }
-        }
-    }
+        };
+        serialHelper.setPort(Constants.PORT);
+        serialHelper.setBaudRate(Constants.BAUDRATE);
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        flag = false;
-        CloseComPort(serialControlA);
-        CloseComPort(serialControlB);
-    }
+        serialHelperScan = new SerialHelper() {
+            @Override
+            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
 
-
-    /**
-     * 串口控制类
-     */
-    private class SerialControl extends SerialPortHelper {
-
-        public SerialControl() {
-            stringBuffer = new StringBuffer();
-        }
-
-        @Override
-        protected void onDataReceived(ComBean ComRecData) {
-            if (ComRecData.sComPort.equals("/dev/ttyS4")) {
-                String call = ChangeTool.ByteArrToHex(ComRecData.bRec);
-                if (call.contains("A1")) {
-                    try {
-                        //          AppPhoneMgr.callPhone(getV(), "18729903883");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (ComRecData.sComPort.equals("/dev/ttyS2")) {
-//            } else if (ComRecData.sComPort.equals("/dev/ttyS1")) {
-                String returnHex = ChangeTool.ByteArrToHex(ComRecData.bRec).replace(" ", "");
-//                Log.i("sss",">>>>>>>>>" + returnHex);
-                if (ComRecData.bRec.length > 8) {
+                String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
+                 Log.i("sss",">>>>>>>>>" + returnHex);
+                if (comBean.bRec.length > 8) {
                     stringBuffer.append(returnHex);
                     if (stringBuffer.toString().length() >= 212) {
                         int doorNum = Integer.parseInt(stringBuffer.toString().substring(4, 6));
@@ -157,7 +101,57 @@ public class OpenDoorService extends Service {
                     stringBuffer.delete(0, stringBuffer.length());
                 }
             }
+        };
+
+        serialHelperScan.setPort(Constants.PORT_SCAN);
+        serialHelperScan.setBaudRate(Constants.BAUDRATE_SCAN);
+        try {
+            serialHelper.open();
+            serialHelperScan.open();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i("sss",e.getMessage());
+            BusProvider.getBus().post(new EventModel("串口打开失败"));
         }
+    }
+    /**
+     * 发送取值命令
+     */
+    private class SendData extends Thread {
+        @Override
+        public void run() {
+            while (flag) {
+                int  door_num = (int) AppSharePreferenceMgr.get(DoorService.this, UserInfoKey.OPEN_DOOR_NUM,0);
+                if (door_num > 0) {
+                    for (int i = 0; i < door_num; i++) {
+                        int j = i + 1;
+                        sendHest( ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //发送Hex
+    public void sendHest(String text){
+        if (serialHelperScan.isOpen()) {
+            serialHelperScan.sendHex(text);
+        } else {
+            BusProvider.getBus().post(new EventModel("串口都没打开"));
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        flag = false;
+        serialHelper.close();
+        serialHelperScan.close();
     }
 
 
@@ -252,7 +246,7 @@ public class OpenDoorService extends Service {
         sendArr_[2] = 0x00;
         sendArr_[3] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
         sendArr_[4] = (byte) 0xEE;
-        serialControlB.send(sendArr);//打开继电器
+        serialHelper.send(sendArr);
         Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -261,7 +255,7 @@ public class OpenDoorService extends Service {
 
             @Override
             public void onNext(Long value) {
-                serialControlB.send(sendArr_);
+                serialHelper.send(sendArr_);
             }
 
             @Override
@@ -278,35 +272,7 @@ public class OpenDoorService extends Service {
     }
 
 
-    //----------------------------------------------------打开串口
-    private void OpenComPort(SerialPortHelper ComPort) {
-        try {
-            ComPort.open();
-        } catch (SecurityException e) {
-            BusProvider.getBus().post(new EventModel("打开串口失败:没有串口读/写权限!"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            BusProvider.getBus().post(new EventModel("打开串口失败:未知错误!"));
-        } catch (InvalidParameterException e) {
-            BusProvider.getBus().post(new EventModel("打开串口失败:参数错误!"));
-        }
-    }
 
-
-    //----------------------------------------------------串口发送
-    private void sendPortData(SerialPortHelper ComPort, String sOut) {
-        if (ComPort != null && ComPort.isOpen()) {
-            ComPort.sendHex(sOut);
-        }
-    }
-
-    //----------------------------------------------------关闭串口
-    private void CloseComPort(SerialPortHelper ComPort) {
-        if (ComPort != null) {
-            ComPort.stopSend();
-            ComPort.close();
-        }
-    }
 
 
 }

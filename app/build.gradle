@@ -14,17 +14,22 @@ android {
         versionName rootProject.ext.android.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        sourceSets {
-            main {
-                jniLibs.srcDir 'src/main/jniLibs'
-                jni.srcDirs = []
-            }
-        }
+//        sourceSets {
+//            main {
+//                jniLibs.srcDir 'src/main/jniLibs'
+//                jni.srcDirs = []
+//            }
+//        }
     }
 }
 
@@ -33,6 +38,6 @@ dependencies {
     annotationProcessor rootProject.ext.dependencies["butterknife-apt"]
     implementation rootProject.ext.dependencies["avi-loading"]
     implementation project(path: ':mvp')
-
+    implementation(name: 'serialport-1.0.1', ext: 'aar')
 
 }

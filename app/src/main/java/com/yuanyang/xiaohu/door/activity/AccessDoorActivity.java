@@ -22,7 +22,7 @@ import com.yuanyang.xiaohu.door.model.MusicModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
-import com.yuanyang.xiaohu.door.service.OpenDoorService;
+import com.yuanyang.xiaohu.door.service.DoorService;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import java.util.List;
@@ -54,7 +54,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     @BindView(R.id.tv_content)
     TextView tipContent;
 
-
     private List<AccessModel> list;
 
     AccessDoorAdapter adapter;
@@ -74,7 +73,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         initViewData();
         getP().initMusic();
 
-        startService(new Intent(this,OpenDoorService.class));
+        startService(new Intent(this,DoorService.class));
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
                     @Override
@@ -280,7 +279,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
      */
     public void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this,OpenDoorService.class));
+        stopService(new Intent(this,DoorService.class));
         getP().onDestroy();
     }
 
