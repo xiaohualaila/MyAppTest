@@ -78,7 +78,7 @@ public class DoorService extends Service {
         };
         serialHelper.setPort(Constants.PORT);
         serialHelper.setBaudRate(Constants.BAUDRATE);
-
+        stringBuffer = new StringBuffer();
         serialHelperScan = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
