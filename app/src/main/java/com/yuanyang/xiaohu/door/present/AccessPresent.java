@@ -35,9 +35,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
 
     private MediaPlayer mediaPlayer;
 
-
-
-    public void initMusic(){
+    public void initMusic() {
         mediaPlayer = new MediaPlayer();
         startMusic(1);
     }
@@ -59,7 +57,6 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
         }
         mediaPlayer.start();
     }
-
 
 
     /**
@@ -96,8 +93,6 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
         if (mediaPlayer != null)
             mediaPlayer.release();
     }
-
-
 
 
 }

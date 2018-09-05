@@ -20,8 +20,6 @@ import com.yuanyang.xiaohu.door.util.GsonProvider;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import android_serialport_api.SerialPortFinder;
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
@@ -33,8 +31,6 @@ import io.reactivex.disposables.Disposable;
 
 public class DoorService extends Service {
 
-    private SerialPortFinder serialPortFinder;
-
     private String openDoorLastData = "";
 
     public SendData sendData; //发送获取数据指令线程
@@ -42,11 +38,8 @@ public class DoorService extends Service {
     private boolean flag = true;
 
     private StringBuffer stringBuffer;
-
-
     private SerialHelper serialHelper;
     private SerialHelper serialHelperScan;
-
 
 
     @Nullable
@@ -69,7 +62,6 @@ public class DoorService extends Service {
      * 初始化串口
      */
     private void init() {
-        serialPortFinder = new SerialPortFinder();
         serialHelper = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
@@ -84,12 +76,12 @@ public class DoorService extends Service {
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
 
                 String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
-                 Log.i("sss",">>>>>>>>>" + returnHex);
+                Log.i("sss", ">>>>>>>>>" + returnHex);
                 if (comBean.bRec.length > 8) {
                     stringBuffer.append(returnHex);
                     if (stringBuffer.toString().length() >= 212) {
                         int doorNum = Integer.parseInt(stringBuffer.toString().substring(4, 6));
-                        Log.i("sss","第" + doorNum + " 门");
+                        Log.i("sss", "第" + doorNum + " 门");
                         String openDoorData = stringBuffer.toString().substring(14, 206);
                         if (!openDoorData.equals(openDoorLastData)) {
                             openDoorLastData = openDoorData;
@@ -110,10 +102,11 @@ public class DoorService extends Service {
             serialHelperScan.open();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("sss",e.getMessage());
+            Log.i("sss", e.getMessage());
             BusProvider.getBus().post(new EventModel("串口打开失败"));
         }
     }
+
     /**
      * 发送取值命令
      */
@@ -121,11 +114,11 @@ public class DoorService extends Service {
         @Override
         public void run() {
             while (flag) {
-                int  door_num = (int) AppSharePreferenceMgr.get(DoorService.this, UserInfoKey.OPEN_DOOR_NUM,0);
+                int door_num = (int) AppSharePreferenceMgr.get(DoorService.this, UserInfoKey.OPEN_DOOR_NUM, 0);
                 if (door_num > 0) {
                     for (int i = 0; i < door_num; i++) {
                         int j = i + 1;
-                        sendHest( ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
+                        sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException e) {
@@ -137,8 +130,10 @@ public class DoorService extends Service {
         }
     }
 
-    //发送Hex
-    public void sendHest(String text){
+    /**
+     * 发送Hex
+     */
+    public void sendHest(String text) {
         if (serialHelperScan.isOpen()) {
             serialHelperScan.sendHex(text);
         } else {
@@ -160,21 +155,21 @@ public class DoorService extends Service {
      */
     private void decryptData(String doorData, int num) {
         try {
-        //    Log.i("sss","doorData====" + doorData);
+            //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
-            Log.i("sss","data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
+            Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
                 BusProvider.getBus().post(new MusicModel(3));
             } else {
-                Log.i("sss","检测是否门已开");
+                Log.i("sss", "检测是否门已开");
                 checkIsOpenDoor(strings, num);
                 BusProvider.getBus().post(new MusicModel(2));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("sss","号门开门失败");
+            Log.i("sss", "号门开门失败");
             BusProvider.getBus().post(new EventModel("号门开门失败"));
         }
     }
@@ -266,13 +261,10 @@ public class DoorService extends Service {
             @Override
             public void onComplete() {
                 BusProvider.getBus().post(new EventModel(strings[0].trim().equals("001") ? "Success!开门成功！" : "预约开门成功"));
-                BusProvider.getBus().post(new UploadModel(strings,model));
+                BusProvider.getBus().post(new UploadModel(strings, model));
             }
         });
     }
-
-
-
 
 
 }

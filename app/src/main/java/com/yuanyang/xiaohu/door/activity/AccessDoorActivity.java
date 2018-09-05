@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
 import com.yuanyang.xiaohu.door.model.AccessModel;
@@ -25,7 +26,9 @@ import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.DoorService;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+
 import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.library.base.SimpleRecAdapter;
@@ -73,7 +76,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         initViewData();
         getP().initMusic();
 
-        startService(new Intent(this,DoorService.class));
+        startService(new Intent(this, DoorService.class));
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
                     @Override
@@ -96,7 +99,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 new Consumer<UploadModel>() {
                     @Override
                     public void accept(UploadModel uploadModel) throws Exception {
-                        getP().uploadLog(uploadModel.strings,uploadModel.model);
+                        getP().uploadLog(uploadModel.strings, uploadModel.model);
                     }
                 }
         );
@@ -248,7 +251,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
             return false;
         } else {
             if (villageId.getText().toString().length() == 9) {
-                if ( (!directionDoor.getText().toString().equals("请选择")) && (directionDoor.getText().toString().equals("楼栋"))) {
+                if ((!directionDoor.getText().toString().equals("请选择")) && (directionDoor.getText().toString().equals("楼栋"))) {
                     if (TextUtils.isEmpty(building.getText().toString())) {
                         ToastManager.showShort(context, "请设置楼栋号");
                         return false;
@@ -257,7 +260,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                     ToastManager.showShort(context, "请设置参数");
                     return false;
                 }
-                int door_num  = adapter.getDataSource().size();
+                int door_num = adapter.getDataSource().size();
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_NUM, door_num);
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, villageId.getText().toString());
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, directionDoor.getText().toString());
@@ -279,7 +282,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
      */
     public void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this,DoorService.class));
+        stopService(new Intent(this, DoorService.class));
         getP().onDestroy();
     }
 
