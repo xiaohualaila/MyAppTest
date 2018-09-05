@@ -1,4 +1,4 @@
-package com.yuanyang.xiaohu.door.serialPortUtil;
+package com.yuanyang.xiaohu.door.util;
 
 /**
  * Created by WangChaowei on 2017/12/11.
