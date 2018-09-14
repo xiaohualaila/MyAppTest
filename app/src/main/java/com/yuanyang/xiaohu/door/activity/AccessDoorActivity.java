@@ -54,7 +54,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     @BindView(R.id.tv_content)
     TextView tipContent;
 
-
     private List<AccessModel> list;
 
     AccessDoorAdapter adapter;
