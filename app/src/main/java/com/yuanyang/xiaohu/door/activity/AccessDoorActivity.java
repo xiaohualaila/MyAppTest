@@ -19,13 +19,13 @@ import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
-import com.yuanyang.xiaohu.door.model.MusicModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.DoorService;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 
 import java.util.List;
 
@@ -41,7 +41,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 public class AccessDoorActivity extends XActivity<AccessPresent> {
-
+    /**
+     * 610103001
+     */
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.open_door_param)
@@ -74,8 +76,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         setAppendContent("请设置参数\n参数设置说明:\n小区编号:长度为9，不足前补0，如小区编号为：123456789(正常模式，直接写入即可)，又如编号为：1234,不足9位，前补0，即输入000001234" + "" +
                 "\n\n楼栋号:长度为6(可为空)，不足前补0，参考小区编号设置，如:123456 --> 123456 又如:452 --> 000452" + "");
         initViewData();
-        getP().initMusic();
-
+       // getP().initMusic();
+        SoundPoolUtil.play(1);
         startService(new Intent(this, DoorService.class));
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
@@ -87,14 +89,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                     }
                 }
         );
-        BusProvider.getBus().toFlowable(MusicModel.class).subscribe(
-                new Consumer<MusicModel>() {
-                    @Override
-                    public void accept(MusicModel musicModel) throws Exception {
-                        getP().startMusic(musicModel.num);
-                    }
-                }
-        );
+
         BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
                 new Consumer<UploadModel>() {
                     @Override
@@ -283,7 +278,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     public void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, DoorService.class));
-        getP().onDestroy();
     }
 
     @Override

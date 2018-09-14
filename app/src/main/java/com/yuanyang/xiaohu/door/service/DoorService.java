@@ -10,13 +10,14 @@ import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
-import com.yuanyang.xiaohu.door.model.MusicModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.ChangeTool;
 import com.yuanyang.xiaohu.door.util.Constants;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -161,11 +162,13 @@ public class DoorService extends Service {
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
-                BusProvider.getBus().post(new MusicModel(3));
+//                BusProvider.getBus().post(new MusicModel(3));
+                SoundPoolUtil.play(3);
             } else {
                 Log.i("sss", "检测是否门已开");
                 checkIsOpenDoor(strings, num);
-                BusProvider.getBus().post(new MusicModel(2));
+            //    BusProvider.getBus().post(new MusicModel(2));
+                SoundPoolUtil.play(2);
             }
         } catch (Exception e) {
             e.printStackTrace();

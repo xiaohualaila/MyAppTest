@@ -3,6 +3,8 @@ package com.yuanyang.xiaohu.door;
 import android.app.Application;
 import android.content.Context;
 
+import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
+
 import cn.com.library.net.NetError;
 import cn.com.library.net.NetProvider;
 import cn.com.library.net.RequestHandler;
@@ -23,7 +25,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = this;
-
+        SoundPoolUtil.getInstance(this);
         XApi.registerProvider(new NetProvider() {
 
             @Override
