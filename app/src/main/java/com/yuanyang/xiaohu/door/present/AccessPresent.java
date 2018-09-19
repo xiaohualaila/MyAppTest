@@ -63,7 +63,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
     }
 
     /**
-     * 上传门禁日志
+     * 轮训判断是否有无数据
      */
     public void uploadDate() {
         String ANDROID_ID = getDeviceUniqID(getV());//202227054248108
@@ -73,7 +73,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-                    //    ToastManager.showShort(getV(), "上传日志失败！");
+                      ToastManager.showShort(getV(), "更新数据失败！");
                         ObservableTimer();
                     }
 
@@ -104,10 +104,10 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
     }
     
     private void ObservableTimer(){
+        //10秒
         Observable.timer(10000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
-                XLog.e("对继电器复位");
             }
 
             @Override
@@ -123,7 +123,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
             @Override
             public void onComplete() {
                 uploadDate();
-              //  Log.i("sss","uploadDate>>>>>>>>>>>>>>>>>>>>>");
+                Log.i("sss","uploadDate>>>>>>>>>>>>>>>>>>>>>");
             }
         });
     }
