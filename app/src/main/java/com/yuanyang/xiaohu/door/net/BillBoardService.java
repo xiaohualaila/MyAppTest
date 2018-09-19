@@ -34,4 +34,7 @@ public interface BillBoardService {
                                  @Query("lat") String lat,
                                  @Query("lng") String lng);
 
+    @GET("/yykjZhCommunity/app/opendoor/addOpendoor")
+    Flowable<BaseBean> uploadDate(  @Query("deviceId") String deviceId);
+
 }
