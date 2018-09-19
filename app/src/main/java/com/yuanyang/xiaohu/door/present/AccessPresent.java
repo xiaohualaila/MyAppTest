@@ -31,6 +31,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 
 public class AccessPresent extends XPresent<AccessDoorActivity> {
@@ -74,7 +75,6 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                     @Override
                     protected void onFail(NetError error) {
                       ToastManager.showShort(getV(), "更新数据失败！");
-                        ObservableTimer();
                     }
 
                     @Override
@@ -86,7 +86,6 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
 //                        cardDao.insert(new CardBean());
 //
 //                        GreenDaoManager.getInstance().getSession().getCardBeanDao().delete(null);
-                        ObservableTimer();
                     }
                 });
     }
@@ -102,28 +101,31 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
         }
         return unique_id;
     }
-    
-    private void ObservableTimer(){
+
+    public void ObservableTimer(){
         //10秒
-        Observable.timer(10000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.interval(500,10000, TimeUnit.MILLISECONDS).doOnNext(new Consumer<Long>() {
+
+            @Override
+            public void accept(Long aLong) throws Exception {
+                uploadDate();
+            }
+        }).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
-            }
 
+            }
             @Override
             public void onNext(Long value) {
-                
-            }
 
+            }
             @Override
             public void onError(Throwable e) {
-
+                Log.d("sss", "对Error事件作出响应");
             }
-
             @Override
             public void onComplete() {
-                uploadDate();
-                Log.i("sss","uploadDate>>>>>>>>>>>>>>>>>>>>>");
+                Log.d("sss", "对Complete事件作出响应");
             }
         });
     }

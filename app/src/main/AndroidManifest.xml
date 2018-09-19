@@ -17,8 +17,7 @@
 
         </activity>
 
-        <activity android:name=".activity.AccessDoorActivity"
-            >
+        <activity android:name=".activity.AccessDoorActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

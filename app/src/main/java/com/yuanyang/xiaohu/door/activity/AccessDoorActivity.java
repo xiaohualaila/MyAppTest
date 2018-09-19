@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
 import com.yuanyang.xiaohu.door.model.AccessModel;
@@ -26,8 +26,8 @@ import com.yuanyang.xiaohu.door.service.DoorService;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -37,8 +37,12 @@ import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.droidlover.xrecyclerview.XRecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+
 
 public class AccessDoorActivity extends XActivity<AccessPresent> {
     /**
@@ -67,6 +71,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
 
     private String[] direction = {"东门", "西门", "南门", "北门", "楼栋"};
 
+
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -90,7 +95,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 }
         );
 
-        getP().uploadDate();
+        getP().ObservableTimer();
+
     }
 
     /**
