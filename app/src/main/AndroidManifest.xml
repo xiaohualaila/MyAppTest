@@ -16,7 +16,8 @@
 
         </activity>
 
-        <activity android:name=".activity.AccessDoorActivity">
+        <activity android:name=".activity.AccessDoorActivity"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,6 +26,16 @@
         </activity>
 
         <service android:name=".service.DoorService"/>
+        <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <!--注册开机广播地址-->
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -76,7 +76,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         setAppendContent("请设置参数\n参数设置说明:\n小区编号:长度为9，不足前补0，如小区编号为：123456789(正常模式，直接写入即可)，又如编号为：1234,不足9位，前补0，即输入000001234" + "" +
                 "\n\n楼栋号:长度为6(可为空)，不足前补0，参考小区编号设置，如:123456 --> 123456 又如:452 --> 000452" + "");
         initViewData();
-       // getP().initMusic();
         SoundPoolUtil.play(1);
         startService(new Intent(this, DoorService.class));
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
