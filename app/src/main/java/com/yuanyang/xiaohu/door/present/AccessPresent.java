@@ -32,6 +32,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class AccessPresent extends XPresent<AccessDoorActivity> {
@@ -104,33 +105,12 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
 
     public void ObservableTimer(){
         //10秒
-        Observable.interval(500,10000, TimeUnit.MILLISECONDS).doOnNext(new Consumer<Long>() {
-
-            @Override
-            public void accept(Long aLong) throws Exception {
-                uploadDate();
-            }
-        }).subscribe(new Observer<Long>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-            @Override
-            public void onNext(Long value) {
-
-            }
-            @Override
-            public void onError(Throwable e) {
-                Log.d("sss", "对Error事件作出响应");
-            }
-            @Override
-            public void onComplete() {
-                Log.d("sss", "对Complete事件作出响应");
-            }
-        });
+        Observable.interval(10, TimeUnit.SECONDS).
+                subscribeOn(Schedulers.io()).
+                subscribe(new Consumer<Long>() {
+                    @Override public void accept(Long num) throws Exception {
+                        uploadDate();
+                    }
+                });
     }
-
-
-
-
 }
