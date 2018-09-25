@@ -1,11 +1,15 @@
 package com.yuanyang.xiaohu.door.activity;
 
+import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,13 +25,13 @@ import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
-import com.yuanyang.xiaohu.door.service.CardService;
 import com.yuanyang.xiaohu.door.service.DoorService;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -37,10 +41,7 @@ import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.droidlover.xrecyclerview.XRecyclerView;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 
@@ -71,6 +72,15 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
 
     private String[] direction = {"东门", "西门", "南门", "北门", "楼栋"};
 
+    private SmdtManager smdt;
+
+    //读卡部分
+    @BindView(R.id.ed)
+    EditText editText;
+    private Thread thread;
+    private boolean isAuto = true;
+    private String msg;
+    private StringBuffer buffer;
 
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -83,7 +93,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         initViewData();
         SoundPoolUtil.play(1);
 
-        startService(new Intent(this, CardService.class));
+        startService(new Intent(this, DoorService.class));
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
                     @Override
@@ -96,8 +106,94 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         );
 
         getP().ObservableTimer();
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char)1);//开启看门狗
+        new Timer().schedule(timerTask,0,5000);
 
+
+        buffer = new StringBuffer();
+        thread = new Thread(runnable);
+        thread.start();
+        editText.requestFocus();
     }
+
+    TimerTask timerTask = new TimerTask(){
+        @Override
+        public void run() {
+            smdt.smdtWatchDogFeed();//喂狗
+        }
+    };
+
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 0:
+                    editText.setText("");
+                    break;
+            }
+
+
+        }
+    };
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            while (isAuto) {
+                msg = editText.getText().toString();
+                //Log.i("sss","  >>>>"+msg);
+
+
+                if (msg.length()>0){
+                    if(msg.contains(";")){
+                        int index = msg.indexOf(";");
+                        msg = msg.substring(index,msg.length());
+                        if(msg.contains("?")){
+                            index = msg.indexOf("?");
+                            msg = msg.substring(0,index+1);
+
+                            Log.i("xxx","  >>>>"+msg);
+                            Message message =new Message();
+                            message.what = 0;
+                            handler.sendMessage(message);
+                            buffer.delete(0,buffer.length());
+
+                        }else {
+                            buffer.append(msg);
+                        }
+
+                    }else {
+                        if(msg.contains("?")) {
+                            int  index = msg.indexOf("?");
+                            msg = msg.substring(0,index+1);
+                            buffer.append(msg);
+
+                            String result = buffer.toString();
+
+                            Log.i("xxx","  >>>>" + result);
+                            Message message =new Message();
+                            message.what = 0;
+                            handler.sendMessage(message);
+                            buffer.delete(0,buffer.length());
+
+                        }
+                    }
+
+                }
+                try {
+                    thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+    };
+
 
     /**
      * 设置title
@@ -196,6 +292,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
 //                    AppUtils.relaunchApp();
                     adapter.setIsSelect(false);
                     initViewData();
+                    editText.requestFocus();
                 }
                 break;
         }
@@ -276,7 +373,9 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
      */
     public void onDestroy() {
         super.onDestroy();
+        isAuto = false;
         stopService(new Intent(this, DoorService.class));
+        smdt.smdtWatchDogEnable((char)0);
     }
 
     @Override
@@ -287,5 +386,26 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     @Override
     public AccessPresent newP() {
         return new AccessPresent();
+    }
+
+    //记录用户首次点击返回键的时间
+    private long firstTime = 0;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                long secondTime = System.currentTimeMillis();
+                if (secondTime - firstTime > 2000) {
+                    ToastManager.showShort(context, "再按一次退出");
+                    firstTime = secondTime;
+                    return true;
+                } else {
+                    finish();
+                }
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

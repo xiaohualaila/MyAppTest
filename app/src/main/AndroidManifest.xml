@@ -26,7 +26,6 @@
         </activity>
 
         <service android:name=".service.DoorService"/>
-        <service android:name=".service.CardService"/>
         <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="true"

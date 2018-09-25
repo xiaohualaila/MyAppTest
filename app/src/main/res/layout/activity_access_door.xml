@@ -210,9 +210,11 @@
                     android:textColor="#037BFF" />
 
             </LinearLayout>
-
+            <EditText
+                android:id="@+id/ed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
-
     </ScrollView>
 
 </LinearLayout>

@@ -64,32 +64,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                 });
     }
 
-    /**
-     * 轮训判断是否有无数据
-     */
-    public void uploadDate() {
-        String ANDROID_ID = getDeviceUniqID(getV());//202227054248108
-        BillboardApi.getDataService().uploadDate(ANDROID_ID).compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                      ToastManager.showShort(getV(), "更新数据失败！");
-                    }
 
-                    @Override
-                    public void onNext(BaseBean model) {
-
-
-                        //TODO 对数据库信息进行增删改查
-//                        CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-//                        cardDao.insert(new CardBean());
-//
-//                        GreenDaoManager.getInstance().getSession().getCardBeanDao().delete(null);
-                    }
-                });
-    }
 
     /** * 获取设备唯一ID * @param context * @return */
     @SuppressLint("MissingPermission")
@@ -110,6 +85,33 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
                         uploadDate();
+                    }
+                });
+    }
+
+    /**
+     * 轮训判断是否有无数据
+     */
+    public void uploadDate() {
+        String ANDROID_ID = getDeviceUniqID(getV());//202227054248108
+        BillboardApi.getDataService().uploadDate(ANDROID_ID).compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        ToastManager.showShort(getV(), "更新数据失败！");
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+
+
+                        //TODO 对数据库信息进行增删改查
+//                        CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+//                        cardDao.insert(new CardBean());
+//
+//                        GreenDaoManager.getInstance().getSession().getCardBeanDao().delete(null);
                     }
                 });
     }
