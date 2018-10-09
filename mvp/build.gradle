@@ -5,7 +5,6 @@ group = 'com.github.limedroid'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
-    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.android.minSdkVersion
@@ -24,6 +23,7 @@ android {
             }
         }
     }
+    buildToolsVersion '28.0.2'
 }
 
 dependencies {

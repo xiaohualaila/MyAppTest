@@ -119,7 +119,7 @@ public class DoorService extends Service {
                 if (door_num > 0) {
                     for (int i = 0; i < door_num; i++) {
                         int j = i + 1;
-                        sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000060101001000000301010010000003"));
+                       sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000030101001000000002010310203003"));
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException e) {
