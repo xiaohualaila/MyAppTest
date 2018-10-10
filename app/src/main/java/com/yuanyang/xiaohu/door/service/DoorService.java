@@ -119,7 +119,13 @@ public class DoorService extends Service {
                 if (door_num > 0) {
                     for (int i = 0; i < door_num; i++) {
                         int j = i + 1;
-                       sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000030101001000000002010310203003"));
+                      sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000030101001000000002010310203003"));
+                   //     sendHest(ChangeTool.makeDataChecksum("0133042123000000000000000000000000000303000000000000030101001000000002010310203003"));
+                       // sendHest(ChangeTool.makeDataChecksum("01330120230000000000000000000000000003 03000000000000 06010100100000 03010100100000 03AE04"));
+                 //     sendHest(ChangeTool.makeDataChecksum("0133012023000000000000000000000000000303000000000000060101001000000301010010000003AE04"));
+                 //       sendHest(ChangeTool.makeDataChecksum("0133012123000000000000000000000000000303000000000000030101001000000002010310203003"));
+                //        sendHest(ChangeTool.makeDataChecksum("01330121230000000000000000000000000003 03000000000000 03010100100000 00020103102030 03"));8A04
+                   //     sendHest(ChangeTool.makeDataChecksum("01330121230000000000000000000000000003030205031020300603000010200000020103102030038A04"));
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException e) {
@@ -158,7 +164,7 @@ public class DoorService extends Service {
         try {
             //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
-            Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
+         //   Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));

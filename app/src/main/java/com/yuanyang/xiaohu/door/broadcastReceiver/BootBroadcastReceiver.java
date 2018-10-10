@@ -6,6 +6,8 @@ import android.content.Intent;
 
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
 
+import cn.com.library.kit.ToastManager;
+
 
 /**
  * Created by admin on 2017/11/2.
@@ -21,5 +23,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(in);
         }
+        ToastManager.showShort(context, "开机启动成功");
     }
 }
