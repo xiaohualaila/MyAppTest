@@ -41,7 +41,7 @@ public class Service extends android.app.Service {
     private SerialHelper serialHelper;
     private SerialHelper serialHelperScan;
 
-
+    private int index = 0;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -53,8 +53,8 @@ public class Service extends android.app.Service {
     public void onCreate() {
         super.onCreate();
         init();
-        sendData = new SendData();
-        sendData.start();
+//        sendData = new SendData();
+//        sendData.start();
     }
 
 
@@ -75,23 +75,68 @@ public class Service extends android.app.Service {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
 
-                String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
-                Log.i("sss", ">>>>>>>>>" + returnHex);
-                if (comBean.bRec.length > 8) {
-                    stringBuffer.append(returnHex);
-                    if (stringBuffer.toString().length() >= 212) {
-                        int doorNum = Integer.parseInt(stringBuffer.toString().substring(4, 6));
-                        Log.i("sss", "第" + doorNum + " 门");
-                        String openDoorData = stringBuffer.toString().substring(14, 206);
-                        if (!openDoorData.equals(openDoorLastData)) {
-                            openDoorLastData = openDoorData;
-                            decryptData(ChangeTool.decodeHexStr(openDoorData), doorNum);//解密
-                        }
-                        stringBuffer.delete(0, stringBuffer.length());
-                    }
-                } else {
-                    stringBuffer.delete(0, stringBuffer.length());
-                }
+                 String str =  ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
+
+                 if(str.substring(str.length()-2,str.length()).equals("##")){
+                     String mm = str.substring(2,str.length());
+                           mm = mm.substring(0,mm.length()-2);
+                     Log.i("sss",">>>" + mm);
+                 }else {
+                     if(str.contains("&&")){
+                         stringBuffer.append(str);
+                     }else {
+                         String sss= str.substring(str.length()-2,str.length()-1);
+                         if(str.substring(str.length()-2,str.length()-1).contains("#")){
+
+                             stringBuffer.append(str);
+
+
+                             String content = stringBuffer.toString();
+                             String which_door = content.substring(content.length()-1,content.length());
+                             content = content.substring(2,content.length());
+                             content = content.substring(0,content.length()-2);
+
+
+
+                             if (!content.equals(openDoorLastData)) {
+                                 openDoorLastData = content;
+                                 decryptData(content, Integer.parseInt(which_door));//解密
+                             }
+
+                             Log.i("xxxx",">>>>>>>>"+ content);
+                             stringBuffer.delete(0,stringBuffer.length());
+                         }else {
+                             stringBuffer.append(str);
+                         }
+
+                     }
+                 }
+
+
+
+
+
+
+
+
+//                String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
+//                Log.i("xxx",ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
+//                Log.i("sss", ">>>>>>>>>" + returnHex);
+//                if (comBean.bRec.length > 8) {
+//                    stringBuffer.append(returnHex);
+//                    if (stringBuffer.toString().length() >= 212) {
+//                        int doorNum = Integer.parseInt(stringBuffer.toString().substring(4, 6));
+//                        Log.i("sss", "第" + doorNum + " 门");
+//                        String openDoorData = stringBuffer.toString().substring(14, 206);
+//                        if (!openDoorData.equals(openDoorLastData)) {
+//                            openDoorLastData = openDoorData;
+//                            decryptData(ChangeTool.decodeHexStr(openDoorData), doorNum);//解密
+//                        }
+//                        stringBuffer.delete(0, stringBuffer.length());
+//                    }
+//                } else {
+//                    stringBuffer.delete(0, stringBuffer.length());
+//                }
             }
         };
 
