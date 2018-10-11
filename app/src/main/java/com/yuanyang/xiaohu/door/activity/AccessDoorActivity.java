@@ -22,7 +22,7 @@ import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
-import com.yuanyang.xiaohu.door.service.DoorService;
+import com.yuanyang.xiaohu.door.service.Service;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
@@ -77,7 +77,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 "\n\n楼栋号:长度为6(可为空)，不足前补0，参考小区编号设置，如:123456 --> 123456 又如:452 --> 000452" + "");
         initViewData();
         SoundPoolUtil.play(1);
-        startService(new Intent(this, DoorService.class));
+        startService(new Intent(this, Service.class));
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
                     @Override
@@ -276,7 +276,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
      */
     public void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, DoorService.class));
+        stopService(new Intent(this, Service.class));
     }
 
     @Override

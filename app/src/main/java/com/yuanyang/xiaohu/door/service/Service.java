@@ -1,12 +1,10 @@
 package com.yuanyang.xiaohu.door.service;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.model.AccessModel;
@@ -22,7 +20,6 @@ import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
@@ -32,7 +29,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class DoorService extends Service {
+public class Service extends android.app.Service {
 
     private String openDoorLastData = "";
 
@@ -117,12 +114,11 @@ public class DoorService extends Service {
         @Override
         public void run() {
             while (flag) {
-                int door_num = (int) AppSharePreferenceMgr.get(DoorService.this, UserInfoKey.OPEN_DOOR_NUM, 0);
+                int door_num = (int) AppSharePreferenceMgr.get(Service.this, UserInfoKey.OPEN_DOOR_NUM, 0);
                 if (door_num > 0) {
                     for (int i = 0; i < door_num; i++) {
                         int j = i + 1;
                         sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000030101001000000002010310203003"));
-                        //sendHest(ChangeTool.makeDataChecksum("0133012123000000000000000000000000000303000000000000060101001000000301010010000003AF04"));
                         try {
                             Thread.sleep(200);
                         } catch (InterruptedException e) {
@@ -161,7 +157,7 @@ public class DoorService extends Service {
         try {
             //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
-            //   Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
+         //   Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));

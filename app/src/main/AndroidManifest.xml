@@ -12,9 +12,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity">
-
-        </activity>
 
         <activity android:name=".activity.AccessDoorActivity"
             >
@@ -25,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.DoorService"/>
+        <service android:name=".service.Service"/>
         <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
