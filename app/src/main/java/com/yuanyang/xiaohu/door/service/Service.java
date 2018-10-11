@@ -33,30 +33,21 @@ public class Service extends android.app.Service {
 
     private String openDoorLastData = "";
 
-    public SendData sendData; //发送获取数据指令线程
-
-    private boolean flag = true;
-
     private StringBuffer stringBuffer;
     private SerialHelper serialHelper;
     private SerialHelper serialHelperScan;
 
-    private int index = 0;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-
     @Override
     public void onCreate() {
         super.onCreate();
         init();
-//        sendData = new SendData();
-//        sendData.start();
     }
-
 
     /**
      * 初始化串口
@@ -103,31 +94,14 @@ public class Service extends android.app.Service {
                      }
                  }
 
+                //TODO 对数据库信息进行增删改查
+//                        CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+//                        cardDao.insert(new CardBean());
+//
+//                        GreenDaoManager.getInstance().getSession().getCardBeanDao().delete(null);
 
 
 
-
-
-
-
-//                String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
-//                Log.i("xxx",ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
-//                Log.i("sss", ">>>>>>>>>" + returnHex);
-//                if (comBean.bRec.length > 8) {
-//                    stringBuffer.append(returnHex);
-//                    if (stringBuffer.toString().length() >= 212) {
-//                        int doorNum = Integer.parseInt(stringBuffer.toString().substring(4, 6));
-//                        Log.i("sss", "第" + doorNum + " 门");
-//                        String openDoorData = stringBuffer.toString().substring(14, 206);
-//                        if (!openDoorData.equals(openDoorLastData)) {
-//                            openDoorLastData = openDoorData;
-//                            decryptData(ChangeTool.decodeHexStr(openDoorData), doorNum);//解密
-//                        }
-//                        stringBuffer.delete(0, stringBuffer.length());
-//                    }
-//                } else {
-//                    stringBuffer.delete(0, stringBuffer.length());
-//                }
             }
         };
 
@@ -143,44 +117,11 @@ public class Service extends android.app.Service {
         }
     }
 
-    /**
-     * 发送取值命令
-     */
-    private class SendData extends Thread {
-        @Override
-        public void run() {
-            while (flag) {
-                int door_num = (int) AppSharePreferenceMgr.get(Service.this, UserInfoKey.OPEN_DOOR_NUM, 0);
-                if (door_num > 0) {
-                    for (int i = 0; i < door_num; i++) {
-                        int j = i + 1;
-                        sendHest(ChangeTool.makeDataChecksum("01330" + j + "2123000000000000000000000000000303000000000000030101001000000002010310203003"));
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-    }
 
-    /**
-     * 发送Hex
-     */
-    public void sendHest(String text) {
-        if (serialHelperScan.isOpen()) {
-            serialHelperScan.sendHex(text);
-        } else {
-            BusProvider.getBus().post(new EventModel("串口都没打开"));
-        }
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        flag = false;
         serialHelper.close();
         serialHelperScan.close();
     }
