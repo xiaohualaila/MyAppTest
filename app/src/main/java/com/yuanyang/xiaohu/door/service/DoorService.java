@@ -168,12 +168,10 @@ public class DoorService extends Service {
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
-//                BusProvider.getBus().post(new MusicModel(3));
                 SoundPoolUtil.play(3);
             } else {
                 Log.i("sss", "检测是否门已开");
                 checkIsOpenDoor(strings, num);
-            //    BusProvider.getBus().post(new MusicModel(2));
                 SoundPoolUtil.play(2);
             }
         } catch (Exception e) {
