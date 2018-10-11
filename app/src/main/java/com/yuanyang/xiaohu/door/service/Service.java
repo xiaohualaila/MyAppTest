@@ -74,9 +74,7 @@ public class Service extends android.app.Service {
         serialHelperScan = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-
                  String str =  ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-
                  if(str.substring(str.length()-2,str.length()).equals("##")){
                      String mm = str.substring(2,str.length());
                            mm = mm.substring(0,mm.length()-2);
@@ -87,22 +85,15 @@ public class Service extends android.app.Service {
                      }else {
                          String sss= str.substring(str.length()-2,str.length()-1);
                          if(str.substring(str.length()-2,str.length()-1).contains("#")){
-
                              stringBuffer.append(str);
-
-
                              String content = stringBuffer.toString();
                              String which_door = content.substring(content.length()-1,content.length());
                              content = content.substring(2,content.length());
                              content = content.substring(0,content.length()-2);
-
-
-
                              if (!content.equals(openDoorLastData)) {
                                  openDoorLastData = content;
                                  decryptData(content, Integer.parseInt(which_door));//解密
                              }
-
                              Log.i("xxxx",">>>>>>>>"+ content);
                              stringBuffer.delete(0,stringBuffer.length());
                          }else {
