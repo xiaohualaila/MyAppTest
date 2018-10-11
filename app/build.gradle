@@ -33,5 +33,5 @@ dependencies {
     implementation rootProject.ext.dependencies["avi-loading"]
     implementation project(path: ':mvp')
     implementation(name: 'serialport-1.0.1', ext: 'aar')
-
+    implementation 'org.greenrobot:greendao:3.2.0'
 }
