@@ -5,6 +5,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
@@ -23,6 +24,7 @@ import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
@@ -68,38 +70,38 @@ public class Service extends android.app.Service {
         serialHelperScan = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                 String str =  ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-                 if(str.substring(str.length()-2,str.length()).equals("##")){
-                     String mm = str.substring(2,str.length());
-                           mm = mm.substring(0,mm.length()-2);
-                     CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-                     CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(mm)).unique();
-                     if(cardBean != null){
-                         openDoor(1);
-                     }
-                 }else {
-                     if(str.contains("&&")){
-                         stringBuffer.append(str);
-                     }else {
-                         String sss= str.substring(str.length()-2,str.length()-1);
-                         if(str.substring(str.length()-2,str.length()-1).contains("#")){
-                             stringBuffer.append(str);
-                             String content = stringBuffer.toString();
-                             String which_door = content.substring(content.length()-1,content.length());
-                             content = content.substring(2,content.length());
-                             content = content.substring(0,content.length()-2);
-                             if (!content.equals(openDoorLastData)) {
-                                 openDoorLastData = content;
-                                 decryptData(content, Integer.parseInt(which_door));//解密
-                             }
-                             Log.i("xxxx",">>>>>>>>"+ content);
-                             stringBuffer.delete(0,stringBuffer.length());
-                         }else {
-                             stringBuffer.append(str);
-                         }
+                String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
+                if (str.substring(str.length() - 2, str.length()).equals("##")) {
+                    String mm = str.substring(2, str.length());
+                    mm = mm.substring(0, mm.length() - 2);
+                    CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+                    CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(mm)).unique();
+                    if (cardBean != null) {
+                        openDoor(1);
+                    }
+                } else {
+                    if (str.contains("&&")) {
+                        stringBuffer.append(str);
+                    } else {
+                        String sss = str.substring(str.length() - 2, str.length() - 1);
+                        if (str.substring(str.length() - 2, str.length() - 1).contains("#")) {
+                            stringBuffer.append(str);
+                            String content = stringBuffer.toString();
+                            String which_door = content.substring(content.length() - 1, content.length());
+                            content = content.substring(2, content.length());
+                            content = content.substring(0, content.length() - 2);
+                            if (!content.equals(openDoorLastData)) {
+                                openDoorLastData = content;
+                                decryptData(content, Integer.parseInt(which_door));//解密
+                            }
+                            Log.i("xxxx", ">>>>>>>>" + content);
+                            stringBuffer.delete(0, stringBuffer.length());
+                        } else {
+                            stringBuffer.append(str);
+                        }
 
-                     }
-                 }
+                    }
+                }
             }
         };
 
@@ -114,7 +116,6 @@ public class Service extends android.app.Service {
             BusProvider.getBus().post(new EventModel("串口打开失败"));
         }
     }
-
 
 
     @Override
@@ -132,7 +133,7 @@ public class Service extends android.app.Service {
         try {
             //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
-         //   Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
+            //   Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
@@ -240,6 +241,7 @@ public class Service extends android.app.Service {
             }
         });
     }
+
     /**
      * 开门代码
      */
@@ -276,7 +278,7 @@ public class Service extends android.app.Service {
 
             @Override
             public void onComplete() {
-                BusProvider.getBus().post(new EventModel( "开门成功！"));
+                BusProvider.getBus().post(new EventModel("开门成功！"));
             }
         });
     }
