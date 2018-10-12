@@ -13,11 +13,6 @@ import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-
-
-import org.greenrobot.greendao.Property;
-import org.greenrobot.greendao.query.QueryBuilder;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import cn.com.library.kit.ToastManager;
@@ -31,7 +26,6 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class AccessPresent extends XPresent<AccessDoorActivity> {
-
 
     /**
      * 上传门禁日志
@@ -64,7 +58,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      */
     public void sendState(){
         //10秒
-        Observable.interval(10, TimeUnit.SECONDS).
+        Observable.interval(10, TimeUnit.MINUTES).
                 subscribeOn(Schedulers.io()).
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
@@ -111,6 +105,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                                     }
                                                 }
                                             }
+                                            Log.i("sss","十分钟请求一次数据");
 //                                            List<CardBean> ls = GreenDaoManager.getInstance().getSession().getCardBeanDao().queryBuilder().list();
 //                                            if(ls.size()>0){
 //                                                for(int i=0;i<ls.size();i++){
