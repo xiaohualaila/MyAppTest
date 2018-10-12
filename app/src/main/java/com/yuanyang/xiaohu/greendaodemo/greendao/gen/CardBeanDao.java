@@ -15,7 +15,7 @@ import com.yuanyang.xiaohu.door.bean.CardBean;
 /** 
  * DAO for table "CARD_BEAN".
 */
-public class CardBeanDao extends AbstractDao<CardBean, String> {
+public class CardBeanDao extends AbstractDao<CardBean, Long> {
 
     public static final String TABLENAME = "CARD_BEAN";
 
@@ -24,9 +24,8 @@ public class CardBeanDao extends AbstractDao<CardBean, String> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, String.class, "id", true, "ID");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property Num = new Property(2, String.class, "num", false, "NUM");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property Num = new Property(1, String.class, "num", false, "NUM");
     }
 
 
@@ -42,9 +41,8 @@ public class CardBeanDao extends AbstractDao<CardBean, String> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"CARD_BEAN\" (" + //
-                "\"ID\" TEXT PRIMARY KEY NOT NULL ," + // 0: id
-                "\"NAME\" TEXT," + // 1: name
-                "\"NUM\" TEXT);"); // 2: num
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"NUM\" TEXT);"); // 1: num
     }
 
     /** Drops the underlying database table. */
@@ -57,19 +55,14 @@ public class CardBeanDao extends AbstractDao<CardBean, String> {
     protected final void bindValues(DatabaseStatement stmt, CardBean entity) {
         stmt.clearBindings();
  
-        String id = entity.getId();
+        Long id = entity.getId();
         if (id != null) {
-            stmt.bindString(1, id);
-        }
- 
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindLong(1, id);
         }
  
         String num = entity.getNum();
         if (num != null) {
-            stmt.bindString(3, num);
+            stmt.bindString(2, num);
         }
     }
 
@@ -77,51 +70,45 @@ public class CardBeanDao extends AbstractDao<CardBean, String> {
     protected final void bindValues(SQLiteStatement stmt, CardBean entity) {
         stmt.clearBindings();
  
-        String id = entity.getId();
+        Long id = entity.getId();
         if (id != null) {
-            stmt.bindString(1, id);
-        }
- 
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindLong(1, id);
         }
  
         String num = entity.getNum();
         if (num != null) {
-            stmt.bindString(3, num);
+            stmt.bindString(2, num);
         }
     }
 
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public CardBean readEntity(Cursor cursor, int offset) {
         CardBean entity = new CardBean( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // num
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // num
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, CardBean entity, int offset) {
-        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setNum(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setNum(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
      }
     
     @Override
-    protected final String updateKeyAfterInsert(CardBean entity, long rowId) {
-        return entity.getId();
+    protected final Long updateKeyAfterInsert(CardBean entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public String getKey(CardBean entity) {
+    public Long getKey(CardBean entity) {
         if(entity != null) {
             return entity.getId();
         } else {

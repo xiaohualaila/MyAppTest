@@ -3,6 +3,7 @@ package com.yuanyang.xiaohu.door.net;
 
 
 import com.yuanyang.xiaohu.door.model.BaseBean;
+import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 
 import io.reactivex.Flowable;
 import retrofit2.http.GET;
@@ -39,7 +40,7 @@ public interface BillBoardService {
      *
      * @return
      */
-    @POST("pc/multimedia/screen/selectMultimediaMessage")
-    Flowable<BaseBean> sendState(@Query("devicemac") String mac);
+    @GET("/yykjZhCommunity/background/device/app/selectDeviceCards")
+    Flowable<BaseBean<MessageBodyBean>> sendState(@Query("devicemac") String mac);
 
 }

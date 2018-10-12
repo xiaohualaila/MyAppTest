@@ -3,8 +3,11 @@ package com.yuanyang.xiaohu.door.activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -69,6 +72,14 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
 
     private String[] direction = {"东门", "西门", "南门", "北门", "楼栋"};
 
+    //读卡部分
+    @BindView(R.id.ed)
+    EditText editText;
+    private Thread thread;
+    private boolean isAuto = true;
+    private String msg;
+    private StringBuffer buffer;
+
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -102,6 +113,78 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         getP().sendState();
 
     }
+
+///////////////////////读卡部分
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 0:
+                    editText.setText("");
+                    break;
+            }
+
+
+        }
+    };
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            while (isAuto) {
+                msg = editText.getText().toString();
+//                Log.i("sss","  >>>>"+msg);
+
+
+                if (msg.length()>0){
+                    if(msg.contains(";")){
+                        int index = msg.indexOf(";");
+                        msg = msg.substring(index,msg.length());
+                        if(msg.contains("?")){
+                            index = msg.indexOf("?");
+                            msg = msg.substring(0,index+1);
+
+                            Log.i("xxx","  >>>>"+msg);
+                            Message message =new Message();
+                            message.what = 0;
+                            handler.sendMessage(message);
+                            buffer.delete(0,buffer.length());
+
+                        }else {
+                            buffer.append(msg);
+                        }
+
+                    }else {
+                        if(msg.contains("?")) {
+                            int  index = msg.indexOf("?");
+                            msg = msg.substring(0,index+1);
+                            buffer.append(msg);
+
+                            String result = buffer.toString();
+
+                            Log.i("xxx","  >>>>" + result);
+                            Message message =new Message();
+                            message.what = 0;
+                            handler.sendMessage(message);
+                            buffer.delete(0,buffer.length());
+
+                        }
+                    }
+
+                }
+                try {
+                    thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+    };
+///////////////////////////
 
     /**
      * 设置title
@@ -168,6 +251,9 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         } else {
             findViewById(R.id.add_er_code).setVisibility(View.GONE);
             findViewById(R.id.bt_set).setVisibility(View.GONE);
+            thread = new Thread(runnable);
+            thread.start();
+            editText.requestFocus();
         }
         adapter.setData(list);
     }
@@ -280,6 +366,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
      */
     public void onDestroy() {
         super.onDestroy();
+        isAuto = false;
         stopService(new Intent(this, Service.class));
     }
 

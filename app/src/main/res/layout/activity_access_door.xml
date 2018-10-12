@@ -72,6 +72,12 @@
                 </RelativeLayout>
 
                 <EditText
+                    android:id="@+id/ed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"/>
+
+                <EditText
                     android:id="@+id/building"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"

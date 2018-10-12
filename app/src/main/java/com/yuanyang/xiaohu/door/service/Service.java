@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
+import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
@@ -16,6 +17,8 @@ import com.yuanyang.xiaohu.door.util.Constants;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -69,7 +72,11 @@ public class Service extends android.app.Service {
                  if(str.substring(str.length()-2,str.length()).equals("##")){
                      String mm = str.substring(2,str.length());
                            mm = mm.substring(0,mm.length()-2);
-                     Log.i("sss",">>>" + mm);
+                     CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+                     CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(mm)).unique();
+                     if(cardBean != null){
+                         openDoor(1);
+                     }
                  }else {
                      if(str.contains("&&")){
                          stringBuffer.append(str);
@@ -93,15 +100,6 @@ public class Service extends android.app.Service {
 
                      }
                  }
-
-                //TODO 对数据库信息进行增删改查
-//                        CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-//                        cardDao.insert(new CardBean());
-//
-//                        GreenDaoManager.getInstance().getSession().getCardBeanDao().delete(null);
-
-
-
             }
         };
 
@@ -242,6 +240,45 @@ public class Service extends android.app.Service {
             }
         });
     }
+    /**
+     * 开门代码
+     */
+    private void openDoor(int num) {
+        /**四个继电器的*/
+        byte[] sendArr = new byte[5];//打开继电器指令
+        sendArr[0] = (byte) 0xFF;
+        sendArr[1] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01); //0x25全开
+        sendArr[2] = 0x01;
+        sendArr[3] = (byte) (num == 1 ? 0x02 : num == 2 ? 0x03 : num == 3 ? 0x04 : num == 4 ? 0x05 : 0x02); //0x26全开
+        sendArr[4] = (byte) 0xEE;
+        final byte[] sendArr_ = new byte[5];//复位继电器指令
+        sendArr_[0] = (byte) 0xFF;
+        sendArr_[1] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
+        sendArr_[2] = 0x00;
+        sendArr_[3] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
+        sendArr_[4] = (byte) 0xEE;
+        serialHelper.send(sendArr);
+        Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                XLog.e("对继电器复位");
+            }
 
+            @Override
+            public void onNext(Long value) {
+                serialHelper.send(sendArr_);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                BusProvider.getBus().post(new EventModel( "开门成功！"));
+            }
+        });
+    }
 
 }
