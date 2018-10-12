@@ -9,10 +9,7 @@ import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.NetStateUtil;
-
-import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.library.kit.ToastManager;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
