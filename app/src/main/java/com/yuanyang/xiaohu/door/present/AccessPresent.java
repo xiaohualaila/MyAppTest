@@ -1,16 +1,26 @@
 package com.yuanyang.xiaohu.door.present;
 
+import android.util.Log;
+
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.NetStateUtil;
+
+import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
+
 import cn.com.library.kit.ToastManager;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class AccessPresent extends XPresent<AccessDoorActivity> {
@@ -41,5 +51,42 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                     }
                 });
     }
+
+    /**
+     * 心跳
+     */
+    public void sendState(){
+        //10秒
+        Observable.interval(10, TimeUnit.SECONDS).
+                subscribeOn(Schedulers.io()).
+                subscribe(new Consumer<Long>() {
+                    @Override public void accept(Long num) throws Exception {
+                        String macAddress = NetStateUtil.getMacAddress();
+                        BillboardApi.getDataService().sendState(macAddress)
+                                .compose(XApi.<BaseBean>getApiTransformer())
+                                .compose(XApi.<BaseBean>getScheduler())
+                                .compose(getV().<BaseBean>bindToLifecycle())
+                                .subscribe(new ApiSubscriber<BaseBean>() {
+                                    @Override
+                                    protected void onFail(NetError error) {
+
+                                    }
+
+                                    @Override
+                                    public void onNext(BaseBean model) {
+                                        if (model.isSuccess()) {
+
+                                        } else {
+
+                                        }
+                                    }
+                                });
+                        Log.i("sss",">>>>>>>>>>>>>请求次数");
+
+                    }
+                });
+    }
+
+
 
 }

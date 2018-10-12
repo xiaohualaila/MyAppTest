@@ -34,4 +34,12 @@ public interface BillBoardService {
                                  @Query("lat") String lat,
                                  @Query("lng") String lng);
 
+    /**
+     * 心跳发送服务器状态
+     *
+     * @return
+     */
+    @POST("pc/multimedia/screen/selectMultimediaMessage")
+    Flowable<BaseBean> sendState(@Query("devicemac") String mac);
+
 }

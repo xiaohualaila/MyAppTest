@@ -25,8 +25,10 @@ import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.Service;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import butterknife.BindView;
@@ -97,6 +99,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                     }
                 }
         );
+        getP().sendState();
+
     }
 
     /**
