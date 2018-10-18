@@ -65,7 +65,7 @@ public class DoorService extends Service {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
-                Log.i("sss", ">>>>>>>>>" + returnHex + "  " + returnHex.length());
+             //   Log.i("sss", ">>>>>>>>>" + returnHex + "  " + returnHex.length());
                 if (comBean.bRec.length > 0) {
                     if (returnHex.length() < 64) {
                         String openDoorData = stringBuffer.toString().substring(0, stringBuffer.length());
