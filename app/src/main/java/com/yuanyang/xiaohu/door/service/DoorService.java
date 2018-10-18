@@ -6,7 +6,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.model.AccessModel;
@@ -18,11 +17,9 @@ import com.yuanyang.xiaohu.door.util.Constants;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
@@ -35,16 +32,9 @@ import io.reactivex.disposables.Disposable;
 public class DoorService extends Service {
 
     private String openDoorLastData = "";
-
-    //public SendData sendData; //发送获取数据指令线程
-
-    private boolean flag = true;
-
     private StringBuffer stringBuffer;
     private SerialHelper serialHelper;
     private SerialHelper serialHelperScan;
-
-    private int index = 0;
 
     @Nullable
     @Override
@@ -52,15 +42,11 @@ public class DoorService extends Service {
         return null;
     }
 
-
     @Override
     public void onCreate() {
         super.onCreate();
         init();
-//        sendData = new SendData();
-//        sendData.start();
     }
-
 
     /**
      * 初始化串口
@@ -78,19 +64,17 @@ public class DoorService extends Service {
         serialHelperScan = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                index++;
                 String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
-                Log.i("sss", ">>>>>>>>>" +  returnHex);
-                if (comBean.bRec.length > 8) {
-                    if(index==2){
+                Log.i("sss", ">>>>>>>>>" + returnHex + "  " + returnHex.length());
+                if (comBean.bRec.length > 0) {
+                    if (returnHex.length() < 64) {
                         String openDoorData = stringBuffer.toString().substring(0, stringBuffer.length());
                         if (!openDoorData.equals(openDoorLastData)) {
                             openDoorLastData = openDoorData;
-                            decryptData(ChangeTool.decodeHexStr(openDoorData), 1);//解密
-                            stringBuffer.delete(0, stringBuffer.length());
+                            decryptData(ChangeTool.decodeHexStr(openDoorData));
                         }
-                        index =0;
-                    }else {
+                        stringBuffer.delete(0, stringBuffer.length());
+                    } else {
                         stringBuffer.append(returnHex);
                     }
                 } else {
@@ -111,32 +95,26 @@ public class DoorService extends Service {
         }
     }
 
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        flag = false;
         serialHelper.close();
         serialHelperScan.close();
     }
 
-
     /**
      * 解密数据、解析数据、
      */
-    private void decryptData(String doorData, int num) {
+    private void decryptData(String doorData) {
         try {
-            //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
-            //   Log.i("sss", "data====" + data);//data 001,610103001,610103,001126,18392393600,00000000000,1532505747025
             String[] strings = data.split(",");
             if (System.currentTimeMillis() - Long.parseLong(strings[6]) > 1000 * 300) {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
                 SoundPoolUtil.play(3);
             } else {
                 Log.i("sss", "检测是否门已开");
-                checkIsOpenDoor(strings, num);
+                checkIsOpenDoor(strings);
                 SoundPoolUtil.play(2);
             }
         } catch (Exception e) {
@@ -149,7 +127,7 @@ public class DoorService extends Service {
     /**
      * 判断是否开门
      */
-    private void checkIsOpenDoor(String[] strings, int num) {
+    private void checkIsOpenDoor(String[] strings) {
         String village = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
         String directionDoor = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
         String building = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_BUILDING, "").toString();
@@ -157,7 +135,7 @@ public class DoorService extends Service {
         List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
         AccessModel model = null;
         if (list.size() > 0) {
-            model = getModel(list, num);
+            model = getModel(list, 1);//1表示1个盒子
         }
         if (!TextUtils.isEmpty(village) && !TextUtils.isEmpty(directionDoor) && list.size() > 0) {
             if (!TextUtils.isEmpty(building)) {
@@ -193,7 +171,6 @@ public class DoorService extends Service {
         }
         return model;
     }
-
 
     /**
      * 开门代码

@@ -177,10 +177,10 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
             model.setDoorNum("无");
             model.setAccessible("请选择");
             list.add(model);
-            findViewById(R.id.add_er_code).setVisibility(View.VISIBLE);
+         //   findViewById(R.id.add_er_code).setVisibility(View.VISIBLE);
             findViewById(R.id.bt_set).setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.add_er_code).setVisibility(View.GONE);
+           // findViewById(R.id.add_er_code).setVisibility(View.GONE);
             findViewById(R.id.bt_set).setVisibility(View.GONE);
         }
         adapter.setData(list);
@@ -205,7 +205,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 model.setAccessible("请选择");
                 list.add(model);
                 adapter.setData(list);
-//                if (list.size() == 8) {
+//                if (list.size() == 1) {
 //                    findViewById(R.id.add_er_code).setVisibility(View.GONE);
 //                }
                 break;

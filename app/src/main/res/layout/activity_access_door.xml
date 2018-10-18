@@ -176,6 +176,7 @@
                     android:layout_height="40dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/select_bg"
+                    android:visibility="gone"
                     android:gravity="center"
                     android:text="添加扫码盒"
                     android:textColor="#ffffff"
