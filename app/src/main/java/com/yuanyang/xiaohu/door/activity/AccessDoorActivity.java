@@ -122,7 +122,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
      */
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("门禁系统");
+        getSupportActionBar().setTitle("老版本的门禁系统");
     }
 
     /**
