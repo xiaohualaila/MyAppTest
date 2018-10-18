@@ -1,10 +1,12 @@
 package com.yuanyang.xiaohu.door.activity;
 
+import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,6 +30,8 @@ import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -67,6 +71,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
 
     private String[] direction = {"东门", "西门", "南门", "北门", "楼栋"};
 
+    private SmdtManager smdt;
+
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -97,7 +103,19 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                     }
                 }
         );
+
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char)1);//开启看门狗
+
+        new Timer().schedule(timerTask,0,5000);
     }
+
+    TimerTask timerTask = new TimerTask(){
+        @Override
+        public void run() {
+                smdt.smdtWatchDogFeed();//喂狗
+        }
+    };
 
     /**
      * 设置title
@@ -277,6 +295,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     public void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, DoorService.class));
+        smdt.smdtWatchDogEnable((char) 0);
     }
 
     @Override

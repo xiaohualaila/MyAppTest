@@ -6,11 +6,17 @@ import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+
+import java.util.concurrent.TimeUnit;
+
 import cn.com.library.kit.ToastManager;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class AccessPresent extends XPresent<AccessDoorActivity> {
@@ -41,5 +47,4 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                     }
                 });
     }
-
 }
