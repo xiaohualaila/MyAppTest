@@ -85,44 +85,44 @@ public class Service extends android.app.Service {
         /**
          *  ttyS4  2号扫码盒
          */
-        stringBuffer_ttyS4 = new StringBuffer();
-        serialHelper_ttyS4 = new SerialHelper() {
-            @Override
-            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                dealMsg(comBean, stringBuffer_ttyS4,2);
-            }
-        };
-
-        serialHelper_ttyS4.setPort(Constants.PORT_ttyS4);
-        serialHelper_ttyS4.setBaudRate(Constants.BAUDRATE);
+//        stringBuffer_ttyS4 = new StringBuffer();
+//        serialHelper_ttyS4 = new SerialHelper() {
+//            @Override
+//            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
+//                dealMsg(comBean, stringBuffer_ttyS4,2);
+//            }
+//        };
+//
+//        serialHelper_ttyS4.setPort(Constants.PORT_ttyS4);
+//        serialHelper_ttyS4.setBaudRate(Constants.BAUDRATE);
 
         /**
          *  ttyXRM0  3号扫码盒
          */
-        stringBuffer_ttyXRM0 = new StringBuffer();
-        serialHelper_ttyXRM0 = new SerialHelper() {
-            @Override
-            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                dealMsg(comBean, stringBuffer_ttyXRM0,3);
-            }
-        };
-
-        serialHelper_ttyXRM0.setPort(Constants.PORT_ttyXRM0);
-        serialHelper_ttyXRM0.setBaudRate(Constants.BAUDRATE);
+//        stringBuffer_ttyXRM0 = new StringBuffer();
+//        serialHelper_ttyXRM0 = new SerialHelper() {
+//            @Override
+//            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
+//                dealMsg(comBean, stringBuffer_ttyXRM0,3);
+//            }
+//        };
+//
+//        serialHelper_ttyXRM0.setPort(Constants.PORT_ttyXRM0);
+//        serialHelper_ttyXRM0.setBaudRate(Constants.BAUDRATE);
 
         /**
          *  ttyXRM1  4号扫码盒
          */
-        stringBuffer_ttyXRM1 = new StringBuffer();
-        serialHelper_ttyXRM1 = new SerialHelper() {
-            @Override
-            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                dealMsg(comBean, stringBuffer_ttyXRM1,4);
-            }
-        };
-
-        serialHelper_ttyXRM1.setPort(Constants.PORT_ttyXRM1);
-        serialHelper_ttyXRM1.setBaudRate(Constants.BAUDRATE);
+//        stringBuffer_ttyXRM1 = new StringBuffer();
+//        serialHelper_ttyXRM1 = new SerialHelper() {
+//            @Override
+//            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
+//                dealMsg(comBean, stringBuffer_ttyXRM1,4);
+//            }
+//        };
+//
+//        serialHelper_ttyXRM1.setPort(Constants.PORT_ttyXRM1);
+//        serialHelper_ttyXRM1.setBaudRate(Constants.BAUDRATE);
 
         try {
             serialHelper_ttyS1.open();
@@ -131,27 +131,27 @@ public class Service extends android.app.Service {
             Log.i("sss", e.getMessage());
             BusProvider.getBus().post(new EventModel("串口打开失败"));
         }
-        try {
-            serialHelper_ttyS4.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("sss", e.getMessage());
-            BusProvider.getBus().post(new EventModel("串口打开失败"));
-        }
-        try {
-            serialHelper_ttyXRM0.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("sss", e.getMessage());
-            BusProvider.getBus().post(new EventModel("串口打开失败"));
-        }
-        try {
-            serialHelper_ttyXRM1.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("sss", e.getMessage());
-            BusProvider.getBus().post(new EventModel("串口打开失败"));
-        }
+//        try {
+//            serialHelper_ttyS4.open();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Log.i("sss", e.getMessage());
+//            BusProvider.getBus().post(new EventModel("串口打开失败"));
+//        }
+//        try {
+//            serialHelper_ttyXRM0.open();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Log.i("sss", e.getMessage());
+//            BusProvider.getBus().post(new EventModel("串口打开失败"));
+//        }
+//        try {
+//            serialHelper_ttyXRM1.open();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Log.i("sss", e.getMessage());
+//            BusProvider.getBus().post(new EventModel("串口打开失败"));
+//        }
 
 
     }
@@ -205,9 +205,9 @@ public class Service extends android.app.Service {
     public void onDestroy() {
         super.onDestroy();
         serialHelper_ttyS1.close();
-        serialHelper_ttyS4.close();
-        serialHelper_ttyXRM0.close();
-        serialHelper_ttyXRM1.close();
+//        serialHelper_ttyS4.close();
+//        serialHelper_ttyXRM0.close();
+//        serialHelper_ttyXRM1.close();
     }
 
     /**
