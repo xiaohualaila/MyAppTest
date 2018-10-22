@@ -114,7 +114,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
 
     }
 
-///////////////////////读卡部分
+    ///////////////////////读卡部分
 
     Handler handler = new Handler(){
         @Override
