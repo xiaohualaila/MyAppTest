@@ -99,7 +99,6 @@ public class Service extends android.app.Service {
                         } else {
                             stringBuffer.append(str);
                         }
-
                     }
                 }
             }
@@ -117,14 +116,12 @@ public class Service extends android.app.Service {
         }
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         serialHelper.close();
         serialHelperScan.close();
     }
-
 
     /**
      * 解密数据、解析数据、
@@ -197,7 +194,6 @@ public class Service extends android.app.Service {
         }
         return model;
     }
-
 
     /**
      * 开门代码
