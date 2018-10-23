@@ -1,7 +1,9 @@
 package com.yuanyang.xiaohu.door.activity;
 
+import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,11 +30,10 @@ import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.Service;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
-
-import java.net.InetAddress;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -79,7 +80,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     private boolean isAuto = true;
     private String msg;
     private StringBuffer buffer;
-
+    private SmdtManager smdt;
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -90,7 +91,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 "\n\n楼栋号:长度为6(可为空)，不足前补0，参考小区编号设置，如:123456 --> 123456 又如:452 --> 000452" + "");
         initViewData();
         SoundPoolUtil.play(1);
-        startService(new Intent(this, Service.class));
+
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 new Consumer<EventModel>() {
                     @Override
@@ -111,8 +112,27 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 }
         );
         getP().sendState();
-
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startService(new Intent(AccessDoorActivity.this, Service.class));
+            }
+        },5000);
+        String model = Build.MODEL;
+        if(model.equals("3280")) {
+            smdt = SmdtManager.create(this);
+            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+            new Timer().schedule(timerTask, 0, 5000);
+        }
     }
+
+    TimerTask timerTask = new TimerTask(){
+        @Override
+        public void run() {
+            smdt.smdtWatchDogFeed();//喂狗
+            // Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
+        }
+    };
 
     ///////////////////////读卡部分
 
@@ -368,6 +388,10 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         super.onDestroy();
         isAuto = false;
         stopService(new Intent(this, Service.class));
+        String model = Build.MODEL;
+        if(model.equals("3280")) {
+            smdt.smdtWatchDogEnable((char)0);
+        }
     }
 
     @Override
