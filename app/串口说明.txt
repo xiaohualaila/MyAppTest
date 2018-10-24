@@ -1,0 +1,5 @@
+ttyS3   3号串口控制门禁
+ttyS1   1号扫码盒
+ttyS4   2号扫码盒
+ttyXRM0  3号扫码盒
+ttyXRM1  4号扫码盒
