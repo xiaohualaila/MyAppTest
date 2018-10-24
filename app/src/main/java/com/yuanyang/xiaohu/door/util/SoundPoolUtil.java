@@ -30,7 +30,7 @@ public class SoundPoolUtil {
         soundPool.load(context, R.raw.dingdong, 1);
         soundPool.load(context, R.raw.success, 2);
         soundPool.load(context, R.raw.fail, 3);
-
+        soundPool.load(context, R.raw.code_scaned, 4);
     }
 
     public static void play(int number) {

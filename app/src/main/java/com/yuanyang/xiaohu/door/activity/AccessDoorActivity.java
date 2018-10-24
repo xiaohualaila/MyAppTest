@@ -111,13 +111,16 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                     }
                 }
         );
+
         getP().sendState();
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startService(new Intent(AccessDoorActivity.this, Service.class));
             }
         },5000);
+
         String model = Build.MODEL;
         if(model.equals("3280")) {
             smdt = SmdtManager.create(this);
