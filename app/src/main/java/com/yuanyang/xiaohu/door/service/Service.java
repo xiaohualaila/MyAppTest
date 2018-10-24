@@ -160,8 +160,6 @@ public class Service extends android.app.Service {
             e.printStackTrace();
             BusProvider.getBus().post(new EventModel("XRM1串口打开失败"));
         }
-
-
     }
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
@@ -180,11 +178,9 @@ public class Service extends android.app.Service {
                 stringBuffer.append(str);
                 String content = stringBuffer.toString();
                 if(content.length() > 12){//小于等于12判断为卡，大于判断是二维码
-                    content = content.substring(1, content.length());
-                    content = content.substring(0, content.length() - 1);
+                    content = content.substring(1, content.length()-1);
                     if (!content.equals(openDoorLastData)) {
                         openDoorLastData = content;
-                        //   decryptData(content, Integer.parseInt(which_door));//解密
                         decryptData(content,scanBox);//解密
                     }else {
                         BusProvider.getBus().post(new EventModel("二维码已刷过！"));
@@ -200,16 +196,15 @@ public class Service extends android.app.Service {
     }
 
     private void dealCardNo(int scanBox, String str) {
-        String mm = str.substring(1, str.length());
-        mm = mm.substring(0, mm.length() - 1);
+        String mm = str.substring(1, str.length()-1);
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
         CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(mm)).unique();
-//        if (cardBean != null) {
+        if (cardBean != null) {
             openCardDoor(scanBox);
-//        }else {
-//            BusProvider.getBus().post(new EventModel("卡号不存在！"));
-//            SoundPoolUtil.play(4);
-//        }
+        }else {
+            BusProvider.getBus().post(new EventModel("卡号不存在！"));
+            SoundPoolUtil.play(4);
+        }
 
     }
 
