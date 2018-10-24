@@ -166,7 +166,7 @@ public class Service extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-      //  Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
+        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
 
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
@@ -204,12 +204,12 @@ public class Service extends android.app.Service {
         mm = mm.substring(0, mm.length() - 1);
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
         CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(mm)).unique();
-        if (cardBean != null) {
+//        if (cardBean != null) {
             openCardDoor(scanBox);
-        }else {
-            BusProvider.getBus().post(new EventModel("卡号不存在！"));
-            SoundPoolUtil.play(4);
-        }
+//        }else {
+//            BusProvider.getBus().post(new EventModel("卡号不存在！"));
+//            SoundPoolUtil.play(4);
+//        }
 
     }
 
@@ -296,7 +296,7 @@ public class Service extends android.app.Service {
     }
 
     /**
-     * 开门代码
+     * 刷二维码开门
      */
     private void openDoor(final String[] strings, final AccessModel model) {
         final int num = model.getRelay();
@@ -335,7 +335,7 @@ public class Service extends android.app.Service {
     }
 
     /**
-     * 开门代码
+     * 刷卡开门
      */
     private void openCardDoor(final int num) {
         if (serialHelper.isOpen()) {
