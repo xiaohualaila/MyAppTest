@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    android:layout_margin="30dp"
+    android:padding="30dp"
+    >
+
+    <LinearLayout
+        android:layout_above="@+id/progressBarHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="正在下载："
+            android:textColor="@color/x_red"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/loading_file_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="文件名"
+            android:textColor="@color/x_red"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/loading_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="1/5"
+            android:textColor="@color/x_red"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/seek"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="20dp"
+        android:indeterminateTint="@color/colorPrimary"
+        android:max="100" />
+    <TextView
+        android:id="@+id/loading_pro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progressBarHorizontal"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/x_red"
+        android:textSize="15sp" />
+
+</LinearLayout>

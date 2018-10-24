@@ -3,10 +3,13 @@ package com.yuanyang.xiaohu.door.activity;
 import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,15 +25,20 @@ import android.widget.TextView;
 
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
+import com.yuanyang.xiaohu.door.dialog.DownloadAPKDialog;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
+import com.yuanyang.xiaohu.door.model.VersionModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.Service;
+import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
+
+import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,7 +54,7 @@ import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
-public class AccessDoorActivity extends XActivity<AccessPresent> {
+public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
     /**
      * 610103001
      */
@@ -81,6 +89,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     private String msg;
     private StringBuffer buffer;
     private SmdtManager smdt;
+
+    public DownloadAPKDialog dialog_app;
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -300,9 +310,9 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
                 model.setAccessible("请选择");
                 list.add(model);
                 adapter.setData(list);
-//                if (list.size() == 8) {
-//                    findViewById(R.id.add_er_code).setVisibility(View.GONE);
-//                }
+                if (list.size() == 4) {
+                    findViewById(R.id.add_er_code).setVisibility(View.GONE);
+                }
                 break;
             case R.id.bt_set://设置参数到终端
                 if (checkIsEmpty()) {
@@ -383,6 +393,17 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
         return true;
     }
 
+    public void updateVersion(VersionModel model){
+        dialog_app = new DownloadAPKDialog(this);
+        dialog_app.show();
+        dialog_app.setCancelable(false);
+        dialog_app.getFile_name().setText(model.getVdetails());
+        dialog_app.getFile_num().setText(model.getVnumber());
+        AppDownload appDownload = new AppDownload();
+        appDownload.setProgressInterface(this);
+        appDownload.downApk(model.getDownload(),this);
+    }
+
 
     /**
      * 退出页面销毁
@@ -405,5 +426,51 @@ public class AccessDoorActivity extends XActivity<AccessPresent> {
     @Override
     public AccessPresent newP() {
         return new AccessPresent();
+    }
+
+    @Override
+    public void callProgress(int progress) {
+        if (progress >= 100) {
+            runOnUiThread(() -> {
+                dialog_app.dismiss();
+                String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/door.apk";
+                install(sdcardDir);
+            });
+
+        }else {
+            runOnUiThread(() -> {
+                dialog_app.getSeekBar().setProgress( progress );
+                dialog_app.getNum_progress().setText(progress+"%");
+            });
+        }
+    }
+
+    /**
+     * 开启安装过程
+     * @param fileName
+     */
+    private void install(String fileName) {
+        //承接我的代码，filename指获取到了我的文件相应路径
+        if (fileName != null) {
+            if (fileName.endsWith(".apk")) {
+                if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
+                    File file= new File(fileName);
+                    Uri apkUri = FileProvider.getUriForFile(context, "com.yuanyang.xiaohu.door.fileprovider", file);
+                    //在AndroidManifest中的android:authorities值
+                    Intent install = new Intent(Intent.ACTION_VIEW);
+                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
+                    install.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                    context.startActivity(install);
+                } else{
+                    Intent install = new Intent(Intent.ACTION_VIEW);
+                    install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
+                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(install);
+                }
+            }
+        }
+
+
     }
 }
