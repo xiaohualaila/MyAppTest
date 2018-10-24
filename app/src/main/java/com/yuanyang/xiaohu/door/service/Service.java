@@ -5,8 +5,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
@@ -164,8 +162,7 @@ public class Service extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
-
+      //  Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){
@@ -205,7 +202,6 @@ public class Service extends android.app.Service {
             BusProvider.getBus().post(new EventModel("卡号不存在！"));
             SoundPoolUtil.play(4);
         }
-
     }
 
     @Override
