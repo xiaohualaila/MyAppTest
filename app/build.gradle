@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
 
-        applicationId 'cn.com.billboard'
+        applicationId 'com.yuanyang.xiaohu.door'
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode rootProject.ext.android.versionCode

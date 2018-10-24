@@ -58,7 +58,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      */
     public void sendState(){
         //10秒
-        Observable.interval(10, TimeUnit.MINUTES).
+        Observable.interval(10, TimeUnit.SECONDS).
                 subscribeOn(Schedulers.io()).
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
@@ -76,42 +76,44 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                     public void onNext(BaseBean model) {
                                         if (model.isSuccess()) {
 
-                                            MessageBodyBean bean  = (MessageBodyBean) model.getMessageBody();
-                                            List<String> add_list = bean.getAddedcards();
-                                            List<String> dele_list = bean.getDeletedcards();
-                                            /**
-                                            *往数据库中增加
-                                            */
-                                            if(add_list.size()>0){
-                                                CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-                                                CardBean card = null;
-                                                for(int i = 0;i<add_list.size();i++){
-                                                    CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(add_list.get(i))).unique();
-                                                    if(cardBean == null){
-                                                        card = new CardBean(null,add_list.get(i));
-                                                        cardDao.insert(card);
+                                            MessageBodyBean bean = (MessageBodyBean) model.getMessageBody();
+                                            if (bean != null) {
+                                                List<String> add_list = bean.getAddedcards();
+                                                List<String> dele_list = bean.getDeletedcards();
+                                                /**
+                                                 *往数据库中增加
+                                                 */
+                                                if (add_list.size() > 0) {
+                                                    CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+                                                    CardBean card = null;
+                                                    for (int i = 0; i < add_list.size(); i++) {
+                                                        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(add_list.get(i))).unique();
+                                                        if (cardBean == null) {
+                                                            card = new CardBean(null, add_list.get(i));
+                                                            cardDao.insert(card);
+                                                        }
+                                                    }
+                                                }
+                                                /**
+                                                 * 从数据库中删除
+                                                 */
+                                                if (dele_list.size() > 0) {
+                                                    CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+                                                    for (int i = 0; i < dele_list.size(); i++) {
+                                                        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(dele_list.get(i))).unique();
+                                                        if (cardBean != null) {
+                                                            cardDao.delete(cardBean);
+                                                        }
+                                                    }
+                                                }
+                                                Log.i("sss", "十分钟请求一次数据");
+                                                List<CardBean> ls = GreenDaoManager.getInstance().getSession().getCardBeanDao().queryBuilder().list();
+                                                if (ls.size() > 0) {
+                                                    for (int i = 0; i < ls.size(); i++) {
+                                                        Log.i("sss", "sss" + ls.get(i).getNum());
                                                     }
                                                 }
                                             }
-                                            /**
-                                             * 从数据库中删除
-                                             */
-                                            if(dele_list.size()>0){
-                                                CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-                                                for(int i = 0;i<dele_list.size();i++){
-                                                    CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(dele_list.get(i))).unique();
-                                                    if(cardBean != null){
-                                                        cardDao.delete(cardBean);
-                                                    }
-                                                }
-                                            }
-                                            Log.i("sss","十分钟请求一次数据");
-//                                            List<CardBean> ls = GreenDaoManager.getInstance().getSession().getCardBeanDao().queryBuilder().list();
-//                                            if(ls.size()>0){
-//                                                for(int i=0;i<ls.size();i++){
-//                                                  Log.i("sss","sss"+ls.get(i).getNum());
-//                                                }
-//                                            }
                                         }
                                     }
                                 });
