@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -22,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
 import com.yuanyang.xiaohu.door.dialog.DownloadAPKDialog;
