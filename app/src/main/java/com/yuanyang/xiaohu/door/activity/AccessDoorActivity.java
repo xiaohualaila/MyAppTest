@@ -82,8 +82,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     private String[] direction = {"东门", "西门", "南门", "北门", "楼栋"};
 
     //读卡部分
-    @BindView(R.id.ed)
-    EditText editText;
+//    @BindView(R.id.ed)
+//    EditText editText;
     private Thread thread;
     private boolean isAuto = true;
     private String msg;
@@ -124,12 +124,9 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
         getP().sendState();
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startService(new Intent(AccessDoorActivity.this, Service.class));
-            }
-        },5000);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
+                Service.class)),5000);
 
         String model = Build.MODEL;
         if(model.equals("3280")) {
@@ -143,80 +140,79 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         @Override
         public void run() {
             smdt.smdtWatchDogFeed();//喂狗
-            // Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
         }
     };
 
     ///////////////////////读卡部分
 
-    Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case 0:
-                    editText.setText("");
-                    break;
-            }
+//    Handler handler = new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            switch (msg.what){
+//                case 0:
+//                    editText.setText("");
+//                    break;
+//            }
+//
+//
+//        }
+//    };
 
-
-        }
-    };
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            while (isAuto) {
-                msg = editText.getText().toString();
-//                Log.i("sss","  >>>>"+msg);
-
-
-                if (msg.length()>0){
-                    if(msg.contains(";")){
-                        int index = msg.indexOf(";");
-                        msg = msg.substring(index,msg.length());
-                        if(msg.contains("?")){
-                            index = msg.indexOf("?");
-                            msg = msg.substring(0,index+1);
-
-                            Log.i("xxx","  >>>>"+msg);
-                            Message message =new Message();
-                            message.what = 0;
-                            handler.sendMessage(message);
-                            buffer.delete(0,buffer.length());
-
-                        }else {
-                            buffer.append(msg);
-                        }
-
-                    }else {
-                        if(msg.contains("?")) {
-                            int  index = msg.indexOf("?");
-                            msg = msg.substring(0,index+1);
-                            buffer.append(msg);
-
-                            String result = buffer.toString();
-
-                            Log.i("xxx","  >>>>" + result);
-                            Message message =new Message();
-                            message.what = 0;
-                            handler.sendMessage(message);
-                            buffer.delete(0,buffer.length());
-
-                        }
-                    }
-
-                }
-                try {
-                    thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        }
-    };
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            while (isAuto) {
+//                msg = editText.getText().toString();
+////                Log.i("sss","  >>>>"+msg);
+//
+//
+//                if (msg.length()>0){
+//                    if(msg.contains(";")){
+//                        int index = msg.indexOf(";");
+//                        msg = msg.substring(index,msg.length());
+//                        if(msg.contains("?")){
+//                            index = msg.indexOf("?");
+//                            msg = msg.substring(0,index+1);
+//
+//                            Log.i("xxx","  >>>>"+msg);
+//                            Message message =new Message();
+//                            message.what = 0;
+//                            handler.sendMessage(message);
+//                            buffer.delete(0,buffer.length());
+//
+//                        }else {
+//                            buffer.append(msg);
+//                        }
+//
+//                    }else {
+//                        if(msg.contains("?")) {
+//                            int  index = msg.indexOf("?");
+//                            msg = msg.substring(0,index+1);
+//                            buffer.append(msg);
+//
+//                            String result = buffer.toString();
+//
+//                            Log.i("xxx","  >>>>" + result);
+//                            Message message =new Message();
+//                            message.what = 0;
+//                            handler.sendMessage(message);
+//                            buffer.delete(0,buffer.length());
+//
+//                        }
+//                    }
+//
+//                }
+//                try {
+//                    thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//
+//        }
+//    };
 ///////////////////////////
 
     /**
@@ -284,9 +280,9 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         } else {
             findViewById(R.id.add_er_code).setVisibility(View.GONE);
             findViewById(R.id.bt_set).setVisibility(View.GONE);
-            thread = new Thread(runnable);
-            thread.start();
-            editText.requestFocus();
+//            thread = new Thread(runnable);
+//            thread.start();
+//            editText.requestFocus();
         }
         adapter.setData(list);
     }
@@ -350,12 +346,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         //点击其他地方消失
         popupWindow.setOutsideTouchable(true);
         popupWindow.showAsDropDown(view);
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                directionDown.setImageResource(R.drawable.ic_arrow_drop_down_black);
-            }
-        });
+        popupWindow.setOnDismissListener(() -> directionDown.setImageResource(R.drawable.ic_arrow_drop_down_black));
     }
 
 
@@ -470,7 +461,5 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 }
             }
         }
-
-
     }
 }
