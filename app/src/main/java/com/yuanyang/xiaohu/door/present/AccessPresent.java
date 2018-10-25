@@ -57,8 +57,8 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      * 心跳
      */
     public void sendState(){
-        //10秒
-        Observable.interval(10, TimeUnit.SECONDS).
+        //10分钟
+        Observable.interval(10, TimeUnit.MINUTES).
                 subscribeOn(Schedulers.io()).
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
