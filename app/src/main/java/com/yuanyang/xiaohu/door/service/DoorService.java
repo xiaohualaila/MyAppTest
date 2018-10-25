@@ -65,21 +65,49 @@ public class DoorService extends Service {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 String returnHex = FuncUtil.ByteArrToHex(comBean.bRec).replace(" ", "");
-             //   Log.i("sss", ">>>>>>>>>" + returnHex + "  " + returnHex.length());
-                if (comBean.bRec.length > 0) {
-                    if (returnHex.length() < 64) {
-                        String openDoorData = stringBuffer.toString().substring(0, stringBuffer.length());
-                        if (!openDoorData.equals(openDoorLastData)) {
-                            openDoorLastData = openDoorData;
-                            decryptData(ChangeTool.decodeHexStr(openDoorData));
-                        }
-                        stringBuffer.delete(0, stringBuffer.length());
-                    } else {
-                        stringBuffer.append(returnHex);
+            //    Log.i("sss", ">>>>>>>>>" + returnHex + "  " + returnHex.length());
+//                    if (returnHex.length() == 124) {
+//                        stringBuffer.append(returnHex);
+//                    } else {
+//                        stringBuffer.append(returnHex);
+//                        String openDoorData = stringBuffer.toString().substring(0, stringBuffer.length());
+//                        if (!openDoorData.equals(openDoorLastData)) {
+//                            openDoorLastData = openDoorData;
+//                            decryptData(ChangeTool.decodeHexStr(openDoorData));
+//                            Log.i("sss", ">>>>>>>>>" + ChangeTool.decodeHexStr(openDoorData) + "  " + ChangeTool.decodeHexStr(openDoorData).length());
+//                        }
+//                        stringBuffer.delete(0, stringBuffer.length());
+//                    }
+               // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //二维码盒子无法设置的情况
+//                if (returnHex.length() ==64) {
+//                    stringBuffer.append(returnHex);
+//                    if(stringBuffer.length()>=192){
+//                        String openDoorData = stringBuffer.toString().substring(0, stringBuffer.length());
+//                        if (!openDoorData.equals(openDoorLastData)) {
+//                            openDoorLastData = openDoorData;
+//                            decryptData(ChangeTool.decodeHexStr(openDoorData));
+//                        }
+//                        stringBuffer.delete(0, stringBuffer.length());
+//                    }
+//                }else {
+//                    stringBuffer.delete(0, stringBuffer.length());
+//                }
+                //二维码盒子可以设置的情况例如：长庆坊
+                if (returnHex.length() < 64) {
+                    stringBuffer.append(returnHex);
+                    String openDoorData = stringBuffer.toString().substring(0, stringBuffer.length());
+                    if (!openDoorData.equals(openDoorLastData)) {
+                        openDoorLastData = openDoorData;
+                        decryptData(ChangeTool.decodeHexStr(openDoorData));
+                      //  Log.i("sss", ">>>>>>>>>" + ChangeTool.decodeHexStr(openDoorData) + "  " + ChangeTool.decodeHexStr(openDoorData).length());
                     }
-                } else {
                     stringBuffer.delete(0, stringBuffer.length());
+                } else {
+                    stringBuffer.append(returnHex);
                 }
+
+
             }
         };
 
@@ -211,6 +239,7 @@ public class DoorService extends Service {
             public void onComplete() {
                 BusProvider.getBus().post(new EventModel(strings[0].trim().equals("001") ? "Success!开门成功！" : "预约开门成功"));
                 BusProvider.getBus().post(new UploadModel(strings, model));
+              //  Log.i("cccc","strings[4]"+strings[4]+ " strings[5] " + strings[5]+" strings[1] " + strings[1]+" strings[2] "+  strings[2]+ " strings[3] "+strings[3]);
             }
         });
     }
