@@ -48,14 +48,13 @@ import cn.com.library.event.BusProvider;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
+import cn.com.library.net.NetError;
 import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
-    /**
-     * 610103001
-     */
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.open_door_param)
@@ -89,6 +88,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     private SmdtManager smdt;
 
     public DownloadAPKDialog dialog_app;
+
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -457,6 +457,42 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(install);
                 }
+            }
+        }
+    }
+    public void showToast(String msg){
+        runOnUiThread(() -> ToastManager.showShort(AccessDoorActivity.this, msg));
+    }
+
+    /**
+     * 请求返回错误
+     */
+    public void showError(NetError error) {
+        if (error != null) {
+            switch (error.getType()) {
+                case NetError.ParseError:
+                    ToastManager.showShort(context, "数据解析异常");
+                    break;
+
+                case NetError.AuthError:
+                    ToastManager.showShort(context, "身份验证异常");
+                    break;
+
+                case NetError.BusinessError:
+                    ToastManager.showShort(context, "业务异常");
+                    break;
+
+                case NetError.NoConnectError:
+                    ToastManager.showShort(context, "网络无连接");
+                    break;
+
+                case NetError.NoDataError:
+                    ToastManager.showShort(context, "数据为空");
+                    break;
+
+                case NetError.OtherError:
+                    ToastManager.showShort(context, "其他异常");
+                    break;
             }
         }
     }

@@ -40,7 +40,7 @@ public interface BillBoardService {
      *
      * @return
      */
-    @GET("/yykjZhCommunity/background/device/app/selectDeviceCards")
+    @GET("system/card/selectDeviceCards")
     Flowable<BaseBean<MessageBodyBean>> sendState(@Query("devicemac") String mac);
 
 }

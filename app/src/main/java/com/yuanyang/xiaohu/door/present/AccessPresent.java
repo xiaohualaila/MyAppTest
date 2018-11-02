@@ -6,6 +6,7 @@ import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
+import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
@@ -15,6 +16,8 @@ import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import cn.com.library.event.BusProvider;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
@@ -63,6 +66,10 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
                         String macAddress = NetStateUtil.getMacAddress();
+                        if(macAddress==null){
+                          getV().showToast("网络无法连接");
+                            return;
+                        }
                         BillboardApi.getDataService().sendState(macAddress)
                                 .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
                                 .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
@@ -70,6 +77,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                 .subscribe(new ApiSubscriber<BaseBean>() {
                                     @Override
                                     protected void onFail(NetError error) {
+                                        getV().showError(error);
                                     }
 
                                     @Override
