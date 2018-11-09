@@ -2,6 +2,7 @@ package com.yuanyang.xiaohu.door.present;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
@@ -61,7 +62,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      */
     public void sendState(){
         //10分钟
-        Observable.interval(10, TimeUnit.MINUTES).
+        Observable.interval(10, TimeUnit.SECONDS).
                 subscribeOn(Schedulers.io()).
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
@@ -85,6 +86,8 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                         if (model.isSuccess()) {
 
                                             MessageBodyBean bean = (MessageBodyBean) model.getMessageBody();
+
+                                            Log.i("sss",  new Gson().toJson(model));
                                             if (bean != null) {
                                                 List<String> add_list = bean.getAddedcards();
                                                 List<String> dele_list = bean.getDeletedcards();
