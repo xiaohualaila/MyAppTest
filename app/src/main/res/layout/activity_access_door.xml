@@ -29,9 +29,8 @@
 
                 <EditText
                     android:id="@+id/village_id"
-                    android:layout_width="match_parent"
+                    android:layout_width="@dimen/setup_text"
                     android:layout_height="40dp"
-                    android:layout_weight="1"
                     android:background="@drawable/view_border"
                     android:digits="0123456789"
                     android:hint="请输入小区编号"
@@ -45,10 +44,9 @@
 
                 <RelativeLayout
                     android:id="@+id/direction_select"
-                    android:layout_width="match_parent"
+                    android:layout_width="@dimen/setup_text"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
                     android:background="@drawable/view_border">
 
                     <TextView
@@ -79,10 +77,9 @@
 
                 <EditText
                     android:id="@+id/building"
-                    android:layout_width="match_parent"
+                    android:layout_width="@dimen/setup_text"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
                     android:background="@drawable/view_border"
                     android:digits="0123456789"
                     android:hint="请输入楼栋号"
@@ -94,6 +91,33 @@
                     android:paddingTop="1dp"
                     android:textSize="16sp"
                     android:visibility="invisible" />
+                <EditText
+                    android:id="@+id/building_unit"
+                    android:layout_width="@dimen/setup_text"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/view_border"
+                    android:digits="0123456789"
+                    android:hint="请输入单元号"
+                    android:inputType="number"
+                    android:maxLength="9"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="1dp"
+                    android:textSize="16sp"
+                    android:visibility="invisible" />
+                <Button
+                    android:id="@+id/bt_retroe"
+                    android:layout_width="@dimen/setup_text"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/select_bg"
+                    android:text="重置"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp" />
+
 
             </LinearLayout>
 

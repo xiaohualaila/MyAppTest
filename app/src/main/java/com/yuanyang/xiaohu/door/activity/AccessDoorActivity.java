@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -68,8 +69,13 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     ImageView directionDown;
     @BindView(R.id.building)
     EditText building;
+    @BindView(R.id.building_unit)
+    EditText building_unit;
     @BindView(R.id.tv_content)
     TextView tipContent;
+    @BindView(R.id.bt_retroe)
+    Button bt_retroe;
+
 
     private List<AccessModel> list;
 
@@ -263,6 +269,13 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
             building.setVisibility(View.INVISIBLE);
             building.setText("");
         }
+        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, "").toString())) {
+            building_unit.setVisibility(View.VISIBLE);
+            building_unit.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, "").toString());
+        } else {
+            building_unit.setVisibility(View.INVISIBLE);
+            building_unit.setText("");
+        }
         list = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString(), AccessModel.class);
         if (list.size() == 0) {
             adapter.setIsSelect(true);
@@ -274,9 +287,11 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
             list.add(model);
             findViewById(R.id.add_er_code).setVisibility(View.VISIBLE);
             findViewById(R.id.bt_set).setVisibility(View.VISIBLE);
+            bt_retroe.setVisibility(View.INVISIBLE);
         } else {
             findViewById(R.id.add_er_code).setVisibility(View.GONE);
             findViewById(R.id.bt_set).setVisibility(View.GONE);
+            bt_retroe.setVisibility(View.VISIBLE);
 //            thread = new Thread(runnable);
 //            thread.start();
 //            editText.requestFocus();
@@ -284,7 +299,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         adapter.setData(list);
     }
 
-    @OnClick({R.id.direction_select, R.id.add_er_code, R.id.bt_set})
+    @OnClick({R.id.direction_select, R.id.add_er_code, R.id.bt_set,R.id.bt_retroe})
     public void clickEvent(View view) {
         switch (view.getId()) {
             case R.id.direction_select:
@@ -314,6 +329,14 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                     initViewData();
                 }
                 break;
+            case R.id.bt_retroe:
+                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_VILLAGE_ID);
+                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_DIRECTION_ID);
+                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_VILLAGE_ID);
+                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_BUILDING);
+                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_PARAMS);
+                initViewData();
+                break;
         }
     }
 
@@ -330,10 +353,13 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 XLog.e(list[i]);
                 directionDoor.setText(list[i]);
-                if (list[i].equals("楼栋"))
+                if (list[i].equals("楼栋")){
                     building.setVisibility(View.VISIBLE);
-                else
+                    building_unit.setVisibility(View.VISIBLE);
+                } else{
                     building.setVisibility(View.INVISIBLE);
+                    building_unit.setVisibility(View.INVISIBLE);
+                }
                 popupWindow.dismiss();
             }
         });
@@ -359,6 +385,10 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 if ((!directionDoor.getText().toString().equals("请选择")) && (directionDoor.getText().toString().equals("楼栋"))) {
                     if (TextUtils.isEmpty(building.getText().toString())) {
                         ToastManager.showShort(context, "请设置楼栋号");
+                        return false;
+                    }
+                    if (TextUtils.isEmpty(building_unit.getText().toString())) {
+                        ToastManager.showShort(context, "请设置楼单元号");
                         return false;
                     }
                 } else if (GsonProvider.getInstance().getGson().toJson(adapter.getDataSource()).contains("请选择")) {
