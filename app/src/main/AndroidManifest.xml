@@ -23,6 +23,7 @@
         </activity>
 
         <service android:name=".service.Service"/>
+        <service android:name=".service.Service2"/>
         <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="true"

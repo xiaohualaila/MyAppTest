@@ -31,6 +31,7 @@ import com.yuanyang.xiaohu.door.model.VersionModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.Service;
+import com.yuanyang.xiaohu.door.service.Service2;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
@@ -101,37 +102,35 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         SoundPoolUtil.play(1);
 
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                new Consumer<EventModel>() {
-                    @Override
-                    public void accept(EventModel eventModel) throws Exception {
-                        XLog.e("EventModel===" + eventModel.value);
-                        //      tv.setText(eventModel.value);
-                        ToastManager.showShort(AccessDoorActivity.this, eventModel.value);
-                    }
+                eventModel -> {
+                    XLog.e("EventModel===" + eventModel.value);
+                    //      tv.setText(eventModel.value);
+                    ToastManager.showShort(AccessDoorActivity.this, eventModel.value);
                 }
         );
 
         BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
-                new Consumer<UploadModel>() {
-                    @Override
-                    public void accept(UploadModel uploadModel) throws Exception {
-                        getP().uploadLog(uploadModel.strings, uploadModel.model);
-                    }
-                }
+                uploadModel -> getP().uploadLog(uploadModel.strings, uploadModel.model)
         );
 
         getP().sendState();
 
         Handler handler = new Handler();
-        handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
-                Service.class)),5000);
 
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        new Timer().schedule(timerTask, 0, 5000);
         String model = Build.MODEL;
         if(model.equals("3280")) {
-            smdt = SmdtManager.create(this);
-            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-            new Timer().schedule(timerTask, 0, 5000);
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
+                    Service2.class)),5000);
+            Log.i("sss","打开service2 3288++" +model);
+        }else {
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
+                    Service.class)),5000);
+            Log.i("sss","打开service 836++" +model);
         }
+
     }
 
     TimerTask timerTask = new TimerTask(){
@@ -400,10 +399,12 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     public void onDestroy() {
         super.onDestroy();
         isAuto = false;
-        stopService(new Intent(this, Service.class));
+        smdt.smdtWatchDogEnable((char)0);
         String model = Build.MODEL;
         if(model.equals("3280")) {
-            smdt.smdtWatchDogEnable((char)0);
+            stopService(new Intent(this, Service2.class));
+        }else {
+            stopService(new Intent(this, Service.class));
         }
     }
 
@@ -491,7 +492,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                     break;
 
                 case NetError.OtherError:
-                    ToastManager.showShort(context, "其他异常");
+                    ToastManager.showShort(context, "网络无连接");
                     break;
             }
         }
