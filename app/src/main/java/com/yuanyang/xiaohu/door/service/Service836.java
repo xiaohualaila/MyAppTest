@@ -5,27 +5,25 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.model.CardModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.ChangeTool;
 import com.yuanyang.xiaohu.door.util.Constants;
+import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
@@ -36,23 +34,18 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 /**
- * 3288板子的
+ * 836板子的
  */
-public class Service2 extends android.app.Service {
+public class Service836 extends android.app.Service {
 
     private String openDoorLastData = "";
 
     private StringBuffer stringBuffer_ttyS1;
     private SerialHelper serialHelper_ttyS1;
 
-    private StringBuffer stringBuffer_ttyS4;
-    private SerialHelper serialHelper_ttyS4;
+    private StringBuffer stringBuffer_ttyS2;
+    private SerialHelper serialHelper_ttyS2;
 
-    private StringBuffer stringBuffer_ttyXRM0;
-    private SerialHelper serialHelper_ttyXRM0;
-
-    private StringBuffer stringBuffer_ttyXRM1;
-    private SerialHelper serialHelper_ttyXRM1;
 
     private SerialHelper serialHelper;
     @Nullable
@@ -76,7 +69,7 @@ public class Service2 extends android.app.Service {
          */
         serialHelper = new SerialHelper() {
             @Override
-            protected void onDataReceived(final ComBean comBean) {
+            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
 
             }
         };
@@ -88,51 +81,25 @@ public class Service2 extends android.app.Service {
         stringBuffer_ttyS1 = new StringBuffer();
         serialHelper_ttyS1 = new SerialHelper() {
             @Override
-            protected void onDataReceived(final ComBean comBean) {
+            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 dealMsg(comBean, stringBuffer_ttyS1,1);
             }
         };
         serialHelper_ttyS1.setPort(Constants.PORT_ttyS1);
         serialHelper_ttyS1.setBaudRate(Constants.BAUDRATE);
-
         /**
-         *  ttyS4  4号扫码盒
+         *  ttyS4  2号扫码盒
          */
-        stringBuffer_ttyS4 = new StringBuffer();
-        serialHelper_ttyS4 = new SerialHelper() {
+        stringBuffer_ttyS2 = new StringBuffer();
+        serialHelper_ttyS2 = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                dealMsg(comBean, stringBuffer_ttyS4,2);
+                dealMsg(comBean, stringBuffer_ttyS2,2);
             }
         };
-        serialHelper_ttyS4.setPort(Constants.PORT_ttyS4);
-        serialHelper_ttyS4.setBaudRate(Constants.BAUDRATE);
+        serialHelper_ttyS2.setPort(Constants.PORT_ttyS2);
+        serialHelper_ttyS2.setBaudRate(Constants.BAUDRATE);
 
-        /**
-         *  ttyXRM0  3号扫码盒
-         */
-        stringBuffer_ttyXRM0 = new StringBuffer();
-        serialHelper_ttyXRM0 = new SerialHelper() {
-            @Override
-            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                dealMsg(comBean, stringBuffer_ttyXRM0,3);
-            }
-        };
-        serialHelper_ttyXRM0.setPort(Constants.PORT_ttyXRM0);
-        serialHelper_ttyXRM0.setBaudRate(Constants.BAUDRATE);
-
-        /**
-         *  ttyXRM1  4号扫码盒
-         */
-        stringBuffer_ttyXRM1 = new StringBuffer();
-        serialHelper_ttyXRM1 = new SerialHelper() {
-            @Override
-            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-                dealMsg(comBean, stringBuffer_ttyXRM1,4);
-            }
-        };
-        serialHelper_ttyXRM1.setPort(Constants.PORT_ttyXRM1);
-        serialHelper_ttyXRM1.setBaudRate(Constants.BAUDRATE);
         try {
             serialHelper.open();
         } catch (IOException e) {
@@ -146,23 +113,12 @@ public class Service2 extends android.app.Service {
             BusProvider.getBus().post(new EventModel("ttyS1串口打开失败"));
         }
         try {
-            serialHelper_ttyS4.open();
+            serialHelper_ttyS2.open();
         } catch (IOException e) {
             e.printStackTrace();
-            BusProvider.getBus().post(new EventModel("ttyS1串口打开失败"));
+            BusProvider.getBus().post(new EventModel("ttyS2串口打开失败"));
         }
-        try {
-            serialHelper_ttyXRM0.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-            BusProvider.getBus().post(new EventModel("XRM0串口打开失败"));
-        }
-        try {
-            serialHelper_ttyXRM1.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-            BusProvider.getBus().post(new EventModel("XRM1串口打开失败"));
-        }
+
     }
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
@@ -198,11 +154,17 @@ public class Service2 extends android.app.Service {
     }
 
     private void dealCardNo(int scanBox, String str) {
-        String mm = str.substring(1, str.length()-1);
+        String card_no = str.substring(1, str.length()-1);
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(mm)).unique();
+        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(card_no)).unique();
         if (cardBean != null) {
-            openCardDoor(scanBox);
+            String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+            List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
+            AccessModel model = null;
+            if (list.size() > 0) {
+                model = getModel(list, scanBox);
+            }
+            openCardDoor(scanBox,card_no,model);
         }else {
             BusProvider.getBus().post(new EventModel("卡号不存在！"));
             SoundPoolUtil.play(4);
@@ -213,16 +175,14 @@ public class Service2 extends android.app.Service {
     public void onDestroy() {
         super.onDestroy();
         serialHelper_ttyS1.close();
-        serialHelper_ttyS4.close();
-        serialHelper_ttyXRM0.close();
-        serialHelper_ttyXRM1.close();
+        serialHelper_ttyS2.close();
         serialHelper.close();
     }
 
     /**
      * 解密数据、解析数据、
      */
-    private void decryptData(String doorData, int num) {
+    private void decryptData(String doorData, int scanBox) {
         try {
             //    Log.i("sss","doorData====" + doorData);
             String data = new String(TDESUtils.decrypt(Base64Utils.decodeString2Byte(doorData), Base64Utils.decodeString2Byte("5kxi7J1zqHBAxAiwQ2GJwnVUH8JoFrqn")), "UTF-8");//身份证号
@@ -233,7 +193,7 @@ public class Service2 extends android.app.Service {
                 SoundPoolUtil.play(3);
             } else {
                 Log.i("sss", "门已开");
-                checkIsOpenDoor(strings, num);
+                checkIsOpenDoor(strings, scanBox);
                 SoundPoolUtil.play(2);
             }
         } catch (Exception e) {
@@ -246,7 +206,7 @@ public class Service2 extends android.app.Service {
     /**
      * 判断是否开门
      */
-    private void checkIsOpenDoor(String[] strings, int num) {
+    private void checkIsOpenDoor(String[] strings, int scanBox) {
         String village = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
         String directionDoor = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
         String building = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_BUILDING, "").toString();
@@ -254,7 +214,7 @@ public class Service2 extends android.app.Service {
         List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
         AccessModel model = null;
         if (list.size() > 0) {
-            model = getModel(list, num);
+            model = getModel(list, scanBox);
         }
         if (!TextUtils.isEmpty(village) && !TextUtils.isEmpty(directionDoor) && list.size() > 0) {
             if (!TextUtils.isEmpty(building)) {
@@ -300,6 +260,7 @@ public class Service2 extends android.app.Service {
             serialHelper.send(getArrOpenDoor(num));
         } else {
             Log.i("sss","串口都没打开");
+            return;
         }
 
         Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
@@ -333,11 +294,12 @@ public class Service2 extends android.app.Service {
     /**
      * 刷卡开门
      */
-    private void openCardDoor(final int num) {
+    private void openCardDoor(final int scanBox, String cardno, AccessModel model) {
         if (serialHelper.isOpen()) {
-            serialHelper.send(getArrOpenDoor(num));
+            serialHelper.send(getArrOpenDoor(scanBox));
         } else {
             Log.i("sss","串口都没打开");
+            return;
         }
 
         Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
@@ -348,7 +310,7 @@ public class Service2 extends android.app.Service {
 
             @Override
             public void onNext(Long value) {
-                serialHelper.send(getArrCloseDoor(num));
+                serialHelper.send(getArrCloseDoor(scanBox));
             }
 
             @Override
@@ -358,7 +320,7 @@ public class Service2 extends android.app.Service {
 
             @Override
             public void onComplete() {
-                BusProvider.getBus().post(new EventModel("开门成功！"));
+                BusProvider.getBus().post(new CardModel(cardno, model));
             }
         });
     }

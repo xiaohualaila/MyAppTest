@@ -23,7 +23,7 @@ public interface BillBoardService {
     @POST("pc/multimedia/screen/completeMultimediaMessage")
     Flowable<BaseBean> upState(@Query("id") String screenIP);
 
-    @GET("/yykjZhCommunity/app/opendoor/addOpendoor")
+    @GET("app/opendoor/addOpendoor")
     Flowable<BaseBean> uploadLog(@Query("memberMobile") String memberMobile,
                                  @Query("VistorMobile") String VistorMobile,
                                  @Query("ComID") String ComID,
@@ -33,7 +33,10 @@ public interface BillBoardService {
                                  @Query("category") String category,
                                  @Query("addr") String addr,
                                  @Query("lat") String lat,
-                                 @Query("lng") String lng);
+                                 @Query("lng") String lng,
+                                 @Query("cardno") String cardno,
+                                 @Query("devicemac") String devicemac,
+                                 @Query("type") String type);
 
     /**
      * 心跳发送服务器状态

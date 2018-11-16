@@ -5,7 +5,7 @@ import cn.com.library.net.XApi;
 public class BillboardApi {
 
   //  public static String API_BASE_URL = "http://www.xazhsq.cn:8080/yykjZhCommunity/";
-    public static String API_BASE_URL = "http://192.168.1.25:8080/yykjZhCommunity/";//测试的
+    public static String API_BASE_URL = "http://192.168.1.33:8081/yykjZhCommunity/";//测试的
 
     private static BillBoardService billBoardService;
 

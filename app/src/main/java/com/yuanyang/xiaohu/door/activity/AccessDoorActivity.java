@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,21 +21,26 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.yuanyang.xiaohu.door.BuildConfig;
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
+import com.yuanyang.xiaohu.door.bean.SharepreferenceBean;
 import com.yuanyang.xiaohu.door.dialog.DownloadAPKDialog;
 import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.model.CardModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
-import com.yuanyang.xiaohu.door.model.VersionModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
-import com.yuanyang.xiaohu.door.service.Service;
-import com.yuanyang.xiaohu.door.service.Service2;
+import com.yuanyang.xiaohu.door.service.Service836;
+import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.SharepreferenceBeanDao;
 
 import java.io.File;
 import java.util.List;
@@ -47,13 +51,13 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 
 public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
 
@@ -85,14 +89,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     private String[] direction = {"东门", "西门", "南门", "北门", "楼栋"};
 
-    //读卡部分
-//    @BindView(R.id.ed)
-//    EditText editText;
-    private Thread thread;
-    private boolean isAuto = true;
-    private String msg;
-    private StringBuffer buffer;
     private SmdtManager smdt;
+    private String mac = "";
 
     public DownloadAPKDialog dialog_app;
 
@@ -104,20 +102,10 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         setAppendContent("门禁终端启动");
         setAppendContent("请设置参数\n参数设置说明:\n小区编号:长度为9，不足前补0，如小区编号为：123456789(正常模式，直接写入即可)，又如编号为：1234,不足9位，前补0，即输入000001234" + "" +
                 "\n\n楼栋号:长度为6(可为空)，不足前补0，参考小区编号设置，如:123456 --> 123456 又如:452 --> 000452" + "");
+        initDateBase();
         initViewData();
+
         SoundPoolUtil.play(1);
-
-        BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                eventModel -> {
-                    XLog.e("EventModel===" + eventModel.value);
-                    //      tv.setText(eventModel.value);
-                    ToastManager.showShort(AccessDoorActivity.this, eventModel.value);
-                }
-        );
-
-        BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
-                uploadModel -> getP().uploadLog(uploadModel.strings, uploadModel.model)
-        );
 
         getP().sendState();
 
@@ -125,18 +113,51 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        mac= smdt.smdtGetEthMacAddress();
+
+
         new Timer().schedule(timerTask, 0, 5000);
         String model = Build.MODEL;
         if(model.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
-                    Service2.class)),5000);
+                    Service3288.class)),5000);
             Log.i("sss","打开service2 3288++" +model);
         }else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
-                    Service.class)),5000);
+                    Service836.class)),5000);
             Log.i("sss","打开service 836++" +model);
         }
 
+        BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                eventModel -> {
+                    XLog.e("EventModel===" + eventModel.value);
+                    ToastManager.showShort(AccessDoorActivity.this, eventModel.value);
+                }
+        );
+        //二维码
+        BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
+                uploadModel -> getP().uploadLog(uploadModel.strings,mac ,uploadModel.model)
+        );
+        //刷卡
+        BusProvider.getBus().toFlowable(CardModel.class).subscribe(
+                cardModel -> getP().uploadCardLog(cardModel.card_no,mac, cardModel.model)
+        );
+    }
+
+    private void initDateBase() {
+        List<AccessModel> list_ = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString(), AccessModel.class);
+        if(list_.size()==0){
+            SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
+            List<SharepreferenceBean> list_bean = dao.queryBuilder().list();
+            if(list_bean.size()>0){
+                SharepreferenceBean bean = list_bean.get(0);
+                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_NUM,bean.getOpen_door_num() );
+                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, bean.getOpen_village_id());
+                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, bean.getOpen_door_direction_id());
+                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_BUILDING, bean.getOpen_door_building());
+                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_PARAMS, bean.getOpen_door_params());
+            }
+        }
     }
 
     TimerTask timerTask = new TimerTask(){
@@ -146,77 +167,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         }
     };
 
-    ///////////////////////读卡部分
-
-//    Handler handler = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            switch (msg.what){
-//                case 0:
-//                    editText.setText("");
-//                    break;
-//            }
-//
-//
-//        }
-//    };
-
-//    Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            while (isAuto) {
-//                msg = editText.getText().toString();
-////                Log.i("sss","  >>>>"+msg);
-//
-//
-//                if (msg.length()>0){
-//                    if(msg.contains(";")){
-//                        int index = msg.indexOf(";");
-//                        msg = msg.substring(index,msg.length());
-//                        if(msg.contains("?")){
-//                            index = msg.indexOf("?");
-//                            msg = msg.substring(0,index+1);
-//
-//                            Log.i("xxx","  >>>>"+msg);
-//                            Message message =new Message();
-//                            message.what = 0;
-//                            handler.sendMessage(message);
-//                            buffer.delete(0,buffer.length());
-//
-//                        }else {
-//                            buffer.append(msg);
-//                        }
-//
-//                    }else {
-//                        if(msg.contains("?")) {
-//                            int  index = msg.indexOf("?");
-//                            msg = msg.substring(0,index+1);
-//                            buffer.append(msg);
-//
-//                            String result = buffer.toString();
-//
-//                            Log.i("xxx","  >>>>" + result);
-//                            Message message =new Message();
-//                            message.what = 0;
-//                            handler.sendMessage(message);
-//                            buffer.delete(0,buffer.length());
-//
-//                        }
-//                    }
-//
-//                }
-//                try {
-//                    thread.sleep(500);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//
-//        }
-//    };
-///////////////////////////
 
     /**
      * 设置title
@@ -292,9 +242,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
             findViewById(R.id.add_er_code).setVisibility(View.GONE);
             findViewById(R.id.bt_set).setVisibility(View.GONE);
             bt_retroe.setVisibility(View.VISIBLE);
-//            thread = new Thread(runnable);
-//            thread.start();
-//            editText.requestFocus();
         }
         adapter.setData(list);
     }
@@ -330,11 +277,16 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 }
                 break;
             case R.id.bt_retroe:
-                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_VILLAGE_ID);
+                AppSharePreferenceMgr.remove(context, UserInfoKey.OPEN_DOOR_NUM);
                 AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_DIRECTION_ID);
                 AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_VILLAGE_ID);
                 AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_BUILDING);
                 AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_PARAMS);
+                SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
+                List<SharepreferenceBean> list = dao.queryBuilder().list();
+                if(list.size()>0){
+                    dao.deleteAll();
+                }
                 initViewData();
                 break;
         }
@@ -348,20 +300,17 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         popupWindow = new PopupWindow(window, view.getWidth(), (view.getHeight() - 4) * list.length);
         ListView listView = window.findViewById(R.id.down_list_view);
         listView.setAdapter(new ArrayAdapter<>(this, R.layout.item_text, list));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                XLog.e(list[i]);
-                directionDoor.setText(list[i]);
-                if (list[i].equals("楼栋")){
-                    building.setVisibility(View.VISIBLE);
-                    building_unit.setVisibility(View.VISIBLE);
-                } else{
-                    building.setVisibility(View.INVISIBLE);
-                    building_unit.setVisibility(View.INVISIBLE);
-                }
-                popupWindow.dismiss();
+        listView.setOnItemClickListener((adapterView, view1, i, l) -> {
+            XLog.e(list[i]);
+            directionDoor.setText(list[i]);
+            if (list[i].equals("楼栋")){
+                building.setVisibility(View.VISIBLE);
+                building_unit.setVisibility(View.VISIBLE);
+            } else{
+                building.setVisibility(View.INVISIBLE);
+                building_unit.setVisibility(View.INVISIBLE);
             }
+            popupWindow.dismiss();
         });
         popupWindow.setFocusable(true);// 使其聚集
         popupWindow.setTouchable(true); // 设置允许在外点击消失/
@@ -403,6 +352,19 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(adapter.getDataSource()));
                 tipContent.setText("");
                 setAppendContent("参数设置成功！");
+                SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
+                List<SharepreferenceBean> list = dao.queryBuilder().list();
+                if(list.size()>0){
+                    dao.deleteAll();
+                }
+
+                SharepreferenceBean sharepreferenceBean = new SharepreferenceBean();
+                sharepreferenceBean.setOpen_door_num(door_num+"");
+                sharepreferenceBean.setOpen_village_id(villageId.getText().toString());
+                sharepreferenceBean.setOpen_door_direction_id(directionDoor.getText().toString());
+                sharepreferenceBean.setOpen_door_building( building.getText().toString());
+                sharepreferenceBean.setOpen_door_params( GsonProvider.getInstance().getGson().toJson(adapter.getDataSource()));
+                dao.insert(sharepreferenceBean);
             } else {
                 ToastManager.showShort(context, "请输入正确的小区编号");
                 return false;
@@ -411,15 +373,17 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         return true;
     }
 
-    public void updateVersion(VersionModel model){
+    public void updateVersion(String apkurl, String s_ver){
+        Kits.File.deleteFile(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/");
+//        String path = Environment.getExternalStorageDirectory()+"/zhsq/" + "door.apk" ;
         dialog_app = new DownloadAPKDialog(this);
         dialog_app.show();
         dialog_app.setCancelable(false);
-        dialog_app.getFile_name().setText(model.getVdetails());
-        dialog_app.getFile_num().setText(model.getVnumber());
+        dialog_app.getFile_name().setText("");
+        dialog_app.getFile_num().setText(s_ver);
         AppDownload appDownload = new AppDownload();
         appDownload.setProgressInterface(this);
-        appDownload.downApk(model.getDownload(),this);
+        appDownload.downApk(apkurl,this);
     }
 
 
@@ -428,13 +392,12 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
      */
     public void onDestroy() {
         super.onDestroy();
-        isAuto = false;
         smdt.smdtWatchDogEnable((char)0);
         String model = Build.MODEL;
         if(model.equals("3280")) {
-            stopService(new Intent(this, Service2.class));
+            stopService(new Intent(this, Service3288.class));
         }else {
-            stopService(new Intent(this, Service.class));
+            stopService(new Intent(this, Service836.class));
         }
     }
 
@@ -475,7 +438,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
             if (fileName.endsWith(".apk")) {
                 if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
                     File file= new File(fileName);
-                    Uri apkUri = FileProvider.getUriForFile(context, "com.yuanyang.xiaohu.door.fileprovider", file);
+                    Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID +".fileprovider", file);
                     //在AndroidManifest中的android:authorities值
                     Intent install = new Intent(Intent.ACTION_VIEW);
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -527,4 +490,5 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
             }
         }
     }
+
 }
