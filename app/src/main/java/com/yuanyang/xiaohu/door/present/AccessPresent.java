@@ -124,7 +124,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                                 return;
                                             }
                                         }
-                                        Log.i("sss",  new Gson().toJson(model));
+//                                        Log.i("sss",  new Gson().toJson(model));
                                         if (bean != null) {
                                             List<String> add_list = bean.getAddedcards();
                                             List<String> dele_list = bean.getDeletedcards();
