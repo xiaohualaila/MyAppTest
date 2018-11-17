@@ -18,7 +18,8 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".activity.AccessDoorActivity"
-             android:windowSoftInputMode="stateHidden">
+             android:windowSoftInputMode="stateHidden"
+             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

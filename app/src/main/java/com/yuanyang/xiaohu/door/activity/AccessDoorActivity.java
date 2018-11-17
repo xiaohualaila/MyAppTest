@@ -62,9 +62,7 @@ import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import kr.co.namee.permissiongen.PermissionFail;
-import kr.co.namee.permissiongen.PermissionGen;
-import kr.co.namee.permissiongen.PermissionSuccess;
+
 
 public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
     private static final int PERMISSIONS_REQUEST = 1;
@@ -105,7 +103,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     public void initData(Bundle savedInstanceState) {
 
         initToolbar();
-        requestPermiss();
         initAdapter();
         setAppendContent("门禁终端启动");
         setAppendContent("请设置参数\n参数设置说明:\n小区编号:长度为9，不足前补0，如小区编号为：123456789(正常模式，直接写入即可)，又如编号为：1234,不足9位，前补0，即输入000001234" + "" +
@@ -150,63 +147,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         BusProvider.getBus().toFlowable(CardModel.class).subscribe(
                 cardModel -> getP().uploadCardLog(cardModel.card_no,mac, cardModel.model)
         );
-    }
-
-    /**
-     * 请求权限
-     */
-    private void requestPermiss(){
-        PermissionGen.with(this)
-                .addRequestCode(PERMISSIONS_REQUEST)
-                .permissions(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE
-                )
-                .request();
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
-    }
-    @PermissionSuccess(requestCode = PERMISSIONS_REQUEST)
-    public void requestPhotoSuccess(){
-        //Log.e(TAG, "requestPhotoSuccess: " );
-        //成功之后的处理
-
-    }
-
-    @PermissionFail(requestCode = PERMISSIONS_REQUEST)
-    public void requestPhotoFail(){
-      //  Log.e(TAG, "requestPhotoFail: " );
-        //失败之后的处理，我一般是跳到设置界面
-        showMissingPermissionDialog();
-    }
-
-    private void showMissingPermissionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("提示");
-        builder.setMessage("当前应用缺少必要权限。请点击\"设置\"-\"权限\"-打开所需权限。");
-
-        // 拒绝, 退出应用
-        builder.setNegativeButton("取消", (dialog, which) -> finish());
-
-        builder.setPositiveButton("设置", (dialog, which) -> startAppSettings());
-
-        builder.setCancelable(false);
-
-        builder.show();
-    }
-
-    /**
-     * 启动应用的设置
-     */
-    private void startAppSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:" + getPackageName()));
-        startActivity(intent);
     }
 
     private void initDateBase() {
@@ -440,7 +380,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     public void updateVersion(String apkurl, String s_ver){
         Kits.File.deleteFile(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/");
-//        String path = Environment.getExternalStorageDirectory()+"/zhsq/" + "door.apk" ;
         File directory = new File(Environment.getExternalStorageDirectory() + "/download/");
         if (!directory.exists()) {
             directory.mkdirs();

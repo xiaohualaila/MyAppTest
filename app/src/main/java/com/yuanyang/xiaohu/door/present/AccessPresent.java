@@ -30,7 +30,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AccessPresent extends XPresent<AccessDoorActivity> {
 
-    private boolean isOne = false;
     /**
      * 上传门禁日志 --扫描
      */
@@ -92,13 +91,8 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      * 心跳
      */
     public void sendState(){
-        if(!isOne){
-            isOne = true;
-        }else {
-            return;
-        }
         //10分钟
-        Observable.interval(10, TimeUnit.SECONDS).
+            Observable.interval(0,10, TimeUnit.MINUTES).
                 subscribeOn(Schedulers.io()).
                 subscribe(num -> {
                     String macAddress = NetStateUtil.getMacAddress();
@@ -119,7 +113,6 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                 @Override
                                 public void onNext(BaseBean model) {
                                     if (model.isSuccess()) {
-
                                         MessageBodyBean bean = (MessageBodyBean) model.getMessageBody();
                                         String s_ver = bean.getBuild();
                                         int v_no = APKVersionCodeUtils.getVersionCode(getV());
@@ -161,21 +154,17 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                                                     }
                                                 }
                                             }
-                                            Log.i("sss", "十分钟请求一次数据");
-                                            List<CardBean> ls = GreenDaoManager.getInstance().getSession().getCardBeanDao().queryBuilder().list();
-                                            if (ls.size() > 0) {
-                                                for (int i = 0; i < ls.size(); i++) {
-                                                    Log.i("sss", "sss" + ls.get(i).getNum());
-                                                }
-                                            }
+//                                            Log.i("sss", "十分钟请求一次数据");
+//                                            List<CardBean> ls = GreenDaoManager.getInstance().getSession().getCardBeanDao().queryBuilder().list();
+//                                            if (ls.size() > 0) {
+//                                                for (int i = 0; i < ls.size(); i++) {
+//                                                    Log.i("sss", "sss" + ls.get(i).getNum());
+//                                                }
+//                                            }
                                         }
                                     }
                                 }
                             });
-
                 });
     }
-
-
-
 }
