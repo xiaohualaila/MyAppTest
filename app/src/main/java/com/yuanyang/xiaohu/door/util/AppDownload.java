@@ -50,7 +50,7 @@ public class AppDownload {
                 cursor.close();
                 final int dl_progress = (int) (bytes_downloaded * 100 / bytes_total);
                 Log.i( "czx", "progress:" + dl_progress );
-                if (dl_progress >= 100) {
+                if (dl_progress >= 99) {
                     myTimer.cancel();
                     callback.callProgress(dl_progress);
                 }else {

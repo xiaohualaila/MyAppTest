@@ -168,7 +168,7 @@ public class Service3288 extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-       // Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
+        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){

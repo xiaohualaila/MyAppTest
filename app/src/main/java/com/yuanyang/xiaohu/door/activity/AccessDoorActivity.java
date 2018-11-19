@@ -1,6 +1,5 @@
 package com.yuanyang.xiaohu.door.activity;
 
-import android.Manifest;
 import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,10 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,6 +35,7 @@ import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.Service3288;
+import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
@@ -65,9 +62,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
-    private static final int PERMISSIONS_REQUEST = 1;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+
     @BindView(R.id.open_door_param)
     XRecyclerView param;
     @BindView(R.id.village_id)
@@ -84,7 +79,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     TextView tipContent;
     @BindView(R.id.bt_retroe)
     Button bt_retroe;
-
+    @BindView(R.id.tv_ver)
+    TextView tv_ver;
 
     private List<AccessModel> list;
 
@@ -125,11 +121,11 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         String model = Build.MODEL;
         if(model.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
-                    Service3288.class)),5000);
+                    Service3288.class)),10000);
             Log.i("sss","打开service2 3288++" +model);
         }else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
-                    Service836.class)),5000);
+                    Service836.class)),10000);
             Log.i("sss","打开service 836++" +model);
         }
 
@@ -177,8 +173,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
      * 设置title
      */
     private void initToolbar() {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("门禁系统");
+        String ver_name =APKVersionCodeUtils.getVerName(this);
+        tv_ver.setText("版本号："+ver_name);
     }
 
     /**
@@ -421,7 +417,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     @Override
     public void callProgress(int progress) {
-        if (progress >= 100) {
+        if (progress >= 99) {
             runOnUiThread(() -> {
                 dialog_app.dismiss();
                 String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/door.apk";
