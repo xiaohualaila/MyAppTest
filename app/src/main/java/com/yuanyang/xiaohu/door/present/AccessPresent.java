@@ -1,8 +1,6 @@
 package com.yuanyang.xiaohu.door.present;
 
-import android.util.Log;
 
-import com.google.gson.Gson;
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
