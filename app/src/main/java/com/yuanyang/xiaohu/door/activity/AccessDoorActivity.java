@@ -417,7 +417,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     @Override
     public void callProgress(int progress) {
-        if (progress >= 99) {
+        if (progress >= 100) {
             runOnUiThread(() -> {
                 dialog_app.dismiss();
                 String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/door.apk";

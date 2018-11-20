@@ -48,9 +48,9 @@ public class AppDownload {
                         .COLUMN_BYTES_DOWNLOADED_SO_FAR ) );
                 float bytes_total = cursor.getInt( cursor.getColumnIndex( DownloadManager.COLUMN_TOTAL_SIZE_BYTES ) );
                 cursor.close();
-                final int dl_progress = (int) (bytes_downloaded * 100 / bytes_total);
+                final int dl_progress = (int) (bytes_downloaded / bytes_total* 100 );
                 Log.i( "czx", "progress:" + dl_progress );
-                if (dl_progress >= 99) {
+                if (dl_progress >= 100) {
                     myTimer.cancel();
                     callback.callProgress(dl_progress);
                 }else {

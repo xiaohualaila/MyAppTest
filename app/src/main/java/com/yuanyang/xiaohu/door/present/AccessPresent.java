@@ -162,6 +162,8 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
 //                                                }
 //                                            }
                                         }
+                                    }else {
+                                        getV().showToast(model.getDescribe());
                                     }
                                 }
                             });
