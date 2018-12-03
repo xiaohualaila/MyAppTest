@@ -203,7 +203,7 @@ public class Service3288 extends android.app.Service {
         String card_no = str.substring(1, str.length()-1);
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
         CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(card_no)).unique();
-//        if (cardBean != null) {
+        if (cardBean != null) {
             String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
             List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
             AccessModel model = null;
@@ -211,10 +211,10 @@ public class Service3288 extends android.app.Service {
                 model = getModel(list, scanBox);
             }
             openCardDoor(scanBox,card_no,model);
-//        }else {
-//            BusProvider.getBus().post(new EventModel("卡号不存在！"));
-//            SoundPoolUtil.play(4);
-//        }
+        }else {
+            BusProvider.getBus().post(new EventModel("卡号不存在！"));
+            SoundPoolUtil.play(4);
+        }
     }
 
     @Override
