@@ -58,6 +58,7 @@ import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 
 public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
@@ -93,7 +94,6 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     private String mac = "";
 
     public DownloadAPKDialog dialog_app;
-
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -406,7 +406,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_access_door;
+        return R.layout.activity_access_door2;
     }
 
     @Override

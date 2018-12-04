@@ -3,8 +3,9 @@ package com.yuanyang.xiaohu.door.present;
 
 import android.util.Log;
 
-import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
+import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.bean.CardBean;
+import com.yuanyang.xiaohu.door.bean.SharepreferenceBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
@@ -12,11 +13,16 @@ import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.SharepreferenceBeanDao;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
@@ -27,7 +33,7 @@ import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class AccessPresent extends XPresent<AccessDoorActivity> {
+public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
 
     /**
      * 上传门禁日志 --扫描
@@ -169,4 +175,68 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                             });
                 });
     }
+
+    public  void initDate() {
+//        BillboardApi.getDataService().sendState(macAddress)
+//                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+//                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+//                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+//                .subscribe(new ApiSubscriber<BaseBean>() {
+//                    @Override
+//                    protected void onFail(NetError error) {
+//                        getV().showError(error);
+//                    }
+//
+//                    @Override
+//                    public void onNext(BaseBean model) {
+//
+//                    }
+        List<AccessModel> list = new ArrayList<>();
+        AccessModel model = new AccessModel();
+        model.setErCode(1);
+        model.setRelay(0);
+        model.setDoorNum("1");
+        model.setAccessible("进");
+        AccessModel model2 = new AccessModel();
+        model2.setErCode(2);
+        model2.setRelay(0);
+        model2.setDoorNum("2");
+        model2.setAccessible("出");
+        AccessModel model3 = new AccessModel();
+        model3.setErCode(3);
+        model3.setRelay(0);
+        model3.setDoorNum("3");
+        model3.setAccessible("进");
+        AccessModel model4 = new AccessModel();
+        model4.setErCode(4);
+        model4.setRelay(0);
+        model4.setDoorNum("4");
+        model4.setAccessible("出");
+        list.add(model);
+        list.add(model2);
+        list.add(model3);
+        list.add(model4);
+
+        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_NUM, list.size());
+        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, "610103001");//小区编号
+        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "东门");//门
+        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, "");//单元门
+        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
+
+        SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
+        List<SharepreferenceBean> list_dao = dao.queryBuilder().list();
+        if(list_dao.size()>0){
+            dao.deleteAll();
+        }
+
+        SharepreferenceBean sharepreferenceBean = new SharepreferenceBean();
+        sharepreferenceBean.setOpen_door_num("4");
+        sharepreferenceBean.setOpen_village_id("610103001");
+        sharepreferenceBean.setOpen_door_direction_id("东门");
+        sharepreferenceBean.setOpen_door_building( "");
+        sharepreferenceBean.setOpen_door_params( GsonProvider.getInstance().getGson().toJson(list));
+        dao.insert(sharepreferenceBean);
+        getV().initViewData();
+    }
+
 }

@@ -46,4 +46,6 @@ public interface BillBoardService {
     @GET("system/card/selectDeviceCards")
     Flowable<BaseBean<MessageBodyBean>> sendState(@Query("devicemac") String mac);
 
+
+
 }

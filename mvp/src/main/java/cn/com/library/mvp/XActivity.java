@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import java.util.List;
+
 import butterknife.Unbinder;
 import cn.com.library.XDroidConf;
 import cn.com.library.event.BusProvider;
@@ -144,4 +146,5 @@ public abstract class XActivity<P extends IPresent> extends RxAppCompatActivity 
     public void bindEvent() {
 
     }
+
 }
