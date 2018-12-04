@@ -30,6 +30,7 @@ import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.File;
 import java.util.List;
@@ -53,6 +54,8 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     XRecyclerView rx;
     @BindView(R.id.village_id)
     EditText villageId;
+    @BindView(R.id.village_name)
+    EditText village_name;
     @BindView(R.id.direction_door)
     TextView directionDoor;
     @BindView(R.id.direction_door_down)
@@ -70,9 +73,10 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
 
     private SmdtManager smdt;
     private String mac = "";
-
+    private String ip = "";
     public DownloadAPKDialog dialog_app;
     private List<AccessModel> list;
+
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -80,29 +84,34 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         initAdapter();
         setAppendContent("门禁终端启动\n");
         setAppendContent("当前参数从服务器端获取，所需参数在服务器端设置\n");
-        getP().initDate();
+
 
         SoundPoolUtil.play(1);
-
-        getP().sendState();
 
         Handler handler = new Handler();
 
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac= smdt.smdtGetEthMacAddress();
-
+        ip = smdt.smdtGetEthIPAddress();
+        String banzi = Build.MODEL;
+        if(mac != null && ip != null){
+            getP().sendState(mac,ip);
+            getP().initDate(mac,banzi);
+        }else {
+            showToast("网络异常!");
+        }
 
         new Timer().schedule(timerTask, 0, 5000);
-        String model = Build.MODEL;
-        if(model.equals("3280")) {
+
+        if(banzi.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service3288.class)),10000);
-            Log.i("sss","打开service2 3288++" +model);
+            Log.i("sss","打开service2 3288++" +banzi);
         }else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service836.class)),10000);
-            Log.i("sss","打开service 836++" +model);
+            Log.i("sss","打开service 836++" +banzi);
         }
 
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
@@ -182,6 +191,10 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
 
 
     public void initViewData() {
+        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.VILLAGE_NAME, "").toString()))
+            village_name.setText(AppSharePreferenceMgr.get(context, UserInfoKey.VILLAGE_NAME, "").toString());
+        else
+            village_name.setText("");
         if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString()))
             villageId.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString());
         else

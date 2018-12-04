@@ -92,7 +92,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     private SmdtManager smdt;
     private String mac = "";
-
+    private String ip = "";
     public DownloadAPKDialog dialog_app;
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -107,14 +107,18 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
         SoundPoolUtil.play(1);
 
-        getP().sendState();
 
         Handler handler = new Handler();
 
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac= smdt.smdtGetEthMacAddress();
-
+        ip = smdt.smdtGetEthIPAddress();
+        if(mac != null && ip != null){
+            getP().sendState(mac,ip);
+        }else {
+            showToast("网络异常!");
+        }
 
         new Timer().schedule(timerTask, 0, 5000);
         String model = Build.MODEL;

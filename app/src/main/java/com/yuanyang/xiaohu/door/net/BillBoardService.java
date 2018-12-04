@@ -3,6 +3,7 @@ package com.yuanyang.xiaohu.door.net;
 
 
 import com.yuanyang.xiaohu.door.model.BaseBean;
+import com.yuanyang.xiaohu.door.model.DoorModel;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 
 import io.reactivex.Flowable;
@@ -44,7 +45,12 @@ public interface BillBoardService {
      * @return
      */
     @GET("system/card/selectDeviceCards")
-    Flowable<BaseBean<MessageBodyBean>> sendState(@Query("devicemac") String mac);
+    Flowable<BaseBean<MessageBodyBean>> sendState(@Query("devicemac") String mac,
+                                                  @Query("deviceip") String ip);
+
+
+    @GET("system/door/getDeviceInfoByMac")
+    Flowable<BaseBean<DoorModel>> initData(@Query("devicemac") String mac);
 
 
 

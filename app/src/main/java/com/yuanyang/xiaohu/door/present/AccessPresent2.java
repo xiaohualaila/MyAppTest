@@ -8,6 +8,7 @@ import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.bean.SharepreferenceBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
+import com.yuanyang.xiaohu.door.model.DoorModel;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
@@ -95,17 +96,12 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
     /**
      * 心跳
      */
-    public void sendState(){
+    public void sendState(String mac,String ip){
         //10分钟
          Observable.interval(0,10, TimeUnit.MINUTES).
                 subscribeOn(Schedulers.io()).
                 subscribe(num -> {
-                    String macAddress = NetStateUtil.getMacAddress();
-                    if(macAddress==null){
-                      getV().showToast("网络无法连接");
-                        return;
-                    }
-                    BillboardApi.getDataService().sendState(macAddress)
+                    BillboardApi.getDataService().sendState(mac,ip)
                             .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
                             .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
                             .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
@@ -176,67 +172,81 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                 });
     }
 
-    public  void initDate() {
-//        BillboardApi.getDataService().sendState(macAddress)
-//                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-//                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-//                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-//                .subscribe(new ApiSubscriber<BaseBean>() {
-//                    @Override
-//                    protected void onFail(NetError error) {
-//                        getV().showError(error);
-//                    }
+    public  void initDate(String mac,String banzi) {
+        BillboardApi.getDataService().initData(mac)
+                .compose(XApi.<BaseBean<DoorModel>>getApiTransformer())
+                .compose(XApi.<BaseBean<DoorModel>>getScheduler())
+                .compose(getV().<BaseBean<DoorModel>>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        getV().showError(error);
+                    }
+
+                    @Override
+                    public void onNext(BaseBean bean) {
+                        if(bean.isSuccess()){
+                            DoorModel doorModel= (DoorModel) bean.getMessageBody();
+                            List<AccessModel> list = new ArrayList<>();
+                            AccessModel model = new AccessModel();
+                            model.setErCode(1);//扫码盒
+                            model.setRelay(1);//设置继电器
+                            model.setDoorNum("1");//设置门
+                            model.setAccessible("进");
+                            AccessModel model2 = new AccessModel();
+                            model2.setErCode(2);
+                            model2.setRelay(2);
+                            model2.setDoorNum("2");
+                            model2.setAccessible("出");
+                            list.add(model);
+                            list.add(model2);
+                            if(banzi.equals("3280")){
+                                AccessModel model3 = new AccessModel();
+                                model3.setErCode(3);
+                                model3.setRelay(2);
+                                model3.setDoorNum("3");
+                                model3.setAccessible("进");
+                                AccessModel model4 = new AccessModel();
+                                model4.setErCode(4);
+                                model4.setRelay(2);
+                                model4.setDoorNum("4");
+                                model4.setAccessible("出");
+                                list.add(model3);
+                                list.add(model4);
+                            }
+
+                            AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_NUM, list.size());
+                            AppSharePreferenceMgr.put(getV(), UserInfoKey.VILLAGE_NAME,doorModel.getCommname());
+                           int type =  doorModel.getGatetype();
+                           if(type == 1){
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, doorModel.getCommid());//小区编号
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, doorModel.getName());//门
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
+                           }else {
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, doorModel.getCommid());//小区编号
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, doorModel.getName());//门
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, doorModel.getBuildno());//单元门
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_UNIT_ID, doorModel.getUnitno());//单元门
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
+                           }
+//                            SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
+//                            List<SharepreferenceBean> list_dao = dao.queryBuilder().list();
+//                            if (list_dao.size() > 0) {
+//                                dao.deleteAll();
+//                            }
 //
-//                    @Override
-//                    public void onNext(BaseBean model) {
-//
-//                    }
-        List<AccessModel> list = new ArrayList<>();
-        AccessModel model = new AccessModel();
-        model.setErCode(1);
-        model.setRelay(0);
-        model.setDoorNum("1");
-        model.setAccessible("进");
-        AccessModel model2 = new AccessModel();
-        model2.setErCode(2);
-        model2.setRelay(0);
-        model2.setDoorNum("2");
-        model2.setAccessible("出");
-        AccessModel model3 = new AccessModel();
-        model3.setErCode(3);
-        model3.setRelay(0);
-        model3.setDoorNum("3");
-        model3.setAccessible("进");
-        AccessModel model4 = new AccessModel();
-        model4.setErCode(4);
-        model4.setRelay(0);
-        model4.setDoorNum("4");
-        model4.setAccessible("出");
-        list.add(model);
-        list.add(model2);
-        list.add(model3);
-        list.add(model4);
+//                            SharepreferenceBean sharepreferenceBean = new SharepreferenceBean();
+//                            sharepreferenceBean.setOpen_door_num("4");
+//                            sharepreferenceBean.setOpen_village_id("610103001");
+//                            sharepreferenceBean.setOpen_door_direction_id("东门");
+//                            sharepreferenceBean.setOpen_door_building("");
+//                            sharepreferenceBean.setOpen_door_params(GsonProvider.getInstance().getGson().toJson(list));
+//                            dao.insert(sharepreferenceBean);
+                            getV().initViewData();
+                        }
 
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_NUM, list.size());
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, "610103001");//小区编号
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "东门");//门
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, "");//单元门
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
-
-        SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
-        List<SharepreferenceBean> list_dao = dao.queryBuilder().list();
-        if(list_dao.size()>0){
-            dao.deleteAll();
-        }
-
-        SharepreferenceBean sharepreferenceBean = new SharepreferenceBean();
-        sharepreferenceBean.setOpen_door_num("4");
-        sharepreferenceBean.setOpen_village_id("610103001");
-        sharepreferenceBean.setOpen_door_direction_id("东门");
-        sharepreferenceBean.setOpen_door_building( "");
-        sharepreferenceBean.setOpen_door_params( GsonProvider.getInstance().getGson().toJson(list));
-        dao.insert(sharepreferenceBean);
-        getV().initViewData();
-    }
+                    }
+                });
+   }
 
 }

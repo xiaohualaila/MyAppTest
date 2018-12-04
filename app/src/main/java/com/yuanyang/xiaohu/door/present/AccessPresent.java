@@ -89,7 +89,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
     /**
      * 心跳
      */
-    public void sendState(){
+    public void sendState(String mac,String ip){
         //10分钟
          Observable.interval(0,10, TimeUnit.MINUTES).
                 subscribeOn(Schedulers.io()).
@@ -99,7 +99,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
                       getV().showToast("网络无法连接");
                         return;
                     }
-                    BillboardApi.getDataService().sendState(macAddress)
+                    BillboardApi.getDataService().sendState(macAddress,ip)
                             .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
                             .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
                             .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
