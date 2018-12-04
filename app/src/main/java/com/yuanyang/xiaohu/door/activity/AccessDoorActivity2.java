@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,6 +37,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
@@ -45,7 +48,10 @@ import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 import cn.droidlover.xrecyclerview.XRecyclerView;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 
 public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements AppDownload.Callback{
@@ -76,7 +82,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     private String ip = "";
     public DownloadAPKDialog dialog_app;
     private List<AccessModel> list;
-
+    private Disposable mDisposable;
     @Override
     public void initData(Bundle savedInstanceState) {
 
@@ -84,19 +90,15 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         initAdapter();
         setAppendContent("门禁终端启动\n");
         setAppendContent("当前参数从服务器端获取，所需参数在服务器端设置\n");
-
-
         SoundPoolUtil.play(1);
-
         Handler handler = new Handler();
-
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac= smdt.smdtGetEthMacAddress();
         ip = smdt.smdtGetEthIPAddress();
         String banzi = Build.MODEL;
         if(mac != null && ip != null){
-            getP().sendState(mac,ip);
+            doSomeThing();//发送心跳获取数据
             getP().initDate(mac,banzi);
         }else {
             showToast("网络异常!");
@@ -128,6 +130,15 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         BusProvider.getBus().toFlowable(CardModel.class).subscribe(
                 cardModel -> getP().uploadCardLog(cardModel.card_no,mac, cardModel.model)
         );
+
+    }
+
+    private void doSomeThing() {
+        mDisposable = Flowable.interval(0,10, TimeUnit.MINUTES)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    getP().sendState(mac,ip);
+                });
     }
 
     TimerTask timerTask = new TimerTask(){
@@ -241,6 +252,9 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             stopService(new Intent(this, Service3288.class));
         }else {
             stopService(new Intent(this, Service836.class));
+        }
+        if (mDisposable != null){
+            mDisposable.dispose();
         }
     }
 

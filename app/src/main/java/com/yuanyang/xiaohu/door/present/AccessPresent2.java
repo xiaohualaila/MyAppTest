@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.bean.CardBean;
-import com.yuanyang.xiaohu.door.bean.SharepreferenceBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.DoorModel;
@@ -15,11 +14,8 @@ import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-import com.yuanyang.xiaohu.greendaodemo.greendao.gen.SharepreferenceBeanDao;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,8 +26,6 @@ import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
@@ -97,10 +91,6 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * 心跳
      */
     public void sendState(String mac,String ip){
-        //10分钟
-         Observable.interval(0,10, TimeUnit.MINUTES).
-                subscribeOn(Schedulers.io()).
-                subscribe(num -> {
                     BillboardApi.getDataService().sendState(mac,ip)
                             .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
                             .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
@@ -169,7 +159,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                     }
                                 }
                             });
-                });
+
     }
 
     public  void initDate(String mac,String banzi) {
@@ -203,12 +193,12 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                             if(banzi.equals("3280")){
                                 AccessModel model3 = new AccessModel();
                                 model3.setErCode(3);
-                                model3.setRelay(2);
+                                model3.setRelay(3);
                                 model3.setDoorNum("3");
                                 model3.setAccessible("进");
                                 AccessModel model4 = new AccessModel();
                                 model4.setErCode(4);
-                                model4.setRelay(2);
+                                model4.setRelay(4);
                                 model4.setDoorNum("4");
                                 model4.setAccessible("出");
                                 list.add(model3);
@@ -242,9 +232,9 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
 //                            sharepreferenceBean.setOpen_door_building("");
 //                            sharepreferenceBean.setOpen_door_params(GsonProvider.getInstance().getGson().toJson(list));
 //                            dao.insert(sharepreferenceBean);
-                            getV().initViewData();
-                        }
 
+                        }
+                        getV().initViewData();
                     }
                 });
    }

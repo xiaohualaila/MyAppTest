@@ -381,12 +381,6 @@ public class Service3288 extends android.app.Service {
         sendArr[2] = 0x01;
         sendArr[3] = (byte) (num == 1 ? 0x02 : num == 2 ? 0x03 : num == 3 ? 0x04 : num == 4 ? 0x05 : 0x02); //0x26全开
         sendArr[4] = (byte) 0xEE;
-        final byte[] sendArr_ = new byte[5];//复位继电器指令
-        sendArr_[0] = (byte) 0xFF;
-        sendArr_[1] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
-        sendArr_[2] = 0x00;
-        sendArr_[3] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
-        sendArr_[4] = (byte) 0xEE;
         return sendArr;
     }
 
