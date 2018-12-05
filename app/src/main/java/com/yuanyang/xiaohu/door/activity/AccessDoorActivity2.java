@@ -73,15 +73,13 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     TextView tipContent;
     @BindView(R.id.tv_ver)
     TextView tv_ver;
-
-    AccessDoorAdapter adapter;
-
     private SmdtManager smdt;
     private String mac = "";
     private String ip = "";
     public DownloadAPKDialog dialog_app;
     private List<AccessModel> list;
     private Disposable mDisposable;
+    AccessDoorAdapter adapter;
     @Override
     public void initData(Bundle savedInstanceState) {
 
