@@ -34,6 +34,7 @@ import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent;
 import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.Service3288;
+import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
@@ -125,11 +126,12 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         if(model.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
                     Service3288.class)),10000);
-            Log.i("sss","打开service2 3288++" +model);
+        }else if(model.equals("SoftwinerEvb")){
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
+                    ServiceA20.class)),10000);
         }else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity.this,
                     Service836.class)),10000);
-            Log.i("sss","打开service 836++" +model);
         }
 
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
@@ -403,6 +405,8 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         String model = Build.MODEL;
         if(model.equals("3280")) {
             stopService(new Intent(this, Service3288.class));
+        }else if(model.equals("SoftwinerEvb")){
+            stopService(new Intent(this, ServiceA20.class));
         }else {
             stopService(new Intent(this, Service836.class));
         }
@@ -410,7 +414,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_access_door2;
+        return R.layout.activity_access_door;
     }
 
     @Override

@@ -190,7 +190,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                             model2.setAccessible("出");
                             list.add(model);
                             list.add(model2);
-                            if(banzi.equals("3280")){
+                            if(banzi.equals("3280")||banzi.equals("SoftwinerEvb")){
                                 AccessModel model3 = new AccessModel();
                                 model3.setErCode(3);
                                 model3.setRelay(3);

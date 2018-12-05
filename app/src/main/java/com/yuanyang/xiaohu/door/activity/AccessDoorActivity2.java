@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,18 +26,17 @@ import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.present.AccessPresent2;
 import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.service.Service836;
+import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
 import butterknife.BindView;
 import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
@@ -51,7 +49,6 @@ import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 
 public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements AppDownload.Callback{
@@ -109,11 +106,13 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         if(banzi.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service3288.class)),10000);
-            Log.i("sss","打开service2 3288++" +banzi);
+        }else if(banzi.equals("SoftwinerEvb")){
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
+                    ServiceA20.class)),10000);
+            Log.i("sss","打开service 836++" +banzi);
         }else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service836.class)),10000);
-            Log.i("sss","打开service 836++" +banzi);
         }
 
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
@@ -250,8 +249,11 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         String model = Build.MODEL;
         if(model.equals("3280")) {
             stopService(new Intent(this, Service3288.class));
+        }else if(model.equals("SoftwinerEvb")) {
+            stopService(new Intent(this, ServiceA20.class));
         }else {
-            stopService(new Intent(this, Service836.class));
+             stopService(new Intent(this, Service836.class));
+
         }
         if (mDisposable != null){
             mDisposable.dispose();

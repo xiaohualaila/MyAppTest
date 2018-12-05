@@ -20,8 +20,8 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(ACTION)) {
-          //  Intent in = new Intent(context, AccessDoorActivity.class);
-            Intent in = new Intent(context, AccessDoorActivity2.class);
+            Intent in = new Intent(context, AccessDoorActivity.class);
+//            Intent in = new Intent(context, AccessDoorActivity2.class);
             in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(in);
         }
