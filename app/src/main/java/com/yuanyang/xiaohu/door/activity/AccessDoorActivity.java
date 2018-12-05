@@ -107,10 +107,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 "\n\n楼栋号:长度为6(可为空)，不足前补0，参考小区编号设置，如:123456 --> 123456 又如:452 --> 000452" + "");
         initDateBase();
         initViewData();
-
         SoundPoolUtil.play(1);
-
-
         Handler handler = new Handler();
 
         smdt = SmdtManager.create(this);
@@ -120,7 +117,7 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
         if(mac != null && ip != null){
             getP().sendState(mac,ip);
         }else {
-            showToast("网络异常!");
+            setAppendContent("网络异常,请检查网络！");
         }
 
         new Timer().schedule(timerTask, 0, 5000);

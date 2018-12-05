@@ -97,10 +97,10 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         ip = smdt.smdtGetEthIPAddress();
         String banzi = Build.MODEL;
         if(mac != null && ip != null){
-            doSomeThing();//发送心跳获取数据
             getP().initDate(mac,banzi);
+            doSomeThing();//发送心跳获取数据
         }else {
-            showToast("网络异常!");
+            setAppendContent("网络异常,请检查网络！\n");
         }
 
         new Timer().schedule(timerTask, 0, 5000);
