@@ -12,6 +12,7 @@
         android:gravity="center_vertical"
         android:background="@color/colorPrimary">
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
@@ -20,6 +21,15 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:text="门禁系统"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20dp"
+            android:textSize="18sp"
+            android:layout_toRightOf="@+id/title"
+            android:layout_marginTop="28dp"
+            android:text="支持3288,836,A20板子，配置信息从服务端获取"/>
         <TextView
             android:id="@+id/tv_ver"
             android:textColor="@color/white"

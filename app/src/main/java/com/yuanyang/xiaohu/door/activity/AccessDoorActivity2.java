@@ -51,7 +51,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 /**
- * 当前版本小区编号等信息服务端设置通过MAC地址获取配置参数
+ * 当前版本小区编号等信息从服务端设置通过MAC地址获取配置参数
  */
 public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements AppDownload.Callback{
 

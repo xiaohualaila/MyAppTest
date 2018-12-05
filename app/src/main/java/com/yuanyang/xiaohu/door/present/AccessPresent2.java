@@ -169,6 +169,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                     @Override
                     protected void onFail(NetError error) {
                         getV().showError(error);
+                        getV().initViewData();
                     }
 
                     @Override
