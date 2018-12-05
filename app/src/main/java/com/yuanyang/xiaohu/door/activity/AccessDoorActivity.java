@@ -61,7 +61,9 @@ import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-
+/**
+ * 当前版本为本地设置小区编号，单元信息
+ */
 public class AccessDoorActivity extends XActivity<AccessPresent> implements AppDownload.Callback{
 
     @BindView(R.id.open_door_param)

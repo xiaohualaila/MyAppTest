@@ -50,7 +50,9 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-
+/**
+ * 当前版本小区编号等信息服务端设置通过MAC地址获取配置参数
+ */
 public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements AppDownload.Callback{
 
     @BindView(R.id.open_door_param)
@@ -103,13 +105,15 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
 
         new Timer().schedule(timerTask, 0, 5000);
 
+        /**
+         * 根据不同的板子开启不同的Service
+         */
         if(banzi.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service3288.class)),10000);
         }else if(banzi.equals("SoftwinerEvb")){
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     ServiceA20.class)),10000);
-            Log.i("sss","打开service 836++" +banzi);
         }else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service836.class)),10000);

@@ -168,7 +168,7 @@ public class Service3288 extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
+    //    Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){
@@ -373,7 +373,9 @@ public class Service3288 extends android.app.Service {
         });
     }
 
-    //开门指令
+    /**
+     *  开门指令
+     */
     private byte[]  getArrOpenDoor(int num){
         /**四个继电器的*/
         byte[] sendArr = new byte[5];//打开继电器指令
@@ -385,7 +387,9 @@ public class Service3288 extends android.app.Service {
         return sendArr;
     }
 
-    //关门指令
+    /**
+     *   关门指令
+     */
     private byte[]  getArrCloseDoor(int num){
         /**四个继电器的*/
         final byte[] sendArr_ = new byte[5];//复位继电器指令

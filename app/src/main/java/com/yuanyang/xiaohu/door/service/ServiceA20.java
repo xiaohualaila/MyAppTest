@@ -5,7 +5,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
@@ -22,11 +21,9 @@ import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
@@ -168,7 +165,7 @@ public class ServiceA20 extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
+//        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){
@@ -373,7 +370,9 @@ public class ServiceA20 extends android.app.Service {
         });
     }
 
-    //开门指令
+    /**
+     *  开门指令
+     */
     private byte[]  getArrOpenDoor(int num){
         /**四个继电器的*/
         byte[] sendArr = new byte[5];//打开继电器指令
@@ -385,7 +384,9 @@ public class ServiceA20 extends android.app.Service {
         return sendArr;
     }
 
-    //关门指令
+    /**
+     * 关门指令
+     */
     private byte[]  getArrCloseDoor(int num){
         /**四个继电器的*/
         final byte[] sendArr_ = new byte[5];//复位继电器指令
