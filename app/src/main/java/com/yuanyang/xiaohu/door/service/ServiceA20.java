@@ -94,7 +94,7 @@ public class ServiceA20 extends android.app.Service {
         serialHelper_ttyS1.setBaudRate(Constants.BAUDRATE);
 
         /**
-         *  ttyS4  4号扫码盒
+         *  ttyS4  2号扫码盒
          */
         stringBuffer_ttyS4 = new StringBuffer();
         serialHelper_ttyS4 = new SerialHelper() {
@@ -107,7 +107,7 @@ public class ServiceA20 extends android.app.Service {
         serialHelper_ttyS4.setBaudRate(Constants.BAUDRATE);
 
         /**
-         *  ttyS5 5号扫码盒
+         *  ttyS5 3号扫码盒
          */
         stringBuffer_ttyS5 = new StringBuffer();
         serialHelper_ttyS5 = new SerialHelper() {
@@ -120,7 +120,7 @@ public class ServiceA20 extends android.app.Service {
         serialHelper_ttyS5.setBaudRate(Constants.BAUDRATE);
 
         /**
-         *  ttyS6  6号扫码盒
+         *  ttyS6  4号扫码盒
          */
         stringBuffer_ttyS6 = new StringBuffer();
         serialHelper_ttyS6 = new SerialHelper() {

@@ -5,7 +5,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
@@ -22,11 +21,9 @@ import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
