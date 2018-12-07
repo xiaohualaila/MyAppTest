@@ -3,11 +3,7 @@ package com.yuanyang.xiaohu.door.broadcastReceiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
-import com.yuanyang.xiaohu.door.activity.AccessDoorActivity;
-import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.activity.StartActivity;
-
 import cn.com.library.kit.ToastManager;
 
 

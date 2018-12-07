@@ -4,12 +4,8 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.yuanyang.xiaohu.door.R;
-
 import java.util.List;
-
-
 
 /**
  * Created by linzp on 2017/11/20.
