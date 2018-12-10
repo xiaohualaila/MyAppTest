@@ -8,7 +8,8 @@ public class MessageBodyBean {
     private String build;
     private List<String> deletedcards;
     private List<String> addedcards;
-
+    private String cardnos;
+    private int  resetstatus;//1重置
     public String getApkurl() {
         return apkurl;
     }
@@ -39,5 +40,21 @@ public class MessageBodyBean {
 
     public void setAddedcards(List<String> addedcards) {
         this.addedcards = addedcards;
+    }
+
+    public String getCardnos() {
+        return cardnos;
+    }
+
+    public void setCardnos(String cardnos) {
+        this.cardnos = cardnos;
+    }
+
+    public int getResetstatus() {
+        return resetstatus;
+    }
+
+    public void setResetstatus(int resetstatus) {
+        this.resetstatus = resetstatus;
     }
 }

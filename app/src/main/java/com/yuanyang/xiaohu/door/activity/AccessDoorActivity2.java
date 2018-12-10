@@ -134,8 +134,10 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     }
 
     private void doSomeThing() {
-       int time = (int) AppSharePreferenceMgr.get(this, UserInfoKey.HEARTINTERVAL,10);//心跳时间
-        mDisposable = Flowable.interval(0,time, TimeUnit.MINUTES)
+//        String time_str = ;
+//       int time = Integer.parseInt(S) ;//心跳时间
+//        int time = (int) AppSharePreferenceMgr.get(this, UserInfoKey.HEARTINTERVA);
+        mDisposable = Flowable.interval(0,10, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     getP().sendState(mac,ip);
