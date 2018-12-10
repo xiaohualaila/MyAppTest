@@ -31,7 +31,6 @@ import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.File;
 import java.util.List;
@@ -87,7 +86,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         initToolbar();
         initAdapter();
         setAppendContent("门禁终端启动\n");
-        setAppendContent("当前参数从服务器端获取，所需参数在服务器端设置\n");
+
         SoundPoolUtil.play(1);
         Handler handler = new Handler();
         smdt = SmdtManager.create(this);
@@ -240,6 +239,8 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             model.setAccessible("请选择");
             list.add(model);
             setAppendContent("未获取到配置信息\n");
+        }else {
+            setAppendContent("参数信息设置成功\n");
         }
         adapter.setData(list);
     }
