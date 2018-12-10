@@ -259,7 +259,7 @@ public class Service836 extends android.app.Service {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(num));
         } else {
-            Log.i("sss","串口都没打开");
+            BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
             return;
         }
 
@@ -274,7 +274,7 @@ public class Service836 extends android.app.Service {
                 if (serialHelper.isOpen()) {
                     serialHelper.send(getArrCloseDoor(num));
                 } else {
-                    Log.i("sss","串口都没打开");
+                    BusProvider.getBus().post(new EventModel("串口都没打开"));
                 }
             }
 
@@ -298,7 +298,8 @@ public class Service836 extends android.app.Service {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(scanBox));
         } else {
-            Log.i("sss","串口都没打开");
+//            Log.i("sss","门禁串口都没打开");
+            BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
             return;
         }
 
