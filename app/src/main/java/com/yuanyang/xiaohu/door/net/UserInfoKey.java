@@ -17,4 +17,5 @@ public class UserInfoKey {
     public static String OPEN_DOOR_ENTER_EXIT_ID = "open_door_enter_exit_id"; // 进门或者出门
     public static String OPEN_DOOR_NUM = "open_door_num"; // 保存门的个数
     public static String VILLAGE_NAME = "village_name"; //
+    public static String HEARTINTERVAL= "heartinterval"; // 心跳时间
 }

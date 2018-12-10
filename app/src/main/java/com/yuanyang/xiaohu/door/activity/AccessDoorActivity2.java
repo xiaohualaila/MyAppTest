@@ -31,6 +31,7 @@ import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.File;
 import java.util.List;
@@ -93,19 +94,18 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac= smdt.smdtGetEthMacAddress();
         ip = smdt.smdtGetEthIPAddress();
-        String banzi = Build.MODEL;
-        if(mac != null && ip != null){
-            getP().initDate(mac,banzi);
-            doSomeThing();//发送心跳获取数据
-        }else {
+
+        if(mac == null || ip == null){
             setAppendContent("网络异常,请检查网络！\n");
         }
-
+        doSomeThing();//发送心跳获取数据
+        initViewData();
         new Timer().schedule(timerTask, 0, 5000);
 
         /**
          * 根据不同的板子开启不同的Service
          */
+        String banzi = Build.MODEL;
         if(banzi.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service3288.class)),10000);
@@ -135,7 +135,8 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     }
 
     private void doSomeThing() {
-        mDisposable = Flowable.interval(0,10, TimeUnit.MINUTES)
+       int time = (int) AppSharePreferenceMgr.get(this, UserInfoKey.HEARTINTERVAL,10);//心跳时间
+        mDisposable = Flowable.interval(0,time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     getP().sendState(mac,ip);

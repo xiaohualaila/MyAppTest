@@ -325,6 +325,7 @@ public class Service836 extends android.app.Service {
             }
         });
     }
+
     //开门指令
     private byte[]  getArrOpenDoor(int num){
         /**四个继电器的*/
