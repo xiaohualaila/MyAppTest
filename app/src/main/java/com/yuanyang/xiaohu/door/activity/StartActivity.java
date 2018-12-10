@@ -33,9 +33,6 @@ public class StartActivity  extends XActivity<StartPresent> {
 
     private void toAccessDoorAct() {
         handler.postDelayed(() -> {
-            /**
-             * 两个版本在此处切换
-             */
             startActivity(new Intent(StartActivity.this,AccessDoorActivity2.class));
             finish();
         },4000);
