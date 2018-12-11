@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.yuanyang.xiaohu.door.BuildConfig;
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
@@ -32,11 +33,13 @@ import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
+
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
@@ -53,7 +56,7 @@ import io.reactivex.disposables.Disposable;
 /**
  * 当前版本小区编号等信息从服务端设置通过MAC地址获取配置参数
  */
-public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements AppDownload.Callback{
+public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements AppDownload.Callback {
 
     @BindView(R.id.open_door_param)
     XRecyclerView rx;
@@ -80,69 +83,77 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     private List<AccessModel> list;
     private Disposable mDisposable;
     AccessDoorAdapter adapter;
+    private Handler handler = new Handler();
+
     @Override
     public void initData(Bundle savedInstanceState) {
 
         initToolbar();
         initAdapter();
         setAppendContent("门禁终端启动\n");
-
         SoundPoolUtil.play(1);
-        Handler handler = new Handler();
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        mac= smdt.smdtGetEthMacAddress();
+        mac = smdt.smdtGetEthMacAddress();
         ip = smdt.smdtGetEthIPAddress();
 
-        if(mac == null || ip == null){
+        if (mac == null || ip == null) {
             setAppendContent("网络异常,请检查网络！\n");
         }
-        doSomeThing();//发送心跳获取数据
+        getServiceData();
+        startService();
+        doSomeThing();
         initViewData();
         new Timer().schedule(timerTask, 0, 5000);
 
-        /**
-         * 根据不同的板子开启不同的Service
-         */
-        String banzi = Build.MODEL;
-        if(banzi.equals("3280")) {
-            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    Service3288.class)),10000);
-        }else if(banzi.equals("SoftwinerEvb")){
-            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    ServiceA20.class)),10000);
-        }else {
-            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    Service836.class)),10000);
-        }
+    }
 
+    private void getServiceData() {
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 eventModel -> {
-                    XLog.e("EventModel===" + eventModel.value);
                     ToastManager.showShort(AccessDoorActivity2.this, eventModel.value);
                 }
         );
         //二维码
         BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
-                uploadModel -> getP().uploadLog(uploadModel.strings,mac ,uploadModel.model)
+                uploadModel -> getP().uploadLog(uploadModel.strings, mac, uploadModel.model)
         );
         //刷卡
         BusProvider.getBus().toFlowable(CardModel.class).subscribe(
-                cardModel -> getP().uploadCardLog(cardModel.card_no,mac, cardModel.model)
+                cardModel -> getP().uploadCardLog(cardModel.card_no, mac, cardModel.model)
         );
-
     }
 
+    /**
+     * 根据不同的板子开启不同的Service
+     */
+    private void startService() {
+        String banzi = Build.MODEL;
+        if (banzi.equals("3280")) {
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
+                    Service3288.class)), 10000);
+        } else if (banzi.equals("SoftwinerEvb")) {
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
+                    ServiceA20.class)), 10000);
+        } else {
+            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
+                    Service836.class)), 10000);
+        }
+    }
+
+    /**
+     * 发送心跳数据
+     */
     private void doSomeThing() {
-        int time = (int) AppSharePreferenceMgr.get(this, UserInfoKey.HEARTINTERVAL,10);
-        mDisposable = Flowable.interval(0,time, TimeUnit.MINUTES)
+        int time = (int) AppSharePreferenceMgr.get(this, UserInfoKey.HEARTINTERVAL, 10);
+        mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
-                    getP().sendState(mac,ip);
+                    getP().sendState(mac, ip);
                 });
     }
 
-    TimerTask timerTask = new TimerTask(){
+    TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             smdt.smdtWatchDogFeed();//喂狗
@@ -154,8 +165,8 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
      * 设置title
      */
     private void initToolbar() {
-        String ver_name =APKVersionCodeUtils.getVerName(this);
-        tv_ver.setText("版本号："+ver_name);
+        String ver_name = APKVersionCodeUtils.getVerName(this);
+        tv_ver.setText("版本号：" + ver_name);
     }
 
     /**
@@ -185,7 +196,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         return adapter;
     }
 
-    public void updateVersion(String apkurl, String s_ver){
+    public void updateVersion(String apkurl, String s_ver) {
         Kits.File.deleteFile(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/");
         File directory = new File(Environment.getExternalStorageDirectory() + "/download/");
         if (!directory.exists()) {
@@ -198,7 +209,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         dialog_app.getFile_num().setText(s_ver);
         AppDownload appDownload = new AppDownload();
         appDownload.setProgressInterface(this);
-        appDownload.downApk(apkurl,this);
+        appDownload.downApk(apkurl, this);
     }
 
 
@@ -217,18 +228,18 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             directionDoor.setText("请选择");
 
         int build_id = (int) AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, 0);
-        if(build_id != 0){
+        if (build_id != 0) {
             building.setVisibility(View.VISIBLE);
-            building.setText(build_id +"");
-        }else {
+            building.setText(build_id + "");
+        } else {
             building.setVisibility(View.INVISIBLE);
             building.setText("");
         }
         int unit_id = (int) AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, 0);
-        if(unit_id != 0){
+        if (unit_id != 0) {
             building_unit.setVisibility(View.VISIBLE);
-            building_unit.setText(unit_id +"");
-        }else {
+            building_unit.setText(unit_id + "");
+        } else {
             building_unit.setVisibility(View.INVISIBLE);
             building_unit.setText("");
         }
@@ -243,27 +254,27 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             model.setAccessible("请选择");
             list.add(model);
             setAppendContent("未获取到配置信息\n");
-        }else {
+        } else {
             setAppendContent("参数信息设置成功\n");
         }
         adapter.setData(list);
     }
+
     /**
      * 退出页面销毁
      */
     public void onDestroy() {
         super.onDestroy();
-        smdt.smdtWatchDogEnable((char)0);
+        smdt.smdtWatchDogEnable((char) 0);
         String model = Build.MODEL;
-        if(model.equals("3280")) {
+        if (model.equals("3280")) {
             stopService(new Intent(this, Service3288.class));
-        }else if(model.equals("SoftwinerEvb")) {
+        } else if (model.equals("SoftwinerEvb")) {
             stopService(new Intent(this, ServiceA20.class));
-        }else {
-             stopService(new Intent(this, Service836.class));
-
+        } else {
+            stopService(new Intent(this, Service836.class));
         }
-        if (mDisposable != null){
+        if (mDisposable != null) {
             mDisposable.dispose();
         }
     }
@@ -287,32 +298,33 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
                 install(sdcardDir);
             });
 
-        }else {
+        } else {
             runOnUiThread(() -> {
-                dialog_app.getSeekBar().setProgress( progress );
-                dialog_app.getNum_progress().setText(progress+"%");
+                dialog_app.getSeekBar().setProgress(progress);
+                dialog_app.getNum_progress().setText(progress + "%");
             });
         }
     }
 
     /**
      * 开启安装过程
+     *
      * @param fileName
      */
     private void install(String fileName) {
         //承接我的代码，filename指获取到了我的文件相应路径
         if (fileName != null) {
             if (fileName.endsWith(".apk")) {
-                if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
-                    File file= new File(fileName);
-                    Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID +".fileprovider", file);
+                if (Build.VERSION.SDK_INT >= 24) {//判读版本是否在7.0以上
+                    File file = new File(fileName);
+                    Uri apkUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", file);
                     //在AndroidManifest中的android:authorities值
                     Intent install = new Intent(Intent.ACTION_VIEW);
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
                     install.setDataAndType(apkUri, "application/vnd.android.package-archive");
                     context.startActivity(install);
-                } else{
+                } else {
                     Intent install = new Intent(Intent.ACTION_VIEW);
                     install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -321,7 +333,8 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             }
         }
     }
-    public void showToast(String msg){
+
+    public void showToast(String msg) {
         runOnUiThread(() -> ToastManager.showShort(AccessDoorActivity2.this, msg));
     }
 
