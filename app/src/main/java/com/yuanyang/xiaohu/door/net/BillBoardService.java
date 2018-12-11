@@ -52,16 +52,15 @@ public interface BillBoardService {
     @GET("system/door/getDeviceInfoByMac")
     Flowable<BaseBean<DoorModel>> initData(@Query("devicemac") String mac);
 
-    @GET("system/card/unResetDeviceDoor")
+    @POST("system/card/unResetDeviceDoor")
     Flowable<BaseBean<MessageBodyBean>> sendDataBaseSize(@Query("devicemac") String mac,
                                                   @Query("affectrow") int size);
 
     /**
      * c查询结果上传
      */
-    @GET("system/card/updateInquiryCards")
+    @POST("system/card/updateInquiryCards")
     Flowable<BaseBean<MessageBodyBean>> sendfindResult(@Query("devicemac") String mac,
                                                        @Query("cardnos") String cardnos,
-                                                       @Query("results") String results
-                                                       );
+                                                       @Query("results") String results);
 }

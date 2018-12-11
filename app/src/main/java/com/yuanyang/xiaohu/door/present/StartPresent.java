@@ -35,6 +35,7 @@ public class StartPresent extends XPresent<StartActivity> {
                     protected void onFail(NetError error) {
                         getV().showError(error);
                         startActivity(new Intent(getV(),AccessDoorActivity2.class));
+                        getV().finish();
                     }
 
                     @Override
@@ -101,6 +102,7 @@ public class StartPresent extends XPresent<StartActivity> {
 
                         }
                         startActivity(new Intent(getV(),AccessDoorActivity2.class));
+                        getV().finish();
                     }
                 });
    }
