@@ -2,7 +2,6 @@ package com.yuanyang.xiaohu.door.present;
 
 
 import android.content.Intent;
-import android.util.Log;
 
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.activity.StartActivity;
@@ -13,6 +12,7 @@ import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.library.mvp.XPresent;
@@ -74,11 +74,7 @@ public class StartPresent extends XPresent<StartActivity> {
                             AppSharePreferenceMgr.put(getV(), UserInfoKey.VILLAGE_NAME,doorModel.getCommname());
                             AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, doorModel.getCommid());//小区编号
                             AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, doorModel.getName());//门
-                            if(doorModel.getHeartinterval() != null){
-                                AppSharePreferenceMgr.put(getV(), UserInfoKey.HEARTINTERVAL, doorModel.getHeartinterval());//心跳时间
-                            }else {
-                                AppSharePreferenceMgr.put(getV(), UserInfoKey.HEARTINTERVAL,10);//心跳时间
-                            }
+                            AppSharePreferenceMgr.put(getV(), UserInfoKey.HEARTINTERVAL,doorModel.getHeartinterval());//心跳时间
                             AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
 
                            int type =  doorModel.getGatetype();

@@ -170,12 +170,12 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                             Log.i("sss", "十分钟请求一次数据");
                                             //////////////////////////
                                             List<CardBean> ls = cardDao.queryBuilder().list();
-                                            Log.i("sss", "总数 " + ls.size());
-                                            if (ls.size() > 0) {
-                                                for (int i = 0; i < ls.size(); i++) {
-                                                    Log.i("sss", "sss" + ls.get(i).getNum());
-                                                }
-                                            }
+//                                            Log.i("sss", "总数 " + ls.size());
+//                                            if (ls.size() > 0) {
+//                                                for (int i = 0; i < ls.size(); i++) {
+//                                                    Log.i("sss", "sss" + ls.get(i).getNum());
+//                                                }
+//                                            }
                                             ///////////////////////
                                             sendDataBaseSize(mac,ls.size());
                                         }

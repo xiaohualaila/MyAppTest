@@ -19,7 +19,7 @@ public class DoorModel {
     private String commid;
     private int gatetype;
     private String commname;
-    private String heartinterval;
+    private int heartinterval;
     private int buildno;
 
     public String getUnit() {
@@ -82,11 +82,11 @@ public class DoorModel {
         return buildno;
     }
 
-    public String getHeartinterval() {
+    public int getHeartinterval() {
         return heartinterval;
     }
 
-    public void setHeartinterval(String heartinterval) {
+    public void setHeartinterval(int heartinterval) {
         this.heartinterval = heartinterval;
     }
 
