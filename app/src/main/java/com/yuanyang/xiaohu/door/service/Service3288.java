@@ -254,7 +254,7 @@ public class Service3288 extends android.app.Service {
     private void checkIsOpenDoor(String[] strings, int num) {
         String village = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
         String directionDoor = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
-        String building = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_BUILDING, "").toString();
+        int building = (int) AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_BUILDING, 0);
         String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
         List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
         AccessModel model = null;
@@ -262,7 +262,7 @@ public class Service3288 extends android.app.Service {
             model = getModel(list, num);
         }
         if (!TextUtils.isEmpty(village) && !TextUtils.isEmpty(directionDoor) && list.size() > 0) {
-            if (!TextUtils.isEmpty(building)) {
+            if (building != 0) {
                 if (village.equals(strings[1]) && ((building + model.getDoorNum()).equals(strings[2]))) {//测试 strings[1]610103001
                     openDoor(strings, model);
                 }

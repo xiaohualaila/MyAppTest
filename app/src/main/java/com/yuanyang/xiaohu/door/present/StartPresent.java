@@ -79,7 +79,7 @@ public class StartPresent extends XPresent<StartActivity> {
 
                            int type =  doorModel.getGatetype();
                            if(type != 1){
-                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, doorModel.getBuildno());//单元门
+                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, doorModel.getBuildno());//单元
                                AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_UNIT_ID, doorModel.getUnitno());//单元门
                            }
 //                            SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();

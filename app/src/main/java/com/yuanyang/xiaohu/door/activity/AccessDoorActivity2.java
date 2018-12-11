@@ -215,20 +215,24 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             directionDoor.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString());
         else
             directionDoor.setText("请选择");
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, "").toString())) {
+
+        int build_id = (int) AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, 0);
+        if(build_id != 0){
             building.setVisibility(View.VISIBLE);
-            building.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, "").toString());
-        } else {
+            building.setText(build_id +"");
+        }else {
             building.setVisibility(View.INVISIBLE);
             building.setText("");
         }
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, "").toString())) {
+        int unit_id = (int) AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, 0);
+        if(unit_id != 0){
             building_unit.setVisibility(View.VISIBLE);
-            building_unit.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, "").toString());
-        } else {
+            building_unit.setText(unit_id +"");
+        }else {
             building_unit.setVisibility(View.INVISIBLE);
             building_unit.setText("");
         }
+
         list = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString(), AccessModel.class);
         if (list.size() == 0) {
             adapter.setIsSelect(true);
