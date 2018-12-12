@@ -110,9 +110,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
 
     private void getServiceData() {
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                eventModel -> {
-                    ToastManager.showShort(AccessDoorActivity2.this, eventModel.value);
-                }
+                eventModel -> ToastManager.showShort(AccessDoorActivity2.this, eventModel.value)
         );
         //二维码
         BusProvider.getBus().toFlowable(UploadModel.class).subscribe(
@@ -266,6 +264,13 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     public void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);
+        stopService();
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
+    }
+
+    private void stopService() {
         String model = Build.MODEL;
         if (model.equals("3280")) {
             stopService(new Intent(this, Service3288.class));
@@ -273,9 +278,6 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             stopService(new Intent(this, ServiceA20.class));
         } else {
             stopService(new Intent(this, Service836.class));
-        }
-        if (mDisposable != null) {
-            mDisposable.dispose();
         }
     }
 

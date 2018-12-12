@@ -82,20 +82,6 @@ public class StartPresent extends XPresent<StartActivity> {
                                AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, doorModel.getBuildno());//单元
                                AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_UNIT_ID, doorModel.getUnitno());//单元门
                            }
-//                            SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
-//                            List<SharepreferenceBean> list_dao = dao.queryBuilder().list();
-//                            if (list_dao.size() > 0) {
-//                                dao.deleteAll();
-//                            }
-//
-//                            SharepreferenceBean sharepreferenceBean = new SharepreferenceBean();
-//                            sharepreferenceBean.setOpen_door_num("4");
-//                            sharepreferenceBean.setOpen_village_id("610103001");
-//                            sharepreferenceBean.setOpen_door_direction_id("东门");
-//                            sharepreferenceBean.setOpen_door_building("");
-//                            sharepreferenceBean.setOpen_door_params(GsonProvider.getInstance().getGson().toJson(list));
-//                            dao.insert(sharepreferenceBean);
-
                         }
                         startActivity(new Intent(getV(),AccessDoorActivity2.class));
                         getV().finish();

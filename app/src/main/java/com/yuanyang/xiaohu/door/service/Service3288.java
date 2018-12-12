@@ -53,6 +53,7 @@ public class Service3288 extends android.app.Service {
     private SerialHelper serialHelper_ttyXRM1;
 
     private SerialHelper serialHelper;
+    private boolean isOpened = false;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -340,8 +341,12 @@ public class Service3288 extends android.app.Service {
      * 刷卡开门
      */
     private void openCardDoor(final int scanBox, String cardno, AccessModel model) {
+        if(isOpened){
+            return;
+        }
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(scanBox));
+            isOpened = true;
         } else {
             Log.i("sss","串口都没打开");
             return;
@@ -366,6 +371,7 @@ public class Service3288 extends android.app.Service {
             @Override
             public void onComplete() {
                 BusProvider.getBus().post(new CardModel(cardno, model));
+                isOpened = false;
             }
         });
     }
