@@ -192,7 +192,6 @@ public class Service836 extends android.app.Service {
                 BusProvider.getBus().post(new EventModel("二维码失效，请刷新二维码!"));
                 SoundPoolUtil.play(3);
             } else {
-                Log.i("sss", "门已开");
                 checkIsOpenDoor(strings, scanBox);
                 SoundPoolUtil.play(2);
             }
@@ -258,6 +257,7 @@ public class Service836 extends android.app.Service {
         final int num = model.getRelay();
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(num));
+            Log.i("sss","门已打开！");
         } else {
             BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
             return;

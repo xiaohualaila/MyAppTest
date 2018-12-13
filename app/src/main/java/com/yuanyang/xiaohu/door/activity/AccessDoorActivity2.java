@@ -158,7 +158,6 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         }
     };
 
-
     /**
      * 设置title
      */

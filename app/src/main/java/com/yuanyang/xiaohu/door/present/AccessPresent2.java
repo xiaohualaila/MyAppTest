@@ -1,10 +1,13 @@
 package com.yuanyang.xiaohu.door.present;
 
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.bean.CardBean;
+import com.yuanyang.xiaohu.door.bean.CardRecord;
+import com.yuanyang.xiaohu.door.bean.CodeRecord;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
@@ -12,7 +15,9 @@ import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 
 import java.util.ArrayList;
@@ -31,6 +36,9 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * 上传门禁日志 --扫描
      */
     public void uploadLog(String[] strings,String mac, AccessModel model) {
+        if(TextUtils.isEmpty(NetStateUtil.getLocalIpAddress())){
+            Log.i("sss","++++++++++++++++++++++++++++++");
+        }
         String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
         BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
                 "", "", "","",mac,"1")
@@ -42,6 +50,11 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                     protected void onFail(NetError error) {
                         ToastManager.showShort(getV(), "上传日志失败！");
                         XLog.e("上传日志失败！");
+                        //todo
+                        CodeRecord codeRecord = new CodeRecord(null,strings[4],strings[5],strings[1],strings[2],strings[3],
+                                directionDoor,model.getAccessible());
+                        CodeRecordDao codeRecordDao = GreenDaoManager.getInstance().getSession().getCodeRecordDao();
+                        codeRecordDao.insert(codeRecord);
                     }
 
                     @Override
@@ -70,6 +83,8 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                     @Override
                     protected void onFail(NetError error) {
                         ToastManager.showShort(getV(), "上传日志失败！");
+                        CardRecord cardRecord = new CardRecord(null,cardNo,directionDoor,model.getAccessible());
+                        GreenDaoManager.getInstance().getSession().getCardRecordDao().insert(cardRecord);
                     }
 
                     @Override
