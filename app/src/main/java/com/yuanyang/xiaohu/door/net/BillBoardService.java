@@ -24,6 +24,23 @@ public interface BillBoardService {
     @POST("pc/multimedia/screen/completeMultimediaMessage")
     Flowable<BaseBean> upState(@Query("id") String screenIP);
 
+    /**
+     * 上班开门日志
+     * @param memberMobile
+     * @param VistorMobile
+     * @param ComID
+     * @param UnitID
+     * @param ComdoorID
+     * @param orientation
+     * @param category
+     * @param addr
+     * @param lat
+     * @param lng
+     * @param cardno
+     * @param devicemac
+     * @param type
+     * @return
+     */
     @GET("app/opendoor/addOpendoor")
     Flowable<BaseBean> uploadLog(@Query("memberMobile") String memberMobile,
                                  @Query("VistorMobile") String VistorMobile,
@@ -38,6 +55,18 @@ public interface BillBoardService {
                                  @Query("cardno") String cardno,
                                  @Query("devicemac") String devicemac,
                                  @Query("type") String type);
+
+    /**
+     * 查询卡号
+     * @param devicemac
+     * @param commid
+     * @param cardno
+     * @return
+     */
+    @GET("system/card/cardExitInComm")
+    Flowable<BaseBean> queryCard( @Query("devicemac") String devicemac,
+                                 @Query("commid") String commid,
+                                  @Query("cardno") String cardno);
 
     /**
      * 心跳发送服务器状态

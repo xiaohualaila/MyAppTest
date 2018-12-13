@@ -1,6 +1,8 @@
 package com.yuanyang.xiaohu.door.present;
 
 
+import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,15 +15,20 @@ import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
+import com.yuanyang.xiaohu.door.service.Service3288;
+import com.yuanyang.xiaohu.door.service.Service836;
+import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.NetStateUtil;
+import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
@@ -35,13 +42,15 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
     /**
      * 上传门禁日志 --扫描
      */
-    public void uploadLog(String[] strings,String mac, AccessModel model) {
-        if(TextUtils.isEmpty(NetStateUtil.getLocalIpAddress())){
-            Log.i("sss","++++++++++++++++++++++++++++++");
+    public void uploadLog(String[] strings, String mac, AccessModel model) {
+        if (NetStateUtil.isNetworkConnected(getV())) {
+            Log.i("sss", "++++++++++++++++++++++++++++++");
+        } else {
+            Log.i("sss", "------------------------------");
         }
         String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
         BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
-                "", "", "","",mac,"1")
+                "", "", "", "", mac, "1")
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())
@@ -50,11 +59,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                     protected void onFail(NetError error) {
                         ToastManager.showShort(getV(), "上传日志失败！");
                         XLog.e("上传日志失败！");
-                        //todo
-                        CodeRecord codeRecord = new CodeRecord(null,strings[4],strings[5],strings[1],strings[2],strings[3],
-                                directionDoor,model.getAccessible());
-                        CodeRecordDao codeRecordDao = GreenDaoManager.getInstance().getSession().getCodeRecordDao();
-                        codeRecordDao.insert(codeRecord);
+                        // saveCodeRecord(strings, directionDoor, model);
                     }
 
                     @Override
@@ -68,14 +73,22 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                     }
                 });
     }
+
+    private void saveCodeRecord(String[] strings, String directionDoor, AccessModel model) {
+        CodeRecord codeRecord = new CodeRecord(null, strings[4], strings[5], strings[1], strings[2], strings[3],
+                directionDoor, model.getAccessible());
+        CodeRecordDao codeRecordDao = GreenDaoManager.getInstance().getSession().getCodeRecordDao();
+        codeRecordDao.insert(codeRecord);
+    }
+
     /**
      * 上传门禁日志 --刷卡
      */
-    public void uploadCardLog(String cardNo,String mac, AccessModel model) {
+    public void uploadCardLog(String cardNo, String mac, AccessModel model) {
         String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
         BillboardApi.getDataService().uploadLog("", "", "", "", "",
                 directionDoor, model.getAccessible(),
-                "", "", "",cardNo,mac,"2")
+                "", "", "", cardNo, mac, "2")
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())
@@ -83,8 +96,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                     @Override
                     protected void onFail(NetError error) {
                         ToastManager.showShort(getV(), "上传日志失败！");
-                        CardRecord cardRecord = new CardRecord(null,cardNo,directionDoor,model.getAccessible());
-                        GreenDaoManager.getInstance().getSession().getCardRecordDao().insert(cardRecord);
+                        //  saveCard(cardNo, directionDoor, model);
                     }
 
                     @Override
@@ -98,169 +110,108 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                 });
     }
 
+    private void saveCard(String cardNo, String directionDoor, AccessModel model) {
+        CardRecord cardRecord = new CardRecord(null, cardNo, directionDoor, model.getAccessible());
+        GreenDaoManager.getInstance().getSession().getCardRecordDao().insert(cardRecord);
+    }
+
 
     /**
      * 心跳
      */
-    public void sendState(String mac,String ip){
-                    BillboardApi.getDataService().sendState(mac,ip)
-                            .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                            .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                            .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                            .subscribe(new ApiSubscriber<BaseBean>() {
-                                @Override
-                                protected void onFail(NetError error) {
-                                    getV().showError(error);
+    public void sendState(String mac, String ip) {
+        BillboardApi.getDataService().sendState(mac, ip)
+                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        getV().showError(error);
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            MessageBodyBean bean = (MessageBodyBean) model.getMessageBody();
+                            String s_ver = bean.getBuild();
+                            int v_no = APKVersionCodeUtils.getVersionCode(getV());
+                            if (s_ver != null) {
+                                int a = Integer.parseInt(s_ver);
+                                if (a > v_no) {
+                                    //更新app
+                                    getV().updateVersion(bean.getApkurl(), s_ver);
+                                    return;
                                 }
-
-                                @Override
-                                public void onNext(BaseBean model) {
-                                    if (model.isSuccess()) {
-                                        MessageBodyBean bean = (MessageBodyBean) model.getMessageBody();
-                                        String s_ver = bean.getBuild();
-                                        int v_no = APKVersionCodeUtils.getVersionCode(getV());
-                                        if(s_ver != null){
-                                            int a = Integer.parseInt(s_ver);
-                                            if(a > v_no){
-                                                //更新app
-                                                getV().updateVersion(bean.getApkurl(),s_ver);
-                                                return;
-                                            }
-                                        }
+                            }
 //                                        Log.i("sss",  new Gson().toJson(model));
-                                        if (bean != null) {
-                                            CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
-                                            int reset = bean.getResetstatus();
-                                            /**
-                                             *重置数据
-                                             */
-                                            if(reset==1){
-                                                cardDao.deleteAll();
-                                            }
-                                            List<String> add_list = bean.getAddedcards();
-                                            List<String> dele_list = bean.getDeletedcards();
+                            if (bean != null) {
+                                CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+                                int reset = bean.getResetstatus();
+                                /**
+                                 *重置数据
+                                 */
+                                if (reset == 1) {
+                                    cardDao.deleteAll();
+                                }
+                                List<String> add_list = bean.getAddedcards();
+                                List<String> dele_list = bean.getDeletedcards();
 
-                                            /**
-                                             *往数据库中增加
-                                             */
-                                            if (add_list.size() > 0) {
-                                                CardBean card = null;
-                                                for (int i = 0; i < add_list.size(); i++) {
-                                                    CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(add_list.get(i))).unique();
-                                                    if (cardBean == null) {
-                                                        card = new CardBean(null, add_list.get(i));
-                                                        cardDao.insert(card);
-                                                    }
-                                                }
-                                            }
-                                            /**
-                                             * 从数据库中删除
-                                             */
-                                            if (dele_list.size() > 0) {
-                                                for (int i = 0; i < dele_list.size(); i++) {
-                                                    CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(dele_list.get(i))).unique();
-                                                    if (cardBean != null) {
-                                                        cardDao.delete(cardBean);
-                                                    }
-                                                }
-                                            }
-                                            //查询card号
-                                            String cards =bean.getCardnos();
-                                            if(cards!=null){
-                                                String[] strings =cards.split(",");
-                                                if(strings.length>0){
-                                                    List<String> ls = new ArrayList<>();
-                                                    for(String s:strings){
-                                                        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(s)).unique();
-                                                        if(cardBean != null){
-                                                            ls.add("Y");
-                                                        }else {
-                                                            ls.add("N");
-                                                        }
-                                                    }
-                                                    sendFindResult(mac,cards,listToString2(ls,","));
-                                                }
-                                            }
-
-                                            Log.i("sss", "十分钟请求一次数据");
-                                            //////////////////////////
-                                            List<CardBean> ls = cardDao.queryBuilder().list();
-//                                            Log.i("sss", "总数 " + ls.size());
-//                                            if (ls.size() > 0) {
-//                                                for (int i = 0; i < ls.size(); i++) {
-//                                                    Log.i("sss", "sss" + ls.get(i).getNum());
-//                                                }
-//                                            }
-                                            ///////////////////////
-                                            sendDataBaseSize(mac,ls.size());
+                                /**
+                                 *往数据库中增加
+                                 */
+                                if (add_list.size() > 0) {
+                                    CardBean card = null;
+                                    for (int i = 0; i < add_list.size(); i++) {
+                                        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(add_list.get(i))).unique();
+                                        if (cardBean == null) {
+                                            card = new CardBean(null, add_list.get(i));
+                                            cardDao.insert(card);
                                         }
-                                    }else {
-                                        getV().showToast(model.getDescribe());
                                     }
                                 }
-                            });
+                                /**
+                                 * 从数据库中删除
+                                 */
+                                if (dele_list.size() > 0) {
+                                    for (int i = 0; i < dele_list.size(); i++) {
+                                        CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(dele_list.get(i))).unique();
+                                        if (cardBean != null) {
+                                            cardDao.delete(cardBean);
+                                        }
+                                    }
+                                }
+                                //查询card号
+//                                String cards = bean.getCardnos();
+//                                if (cards != null) {
+//                                    String[] strings = cards.split(",");
+//                                    if (strings.length > 0) {
+//                                        List<String> ls = new ArrayList<>();
+//                                        for (String s : strings) {
+//                                            CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(s)).unique();
+//                                            if (cardBean != null) {
+//                                                ls.add("Y");
+//                                            } else {
+//                                                ls.add("N");
+//                                            }
+//                                        }
+//                                        sendFindResult(mac, cards, listToString2(ls, ","));
+//                                    }
+//                                }
 
-    }
-
-    /**
-     * 查询卡号
-     * @param mac
-     * @param cards
-     * @param objects
-     */
-    private void sendFindResult(String mac, String cards, String objects) {
-        BillboardApi.getDataService().sendfindResult(mac,cards,objects)
-                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
-
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                        }
-                    }
-                });
-
-    }
-
-    public String listToString2(List list, String separator) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            if (i == list.size() - 1) {
-                sb.append(list.get(i));
-            } else {
-                sb.append(list.get(i));
-                sb.append(separator);
-            }
-        }
-        return sb.toString();
-    }
-
-
-    /**
-     * 发送重置后的数据
-     */
-    public void sendDataBaseSize(String mac,int size){
-        BillboardApi.getDataService().sendDataBaseSize(mac,size)
-                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
-
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-
-                        }else {
+                                Log.i("sss", "十分钟请求一次数据");
+                                //////////////////////////
+                                List<CardBean> ls = cardDao.queryBuilder().list();
+                                Log.i("sss", "总数 " + ls.size());
+                                if (ls.size() > 0) {
+                                    for (int i = 0; i < ls.size(); i++) {
+                                        Log.i("sss", "保存的卡" + ls.get(i).getNum());
+                                    }
+                                }
+                                ///////////////////////
+                                sendDataBaseSize(mac, ls.size());
+                            }
+                        } else {
                             getV().showToast(model.getDescribe());
                         }
                     }
@@ -268,6 +219,117 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
 
     }
 
+//    /**
+//     * 查询卡号
+//     *
+//     * @param mac
+//     * @param cards
+//     * @param objects
+//     */
+//    private void sendFindResult(String mac, String cards, String objects) {
+//        BillboardApi.getDataService().sendfindResult(mac, cards, objects)
+//                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+//                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+//                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+//                .subscribe(new ApiSubscriber<BaseBean>() {
+//                    @Override
+//                    protected void onFail(NetError error) {
+//                        getV().showError(error);
+//                    }
+//
+//                    @Override
+//                    public void onNext(BaseBean model) {
+//                        if (model.isSuccess()) {
+//                        }
+//                    }
+//                });
+//
+//    }
 
+//    public String listToString2(List list, String separator) {
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < list.size(); i++) {
+//            if (i == list.size() - 1) {
+//                sb.append(list.get(i));
+//            } else {
+//                sb.append(list.get(i));
+//                sb.append(separator);
+//            }
+//        }
+//        return sb.toString();
+//    }
+
+
+    /**
+     * 发送重置后的数据
+     */
+    public void sendDataBaseSize(String mac, int size) {
+        BillboardApi.getDataService().sendDataBaseSize(mac, size)
+                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        getV().showError(error);
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+
+                        } else {
+                            getV().showToast(model.getDescribe());
+                        }
+                    }
+                });
 
     }
+
+    /**
+     * 从服务器查询卡号
+     * @param mac
+     * @param cardNo
+     * @param box
+     * @param accessModel
+     */
+    public void queryServer(String mac, String cardNo,int box,AccessModel accessModel) {
+        String village_id = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
+        BillboardApi.getDataService().queryCard(mac,village_id, cardNo)
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        ToastManager.showShort(getV(), "从服务器查询卡号失败！");
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            String save = (String) model.getMessageBody();
+                            if(save.equals("Y")){
+
+                                String banzi = Build.MODEL;
+                                if (banzi.equals("3280")) {
+                                    Service3288.getInstance().openCardDoor(box,cardNo,accessModel);
+                                } else if (banzi.equals("SoftwinerEvb")) {
+                                    ServiceA20.getInstance().openCardDoor(box,cardNo,accessModel);
+                                } else {
+                                    Service836.getInstance().openCardDoor(box,cardNo,accessModel);
+                                }
+
+                                CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
+                                CardBean cardBean = new CardBean(null,cardNo);
+                                cardDao.insert(cardBean);
+                            }else {
+                                  SoundPoolUtil.play(4);
+                                  Log.i("sss","没有查询到卡号");
+                            }
+                        }
+                    }
+                });
+    }
+
+}

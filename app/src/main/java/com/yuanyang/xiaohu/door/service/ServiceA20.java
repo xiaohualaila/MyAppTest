@@ -11,6 +11,7 @@ import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.CardModel;
+import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
@@ -34,7 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 /**
- * 3288板子的
+ * A20板子的
  */
 public class ServiceA20 extends android.app.Service {
 
@@ -53,7 +54,19 @@ public class ServiceA20 extends android.app.Service {
     private SerialHelper serialHelper_ttyS6;
 
     private SerialHelper serialHelper;
-    private boolean isOpened = false;
+
+    private static ServiceA20 instance;
+
+    public static ServiceA20 getInstance(){
+        if(instance == null){
+            synchronized (ServiceA20.class){
+                if (instance == null){
+                    instance = new ServiceA20();
+                }
+            }
+        }
+        return instance;
+    }
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -63,6 +76,7 @@ public class ServiceA20 extends android.app.Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         init();
     }
 
@@ -196,22 +210,20 @@ public class ServiceA20 extends android.app.Service {
         }
     }
 
-
     private void dealCardNo(int scanBox, String str) {
+        String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+        List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
+        AccessModel model = null;
+        if (list.size() > 0) {
+            model = getModel(list, scanBox);
+        }
         String card_no = str.substring(1, str.length()-1);
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
         CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(card_no)).unique();
         if (cardBean != null) {
-            String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
-            List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
-            AccessModel model = null;
-            if (list.size() > 0) {
-                model = getModel(list, scanBox);
-            }
             openCardDoor(scanBox,card_no,model);
         }else {
-            BusProvider.getBus().post(new EventModel("卡号不存在！"));
-            SoundPoolUtil.play(4);
+            BusProvider.getBus().post(new CardNoModel(card_no,scanBox,model));
         }
     }
 
@@ -340,13 +352,9 @@ public class ServiceA20 extends android.app.Service {
     /**
      * 刷卡开门
      */
-    private void openCardDoor(final int scanBox, String cardno, AccessModel model) {
-        if(isOpened){
-            return;
-        }
+    public void openCardDoor(final int scanBox, String cardno, AccessModel model) {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(scanBox));
-            isOpened = true;
         } else {
             Log.i("sss","串口都没打开");
             return;
@@ -371,7 +379,6 @@ public class ServiceA20 extends android.app.Service {
             @Override
             public void onComplete() {
                 BusProvider.getBus().post(new CardModel(cardno, model));
-                isOpened = false;
             }
         });
     }

@@ -21,6 +21,7 @@ import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
 import com.yuanyang.xiaohu.door.dialog.DownloadAPKDialog;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.CardModel;
+import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
@@ -96,7 +97,6 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac = smdt.smdtGetEthMacAddress();
         ip = smdt.smdtGetEthIPAddress();
-
         if (mac == null || ip == null) {
             setAppendContent("网络异常,请检查网络！\n");
         }
@@ -119,6 +119,10 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         //刷卡
         BusProvider.getBus().toFlowable(CardModel.class).subscribe(
                 cardModel -> getP().uploadCardLog(cardModel.card_no, mac, cardModel.model)
+        );
+        //查询卡号
+        BusProvider.getBus().toFlowable(CardNoModel.class).subscribe(
+                cardModel -> getP().queryServer( mac,cardModel.value,cardModel.scanBox,cardModel.accessModel)
         );
     }
 

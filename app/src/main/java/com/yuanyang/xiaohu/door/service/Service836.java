@@ -10,9 +10,12 @@ import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.CardModel;
+import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
+import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.ChangeTool;
 import com.yuanyang.xiaohu.door.util.Constants;
@@ -27,7 +30,11 @@ import java.util.concurrent.TimeUnit;
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
+import cn.com.library.net.ApiSubscriber;
+import cn.com.library.net.NetError;
+import cn.com.library.net.XApi;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -47,7 +54,21 @@ public class Service836 extends android.app.Service {
     private SerialHelper serialHelper_ttyS2;
 
     private SerialHelper serialHelper;
-    private boolean isOpened = false;
+
+    private static Service836 instance;
+
+    public static Service836 getInstance(){
+        if(instance == null){
+            synchronized (Service836.class){
+                if (instance == null){
+                    instance = new Service836();
+                }
+            }
+        }
+        return instance;
+    }
+
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,8 +78,11 @@ public class Service836 extends android.app.Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        instance =this;
         init();
     }
+
+
 
     /**
      * 初始化串口
@@ -123,7 +147,7 @@ public class Service836 extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-        Log.i("sss","sss>>>>>>>>"+ str + "  " + str.length());
+        Log.i("sss","读卡>>>>>>>>"+ str + "  " + str.length());
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){
@@ -153,23 +177,29 @@ public class Service836 extends android.app.Service {
         }
     }
 
-    private void dealCardNo(int scanBox, String str) {
+    /**
+     * 处理卡号
+     * @param scanBox
+     * @param str
+     */
+    public void dealCardNo(int scanBox, String str) {
+        String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+        List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
+        AccessModel model = null;
+        if (list.size() > 0) {
+            model = getModel(list, scanBox);
+        }
         String card_no = str.substring(1, str.length()-1);
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
         CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(card_no)).unique();
         if (cardBean != null) {
-            String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
-            List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
-            AccessModel model = null;
-            if (list.size() > 0) {
-                model = getModel(list, scanBox);
-            }
             openCardDoor(scanBox,card_no,model);
         }else {
-            BusProvider.getBus().post(new EventModel("卡号不存在！"));
-            SoundPoolUtil.play(4);
+            BusProvider.getBus().post(new CardNoModel(card_no,scanBox,model));
         }
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -221,7 +251,7 @@ public class Service836 extends android.app.Service {
                     openDoor(strings, model);
                 }
             } else {
-                if (village.equals(strings[1])) {
+                if (!village.equals(strings[1])) {
                     openDoor(strings, model);
                 } else {
                     BusProvider.getBus().post(new EventModel("资料匹配失败，请确认小区是否正确"));
@@ -294,13 +324,9 @@ public class Service836 extends android.app.Service {
     /**
      * 刷卡开门
      */
-    private void openCardDoor(final int scanBox, String cardno, AccessModel model) {
-        if(isOpened){
-            return;
-        }
+    public void openCardDoor(final int scanBox, String cardno, AccessModel model) {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(scanBox));
-            isOpened = true;
         } else {
 //            Log.i("sss","门禁串口都没打开");
             BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
@@ -326,7 +352,6 @@ public class Service836 extends android.app.Service {
             @Override
             public void onComplete() {
                 BusProvider.getBus().post(new CardModel(cardno, model));
-                isOpened = false;
             }
         });
     }
