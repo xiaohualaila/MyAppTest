@@ -57,6 +57,8 @@ public class Service836 extends android.app.Service {
 
     private static Service836 instance;
 
+    private String current_card="";
+
     public static Service836 getInstance(){
         if(instance == null){
             synchronized (Service836.class){
@@ -144,7 +146,7 @@ public class Service836 extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer,int scanBox) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
-        Log.i("sss","读卡>>>>>>>>"+ str + "  " + str.length());
+        Log.i("xxx","读卡>>>>>>>>"+ str + "  " + str.length());
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){
@@ -346,6 +348,10 @@ public class Service836 extends android.app.Service {
 
             @Override
             public void onComplete() {
+                 if(current_card.equals(cardno)){
+                    return;
+                 }
+                current_card=cardno;
                 BusProvider.getBus().post(new CardModel(cardno, model));
             }
         });

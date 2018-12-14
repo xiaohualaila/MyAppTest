@@ -1,11 +1,8 @@
 package com.yuanyang.xiaohu.door.present;
 
 
-import android.content.Intent;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.Log;
-
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.bean.CardRecord;
@@ -25,8 +22,6 @@ import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.library.kit.ToastManager;
@@ -43,11 +38,11 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * 上传门禁日志 --扫描
      */
     public void uploadLog(String[] strings, String mac, AccessModel model) {
-        if (NetStateUtil.isNetworkConnected(getV())) {
-            Log.i("sss", "++++++++++++++++++++++++++++++");
-        } else {
-            Log.i("sss", "------------------------------");
-        }
+//        if (NetStateUtil.isNetworkConnected(getV())) {
+//            Log.i("sss", "++++++++++++++++++++++++++++++");
+//        } else {
+//            Log.i("sss", "------------------------------");
+//        }
         String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
         BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
                 "", "", "", "", mac, "1")
@@ -72,13 +67,6 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                         }
                     }
                 });
-    }
-
-    private void saveCodeRecord(String[] strings, String directionDoor, AccessModel model) {
-        CodeRecord codeRecord = new CodeRecord(null, strings[4], strings[5], strings[1], strings[2], strings[3],
-                directionDoor, model.getAccessible());
-        CodeRecordDao codeRecordDao = GreenDaoManager.getInstance().getSession().getCodeRecordDao();
-        codeRecordDao.insert(codeRecord);
     }
 
     /**
@@ -108,11 +96,6 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                         }
                     }
                 });
-    }
-
-    private void saveCard(String cardNo, String directionDoor, AccessModel model) {
-        CardRecord cardRecord = new CardRecord(null, cardNo, directionDoor, model.getAccessible());
-        GreenDaoManager.getInstance().getSession().getCardRecordDao().insert(cardRecord);
     }
 
 
@@ -219,47 +202,6 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
 
     }
 
-//    /**
-//     * 查询卡号
-//     *
-//     * @param mac
-//     * @param cards
-//     * @param objects
-//     */
-//    private void sendFindResult(String mac, String cards, String objects) {
-//        BillboardApi.getDataService().sendfindResult(mac, cards, objects)
-//                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-//                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-//                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-//                .subscribe(new ApiSubscriber<BaseBean>() {
-//                    @Override
-//                    protected void onFail(NetError error) {
-//                        getV().showError(error);
-//                    }
-//
-//                    @Override
-//                    public void onNext(BaseBean model) {
-//                        if (model.isSuccess()) {
-//                        }
-//                    }
-//                });
-//
-//    }
-
-//    public String listToString2(List list, String separator) {
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < list.size(); i++) {
-//            if (i == list.size() - 1) {
-//                sb.append(list.get(i));
-//            } else {
-//                sb.append(list.get(i));
-//                sb.append(separator);
-//            }
-//        }
-//        return sb.toString();
-//    }
-
-
     /**
      * 发送重置后的数据
      */
@@ -310,7 +252,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                         if (model.isSuccess()) {
                             String save = (String) model.getMessageBody();
                             if(save.equals("Y")){
-
+                                Log.i("sss","请求的服务器Y");
                                 String banzi = Build.MODEL;
                                 if (banzi.equals("3280")) {
                                     Service3288.getInstance().openCardDoor(box,cardNo,accessModel);
@@ -324,12 +266,70 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                 CardBean cardBean = new CardBean(null,cardNo);
                                 cardDao.insert(cardBean);
                             }else {
-                                  SoundPoolUtil.play(4);
-                                  Log.i("sss","没有查询到卡号");
+                                SoundPoolUtil.play(4);
+                                Log.i("sss",model.getDescribe());
                             }
+                        }else {
+                            SoundPoolUtil.play(4);
+                            Log.i("sss",model.getDescribe());
                         }
                     }
                 });
     }
+
+//    /**
+//     * 查询卡号
+//     *
+//     * @param mac
+//     * @param cards
+//     * @param objects
+//     */
+//    private void sendFindResult(String mac, String cards, String objects) {
+//        BillboardApi.getDataService().sendfindResult(mac, cards, objects)
+//                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+//                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+//                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+//                .subscribe(new ApiSubscriber<BaseBean>() {
+//                    @Override
+//                    protected void onFail(NetError error) {
+//                        getV().showError(error);
+//                    }
+//
+//                    @Override
+//                    public void onNext(BaseBean model) {
+//                        if (model.isSuccess()) {
+//                        }
+//                    }
+//                });
+//
+//    }
+
+//    public String listToString2(List list, String separator) {
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < list.size(); i++) {
+//            if (i == list.size() - 1) {
+//                sb.append(list.get(i));
+//            } else {
+//                sb.append(list.get(i));
+//                sb.append(separator);
+//            }
+//        }
+//        return sb.toString();
+//    }
+
+
+    private void saveCodeRecord(String[] strings, String directionDoor, AccessModel model) {
+        CodeRecord codeRecord = new CodeRecord(null, strings[4], strings[5], strings[1], strings[2], strings[3],
+                directionDoor, model.getAccessible());
+        CodeRecordDao codeRecordDao = GreenDaoManager.getInstance().getSession().getCodeRecordDao();
+        codeRecordDao.insert(codeRecord);
+    }
+
+    private void saveCard(String cardNo, String directionDoor, AccessModel model) {
+        CardRecord cardRecord = new CardRecord(null, cardNo, directionDoor, model.getAccessible());
+        GreenDaoManager.getInstance().getSession().getCardRecordDao().insert(cardRecord);
+    }
+
+
 
 }
