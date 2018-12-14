@@ -139,7 +139,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
                     ServiceA20.class)), 10000);
         } else {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    Service836.class)), 10000);
+                    Service836.class)), 5000);
         }
     }
 

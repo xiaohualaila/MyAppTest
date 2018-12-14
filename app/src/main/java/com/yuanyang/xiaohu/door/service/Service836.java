@@ -68,7 +68,6 @@ public class Service836 extends android.app.Service {
         return instance;
     }
 
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -81,8 +80,6 @@ public class Service836 extends android.app.Service {
         instance =this;
         init();
     }
-
-
 
     /**
      * 初始化串口
@@ -199,8 +196,6 @@ public class Service836 extends android.app.Service {
         }
     }
 
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -251,7 +246,7 @@ public class Service836 extends android.app.Service {
                     openDoor(strings, model);
                 }
             } else {
-                if (!village.equals(strings[1])) {
+                if (village.equals(strings[1])) {
                     openDoor(strings, model);
                 } else {
                     BusProvider.getBus().post(new EventModel("资料匹配失败，请确认小区是否正确"));
