@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.yuanyang.xiaohu.door.BuildConfig;
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.adapter.AccessDoorAdapter;
@@ -33,15 +32,12 @@ import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
-
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
 import butterknife.BindView;
 import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
