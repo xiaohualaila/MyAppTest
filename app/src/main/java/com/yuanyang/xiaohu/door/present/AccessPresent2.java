@@ -16,12 +16,14 @@ import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.NetStateUtil;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.library.kit.ToastManager;
@@ -43,7 +45,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
 //        } else {
 //            Log.i("sss", "------------------------------");
 //        }
-        String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
+        String directionDoor = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
         BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
                 "", "", "", "", mac, "1")
                 .compose(XApi.<BaseBean>getApiTransformer())
@@ -73,7 +75,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * 上传门禁日志 --刷卡
      */
     public void uploadCardLog(String cardNo, String mac, AccessModel model) {
-        String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
+        String directionDoor = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
         BillboardApi.getDataService().uploadLog("", "", "", "", "",
                 directionDoor, model.getAccessible(),
                 "", "", "", cardNo, mac, "2")
@@ -165,22 +167,22 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                     }
                                 }
                                 //查询card号
-//                                String cards = bean.getCardnos();
-//                                if (cards != null) {
-//                                    String[] strings = cards.split(",");
-//                                    if (strings.length > 0) {
-//                                        List<String> ls = new ArrayList<>();
-//                                        for (String s : strings) {
-//                                            CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(s)).unique();
-//                                            if (cardBean != null) {
-//                                                ls.add("Y");
-//                                            } else {
-//                                                ls.add("N");
-//                                            }
-//                                        }
-//                                        sendFindResult(mac, cards, listToString2(ls, ","));
-//                                    }
-//                                }
+                                String cards = bean.getCardnos();
+                                if (cards != null) {
+                                    String[] strings = cards.split(",");
+                                    if (strings.length > 0) {
+                                        List<String> ls = new ArrayList<>();
+                                        for (String s : strings) {
+                                            CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(s)).unique();
+                                            if (cardBean != null) {
+                                                ls.add("Y");
+                                            } else {
+                                                ls.add("N");
+                                            }
+                                        }
+                                        sendFindResult(mac, cards, listToString2(ls, ","));
+                                    }
+                                }
 
                                 Log.i("sss", "十分钟请求一次数据");
                                 //////////////////////////
@@ -236,7 +238,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * @param accessModel
      */
     public void queryServer(String mac, String cardNo,int box,AccessModel accessModel) {
-        String village_id = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
+        String village_id = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, "");
         BillboardApi.getDataService().queryCard(mac,village_id, cardNo)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
@@ -277,45 +279,45 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                 });
     }
 
-//    /**
-//     * 查询卡号
-//     *
-//     * @param mac
-//     * @param cards
-//     * @param objects
-//     */
-//    private void sendFindResult(String mac, String cards, String objects) {
-//        BillboardApi.getDataService().sendfindResult(mac, cards, objects)
-//                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-//                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-//                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-//                .subscribe(new ApiSubscriber<BaseBean>() {
-//                    @Override
-//                    protected void onFail(NetError error) {
-//                        getV().showError(error);
-//                    }
-//
-//                    @Override
-//                    public void onNext(BaseBean model) {
-//                        if (model.isSuccess()) {
-//                        }
-//                    }
-//                });
-//
-//    }
+    /**
+     * 查询卡号
+     *
+     * @param mac
+     * @param cards
+     * @param objects
+     */
+    private void sendFindResult(String mac, String cards, String objects) {
+        BillboardApi.getDataService().sendfindResult(mac, cards, objects)
+                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        getV().showError(error);
+                    }
 
-//    public String listToString2(List list, String separator) {
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < list.size(); i++) {
-//            if (i == list.size() - 1) {
-//                sb.append(list.get(i));
-//            } else {
-//                sb.append(list.get(i));
-//                sb.append(separator);
-//            }
-//        }
-//        return sb.toString();
-//    }
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                        }
+                    }
+                });
+
+    }
+
+    public String listToString2(List list, String separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            if (i == list.size() - 1) {
+                sb.append(list.get(i));
+            } else {
+                sb.append(list.get(i));
+                sb.append(separator);
+            }
+        }
+        return sb.toString();
+    }
 
 
     private void saveCodeRecord(String[] strings, String directionDoor, AccessModel model) {

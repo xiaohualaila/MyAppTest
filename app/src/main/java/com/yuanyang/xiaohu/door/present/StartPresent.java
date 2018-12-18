@@ -10,7 +10,7 @@ import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.DoorModel;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 
 import java.util.ArrayList;
@@ -70,17 +70,17 @@ public class StartPresent extends XPresent<StartActivity> {
                                 list.add(model4);
                             }
 
-                            AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_NUM, list.size());
-                            AppSharePreferenceMgr.put(getV(), UserInfoKey.VILLAGE_NAME,doorModel.getCommname());
-                            AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, doorModel.getCommid());//小区编号
-                            AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, doorModel.getName());//门
-                            AppSharePreferenceMgr.put(getV(), UserInfoKey.HEARTINTERVAL,doorModel.getHeartinterval());//心跳时间
-                            AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
+                            SharedPreferencesUtil.putInt(getV(), UserInfoKey.OPEN_DOOR_NUM, list.size());
+                            SharedPreferencesUtil.putString(getV(), UserInfoKey.VILLAGE_NAME,doorModel.getCommname());
+                            SharedPreferencesUtil.putString(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, doorModel.getCommid());//小区编号
+                            SharedPreferencesUtil.putString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, doorModel.getName());//门
+                            SharedPreferencesUtil.putInt(getV(), UserInfoKey.HEARTINTERVAL,doorModel.getHeartinterval());//心跳时间
+                            SharedPreferencesUtil.putString(getV(), UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(list));
 
                            int type =  doorModel.getGatetype();
                            if(type != 1){
-                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_BUILDING, doorModel.getBuildno());//单元
-                               AppSharePreferenceMgr.put(getV(), UserInfoKey.OPEN_DOOR_UNIT_ID, doorModel.getUnitno());//单元门
+                               SharedPreferencesUtil.putInt(getV(), UserInfoKey.OPEN_DOOR_BUILDING, doorModel.getBuildno());//单元
+                               SharedPreferencesUtil.putInt(getV(), UserInfoKey.OPEN_DOOR_UNIT_ID, doorModel.getUnitno());//单元门
                            }
                         }
                         startActivity(new Intent(getV(),AccessDoorActivity2.class));

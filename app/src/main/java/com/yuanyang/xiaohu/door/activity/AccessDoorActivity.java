@@ -37,7 +37,7 @@ import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
@@ -150,17 +150,18 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     }
 
     private void initDateBase() {
-        List<AccessModel> list_ = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString(), AccessModel.class);
+        List<AccessModel> list_ = GsonProvider.stringToList(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]"), AccessModel.class);
         if(list_.size()==0){
             SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
             List<SharepreferenceBean> list_bean = dao.queryBuilder().list();
             if(list_bean.size()>0){
                 SharepreferenceBean bean = list_bean.get(0);
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_NUM,bean.getOpen_door_num() );
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, bean.getOpen_village_id());
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, bean.getOpen_door_direction_id());
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_BUILDING, bean.getOpen_door_building());
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_PARAMS, bean.getOpen_door_params());
+                SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_NUM,bean.getOpen_door_num() );
+                SharedPreferencesUtil.putString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, bean.getOpen_village_id());
+                SharedPreferencesUtil.putString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, bean.getOpen_door_direction_id());
+                SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_BUILDING, bean.getOpen_door_building());
+                SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_UNIT_ID, bean.getOpen_door_unit());
+                SharedPreferencesUtil.putString(context, UserInfoKey.OPEN_DOOR_PARAMS, bean.getOpen_door_params());
             }
         }
     }
@@ -209,29 +210,31 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
     }
 
     private void initViewData() {
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString()))
-            villageId.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString());
+        if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "")))
+            villageId.setText(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, ""));
         else
             villageId.setText("");
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString()))
-            directionDoor.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString());
+        if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "")))
+            directionDoor.setText(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, ""));
         else
             directionDoor.setText("请选择");
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, "").toString())) {
+        int build_id = SharedPreferencesUtil.getInt(context, UserInfoKey.OPEN_DOOR_BUILDING, 0);
+        if (build_id != 0) {
             building.setVisibility(View.VISIBLE);
-            building.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, "").toString());
+            building.setText(build_id + "");
         } else {
             building.setVisibility(View.INVISIBLE);
             building.setText("");
         }
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, "").toString())) {
+        int unit_id = SharedPreferencesUtil.getInt(context, UserInfoKey.OPEN_DOOR_UNIT_ID, 0);
+        if (unit_id != 0) {
             building_unit.setVisibility(View.VISIBLE);
-            building_unit.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, "").toString());
+            building_unit.setText(unit_id + "");
         } else {
             building_unit.setVisibility(View.INVISIBLE);
             building_unit.setText("");
         }
-        list = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString(), AccessModel.class);
+        list = GsonProvider.stringToList(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]"), AccessModel.class);
         if (list.size() == 0) {
             adapter.setIsSelect(true);
             AccessModel model = new AccessModel();
@@ -282,11 +285,11 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 }
                 break;
             case R.id.bt_retroe:
-                AppSharePreferenceMgr.remove(context, UserInfoKey.OPEN_DOOR_NUM);
-                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_DIRECTION_ID);
-                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_VILLAGE_ID);
-                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_BUILDING);
-                AppSharePreferenceMgr.remove(context,UserInfoKey.OPEN_DOOR_PARAMS);
+                SharedPreferencesUtil.deleteShared(context, UserInfoKey.OPEN_DOOR_NUM);
+                SharedPreferencesUtil.deleteShared(context,UserInfoKey.OPEN_DOOR_DIRECTION_ID);
+                SharedPreferencesUtil.deleteShared(context,UserInfoKey.OPEN_DOOR_VILLAGE_ID);
+                SharedPreferencesUtil.deleteShared(context,UserInfoKey.OPEN_DOOR_BUILDING);
+                SharedPreferencesUtil.deleteShared(context,UserInfoKey.OPEN_DOOR_PARAMS);
                 SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
                 List<SharepreferenceBean> list = dao.queryBuilder().list();
                 if(list.size()>0){
@@ -350,11 +353,15 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                     return false;
                 }
                 int door_num = adapter.getDataSource().size();
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_NUM, door_num);
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, villageId.getText().toString());
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, directionDoor.getText().toString());
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_BUILDING, building.getText().toString());
-                AppSharePreferenceMgr.put(context, UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(adapter.getDataSource()));
+                SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_NUM, door_num);
+                SharedPreferencesUtil.putString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, villageId.getText().toString());
+                SharedPreferencesUtil.putString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, directionDoor.getText().toString());
+
+                int b = Integer.parseInt(building.getText().toString());
+                int u = Integer.parseInt(building_unit.getText().toString());
+                SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_BUILDING,b);
+                SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_UNIT_ID,u);
+                SharedPreferencesUtil.putString(context, UserInfoKey.OPEN_DOOR_PARAMS, GsonProvider.getInstance().getGson().toJson(adapter.getDataSource()));
                 tipContent.setText("");
                 setAppendContent("参数设置成功！");
                 SharepreferenceBeanDao dao = GreenDaoManager.getInstance().getSession().getSharepreferenceBeanDao();
@@ -364,10 +371,11 @@ public class AccessDoorActivity extends XActivity<AccessPresent> implements AppD
                 }
 
                 SharepreferenceBean sharepreferenceBean = new SharepreferenceBean();
-                sharepreferenceBean.setOpen_door_num(door_num+"");
+                sharepreferenceBean.setOpen_door_num(door_num);
                 sharepreferenceBean.setOpen_village_id(villageId.getText().toString());
                 sharepreferenceBean.setOpen_door_direction_id(directionDoor.getText().toString());
-                sharepreferenceBean.setOpen_door_building( building.getText().toString());
+                sharepreferenceBean.setOpen_door_building(b);
+                sharepreferenceBean.setOpen_door_unit(u);
                 sharepreferenceBean.setOpen_door_params( GsonProvider.getInstance().getGson().toJson(adapter.getDataSource()));
                 dao.insert(sharepreferenceBean);
             } else {

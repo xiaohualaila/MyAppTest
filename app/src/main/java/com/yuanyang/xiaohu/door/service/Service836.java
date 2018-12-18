@@ -19,7 +19,7 @@ import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.ChangeTool;
 import com.yuanyang.xiaohu.door.util.Constants;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
@@ -182,7 +182,7 @@ public class Service836 extends android.app.Service {
      * @param str
      */
     public void dealCardNo(int scanBox, String str) {
-        String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+        String params = SharedPreferencesUtil.getString(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]");
         List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
         AccessModel model = null;
         if (list.size() > 0) {
@@ -233,10 +233,10 @@ public class Service836 extends android.app.Service {
      * 判断是否开门
      */
     private void checkIsOpenDoor(String[] strings, int scanBox) {
-        String village = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString();
-        String directionDoor = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
-        int building = (int) AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_BUILDING, 0);
-        String params = AppSharePreferenceMgr.get(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString();
+        String village = SharedPreferencesUtil.getString(this, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "");
+        String directionDoor = SharedPreferencesUtil.getString(this, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
+        int building =  SharedPreferencesUtil.getInt(this, UserInfoKey.OPEN_DOOR_BUILDING, 0);
+        String params = SharedPreferencesUtil.getString(this, UserInfoKey.OPEN_DOOR_PARAMS, "[]");
         List<AccessModel> list = GsonProvider.stringToList(params, AccessModel.class);
         AccessModel model = null;
         if (list.size() > 0) {

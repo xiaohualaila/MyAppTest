@@ -11,8 +11,8 @@ import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
 import com.yuanyang.xiaohu.door.util.NetStateUtil;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 import java.util.List;
@@ -33,7 +33,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      * 上传门禁日志 --扫描
      */
     public void uploadLog(String[] strings,String mac, AccessModel model) {
-        String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
+        String directionDoor = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
         BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
                 "", "", "","",mac,"1")
                 .compose(XApi.<BaseBean>getApiTransformer())
@@ -61,7 +61,7 @@ public class AccessPresent extends XPresent<AccessDoorActivity> {
      * 上传门禁日志 --刷卡
      */
     public void uploadCardLog(String cardNo,String mac, AccessModel model) {
-        String directionDoor = AppSharePreferenceMgr.get(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString();
+        String directionDoor = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
         BillboardApi.getDataService().uploadLog("", "", "", "", "",
                 directionDoor, model.getAccessible(),
                 "", "", "",cardNo,mac,"2")

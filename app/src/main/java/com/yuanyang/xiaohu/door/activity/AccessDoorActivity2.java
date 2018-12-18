@@ -31,8 +31,9 @@ import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
-import com.yuanyang.xiaohu.door.util.AppSharePreferenceMgr;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 
 import java.io.File;
@@ -147,7 +148,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
      * 发送心跳数据
      */
     private void doSomeThing() {
-        int time = (int) AppSharePreferenceMgr.get(this, UserInfoKey.HEARTINTERVAL, 10);
+        int time =  SharedPreferencesUtil.getInt(this, UserInfoKey.HEARTINTERVAL, 10);
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
@@ -215,20 +216,20 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
 
 
     public void initViewData() {
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.VILLAGE_NAME, "").toString()))
-            village_name.setText(AppSharePreferenceMgr.get(context, UserInfoKey.VILLAGE_NAME, "").toString());
+        if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(context, UserInfoKey.VILLAGE_NAME, "")))
+            village_name.setText(SharedPreferencesUtil.getString(context, UserInfoKey.VILLAGE_NAME, ""));
         else
             village_name.setText("");
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString()))
-            villageId.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "").toString());
+        if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "")))
+            villageId.setText(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, ""));
         else
             villageId.setText("");
-        if (!TextUtils.isEmpty(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString()))
-            directionDoor.setText(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "").toString());
+        if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "")))
+            directionDoor.setText(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, ""));
         else
             directionDoor.setText("请选择");
 
-        int build_id = (int) AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_BUILDING, 0);
+        int build_id = SharedPreferencesUtil.getInt(context, UserInfoKey.OPEN_DOOR_BUILDING, 0);
         if (build_id != 0) {
             building.setVisibility(View.VISIBLE);
             building.setText(build_id + "");
@@ -236,7 +237,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             building.setVisibility(View.INVISIBLE);
             building.setText("");
         }
-        int unit_id = (int) AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_UNIT_ID, 0);
+        int unit_id = SharedPreferencesUtil.getInt(context, UserInfoKey.OPEN_DOOR_UNIT_ID, 0);
         if (unit_id != 0) {
             building_unit.setVisibility(View.VISIBLE);
             building_unit.setText(unit_id + "");
@@ -245,7 +246,7 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
             building_unit.setText("");
         }
 
-        list = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]").toString(), AccessModel.class);
+        list = GsonProvider.stringToList(SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_PARAMS, "[]"), AccessModel.class);
         if (list.size() == 0) {
             adapter.setIsSelect(true);
             AccessModel model = new AccessModel();
