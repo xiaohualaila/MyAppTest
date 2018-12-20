@@ -43,7 +43,6 @@ import cn.com.library.base.SimpleRecAdapter;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
-import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 import cn.droidlover.xrecyclerview.XRecyclerView;
@@ -92,20 +91,15 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
         SoundPoolUtil.play(1);
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        mac = smdt.smdtGetEthMacAddress();
-        ip = smdt.smdtGetEthIPAddress();
-        if (mac == null || ip == null) {
-            setAppendContent("网络异常,请检查网络！\n");
-        }
-        getServiceData();
+        heartinterval();
+        getBus();
         startService();
-        doSomeThing();
         initViewData();
         new Timer().schedule(timerTask, 0, 5000);
 
     }
 
-    private void getServiceData() {
+    private void getBus() {
         BusProvider.getBus().toFlowable(EventModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 eventModel -> ToastManager.showShort(AccessDoorActivity2.this, eventModel.value)
         );
@@ -143,11 +137,17 @@ public class AccessDoorActivity2 extends XActivity<AccessPresent2> implements Ap
     /**
      * 发送心跳数据
      */
-    private void doSomeThing() {
+    private void heartinterval() {
         int time =  SharedPreferencesUtil.getInt(this, UserInfoKey.HEARTINTERVAL, 10);
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
+                    mac = smdt.smdtGetEthMacAddress();
+                    ip = smdt.smdtGetEthIPAddress();
+                    if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ip)){
+                        ToastManager.showShort(context, "Mac地址或IP地址不能为空，请检查网络！");
+                        return;
+                    }
                     getP().sendState(mac, ip);
                 });
     }
