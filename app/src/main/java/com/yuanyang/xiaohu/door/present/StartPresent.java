@@ -2,7 +2,6 @@ package com.yuanyang.xiaohu.door.present;
 
 
 import android.content.Intent;
-
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.activity.StartActivity;
 import com.yuanyang.xiaohu.door.model.AccessModel;
@@ -12,14 +11,12 @@ import com.yuanyang.xiaohu.door.net.BillboardApi;
 import com.yuanyang.xiaohu.door.net.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
-
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
-
 import static com.blankj.utilcode.util.ActivityUtils.startActivity;
 
 

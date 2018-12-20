@@ -16,16 +16,13 @@ import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.ServiceA20;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
-import com.yuanyang.xiaohu.door.util.NetStateUtil;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
