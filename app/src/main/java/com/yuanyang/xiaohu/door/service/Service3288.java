@@ -313,9 +313,8 @@ public class Service3288 extends android.app.Service {
      * 刷二维码开门
      */
     private void openDoor(final String[] strings, final AccessModel model) {
-        final int num = model.getRelay();
         if (serialHelper.isOpen()) {
-            serialHelper.send(getArrOpenDoor(num));
+            serialHelper.send(getArrOpenDoor(model.getRelay()));
             Log.i("sss", "门已开");
         } else {
             Log.i("sss","串口都没打开");
@@ -331,7 +330,7 @@ public class Service3288 extends android.app.Service {
             @Override
             public void onNext(Long value) {
                 if (serialHelper.isOpen()) {
-                    serialHelper.send(getArrCloseDoor(num));
+                    serialHelper.send(getArrCloseDoor(model.getRelay()));
                 } else {
                     Log.i("sss","串口都没打开");
                 }

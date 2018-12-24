@@ -47,7 +47,7 @@ public class StartPresent extends XPresent<StartActivity> {
                             model.setAccessible("进");
                             AccessModel model2 = new AccessModel();
                             model2.setErCode(2);
-                            model2.setRelay(1);
+                            model2.setRelay(2);
                             model2.setDoorNum("2");
                             model2.setAccessible("出");
                             list.add(model);
