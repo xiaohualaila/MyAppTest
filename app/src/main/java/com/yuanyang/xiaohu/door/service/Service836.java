@@ -186,7 +186,7 @@ public class Service836 extends android.app.Service {
         CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
         CardBean cardBean = cardDao.queryBuilder().where(CardBeanDao.Properties.Num.eq(card_no)).unique();
         if (cardBean != null) {
-            openCardDoor(scanBox,card_no,model);
+            openCardDoor(card_no,model);
         }else {
             BusProvider.getBus().post(new CardNoModel(card_no,scanBox,model));
         }
@@ -315,9 +315,9 @@ public class Service836 extends android.app.Service {
     /**
      * 刷卡开门
      */
-    public void openCardDoor(final int scanBox, String cardno, AccessModel model) {
+    public void openCardDoor(String cardno, AccessModel model) {
         if (serialHelper.isOpen()) {
-            serialHelper.send(getArrOpenDoor(scanBox));
+            serialHelper.send(getArrOpenDoor(model.getRelay()));
         } else {
 //            Log.i("sss","门禁串口都没打开");
             BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
@@ -332,7 +332,7 @@ public class Service836 extends android.app.Service {
 
             @Override
             public void onNext(Long value) {
-                serialHelper.send(getArrCloseDoor(scanBox));
+                serialHelper.send(getArrCloseDoor(model.getRelay()));
             }
 
             @Override

@@ -185,11 +185,11 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                 //////////////////////////
                                 List<CardBean> ls = cardDao.queryBuilder().list();
                                 Log.i("sss", "总数 " + ls.size());
-                                if (ls.size() > 0) {
-                                    for (int i = 0; i < ls.size(); i++) {
-                                        Log.i("sss", "保存的卡" + ls.get(i).getNum());
-                                    }
-                                }
+//                                if (ls.size() > 0) {
+//                                    for (int i = 0; i < ls.size(); i++) {
+//                                        Log.i("sss", "保存的卡" + ls.get(i).getNum());
+//                                    }
+//                                }
                                 ///////////////////////
                                 sendDataBaseSize(mac, ls.size());
                             }
@@ -254,11 +254,11 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                 Log.i("sss","请求的服务器Y");
                                 String banzi = Build.MODEL;
                                 if (banzi.equals("3280")) {
-                                    Service3288.getInstance().openCardDoor(box,cardNo,accessModel);
+                                    Service3288.getInstance().openCardDoor(cardNo,accessModel);
                                 } else if (banzi.equals("SoftwinerEvb")) {
-                                    ServiceA20.getInstance().openCardDoor(box,cardNo,accessModel);
+                                    ServiceA20.getInstance().openCardDoor(cardNo,accessModel);
                                 } else {
-                                    Service836.getInstance().openCardDoor(box,cardNo,accessModel);
+                                    Service836.getInstance().openCardDoor(cardNo,accessModel);
                                 }
 
                                 CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
