@@ -22,11 +22,11 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
                  //  Log.i("sss", "当前移动网络连接可用 ");
                ToastManager.showShort(context, "网络连接可用！ ");
            } else {
-               Log.i("sss", "当前没有网络连接，请确保你已经打开网络 ");
+              // Log.i("sss", "当前没有网络连接，请确保你已经打开网络 ");
                ToastManager.showShort(context, "当前网络未连接！ ");
            }
         } else {
-             Log.i("sss", "当前没有网络连接，请确保你已经打开网络 ");
+           //  Log.i("sss", "当前没有网络连接，请确保你已经打开网络 ");
             ToastManager.showShort(context, "当前网络未连接");
         }
     }
