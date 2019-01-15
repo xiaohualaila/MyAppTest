@@ -46,6 +46,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.Observable;
 /**
