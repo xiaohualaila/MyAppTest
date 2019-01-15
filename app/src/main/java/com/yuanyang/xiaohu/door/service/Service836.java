@@ -367,4 +367,29 @@ public class Service836 extends android.app.Service {
         sendArr_[0] = (byte) (num == 1 ? 0x10 : num == 2 ? 0x20 : num == 3 ? 0x30 : num == 4 ? 0x40 : 0x50) ;//0x50全关
         return sendArr_;
     }
+
+
+//    //开门指令
+//    private byte[]  getArrOpenDoor(int num){
+//        /**四个继电器的*/
+//        byte[] sendArr = new byte[5];//打开继电器指令
+//        sendArr[0] = (byte) 0xFF;
+//        sendArr[1] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01); //0x25全开
+//        sendArr[2] = 0x01;
+//        sendArr[3] = (byte) (num == 1 ? 0x02 : num == 2 ? 0x03 : num == 3 ? 0x04 : num == 4 ? 0x05 : 0x02); //0x26全开
+//        sendArr[4] = (byte) 0xEE;
+//        return sendArr;
+//    }
+//
+//    //关门指令
+//    private byte[]  getArrCloseDoor(int num){
+//        /**四个继电器的*/
+//        final byte[] sendArr_ = new byte[5];//复位继电器指令
+//        sendArr_[0] = (byte) 0xFF;
+//        sendArr_[1] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
+//        sendArr_[2] = 0x00;
+//        sendArr_[3] = (byte) (num == 1 ? 0x01 : num == 2 ? 0x02 : num == 3 ? 0x03 : num == 4 ? 0x04 : 0x01);//0x25全关
+//        sendArr_[4] = (byte) 0xEE;
+//        return sendArr_;
+//    }
 }
