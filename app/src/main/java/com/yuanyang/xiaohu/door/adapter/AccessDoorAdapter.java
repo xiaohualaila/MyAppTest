@@ -14,11 +14,11 @@ import android.widget.TextView;
 
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.model.AccessModel;
+import com.yuanyang.xiaohu.door.util.SimpleRecAdapter;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
-import cn.com.library.base.SimpleRecAdapter;
-import cn.com.library.kit.KnifeKit;
 
 public class AccessDoorAdapter extends SimpleRecAdapter<AccessModel, AccessDoorAdapter.ViewHolder> {
 
@@ -153,7 +153,7 @@ public class AccessDoorAdapter extends SimpleRecAdapter<AccessModel, AccessDoorA
 
         public ViewHolder(View itemView) {
             super(itemView);
-            KnifeKit.bind(this, itemView);
+            ButterKnife.bind(this,itemView);
         }
     }
 

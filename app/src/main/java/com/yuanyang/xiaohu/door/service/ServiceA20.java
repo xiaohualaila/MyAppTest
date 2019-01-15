@@ -9,6 +9,7 @@ import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
+import com.yuanyang.xiaohu.door.event.BusProvider;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.CardModel;
 import com.yuanyang.xiaohu.door.model.CardNoModel;
@@ -25,10 +26,7 @@ import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import cn.com.library.encrpt.Base64Utils;
-import cn.com.library.encrpt.TDESUtils;
-import cn.com.library.event.BusProvider;
-import cn.com.library.log.XLog;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -323,7 +321,7 @@ public class ServiceA20 extends android.app.Service {
         Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
-                XLog.e("对继电器复位");
+               Log.i("sss","对继电器复位");
             }
 
             @Override

@@ -38,6 +38,7 @@ import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.Kits;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
+import com.yuanyang.xiaohu.door.util.SimpleRecAdapter;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.File;
 import java.util.List;

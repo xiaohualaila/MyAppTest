@@ -9,6 +9,7 @@ import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
+import com.yuanyang.xiaohu.door.event.BusProvider;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.CardModel;
 import com.yuanyang.xiaohu.door.model.CardNoModel;
