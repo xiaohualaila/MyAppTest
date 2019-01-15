@@ -9,6 +9,8 @@ import com.bjw.bean.ComBean;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.yuanyang.xiaohu.door.bean.CardBean;
+import com.yuanyang.xiaohu.door.encrpt.Base64Utils;
+import com.yuanyang.xiaohu.door.encrpt.TDESUtils;
 import com.yuanyang.xiaohu.door.event.BusProvider;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.CardModel;
@@ -360,7 +362,7 @@ public class ServiceA20 extends android.app.Service {
         Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
-                XLog.e("对继电器复位");
+              //  XLog.e("对继电器复位");
             }
 
             @Override
