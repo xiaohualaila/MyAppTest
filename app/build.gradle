@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 android {
 
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
-
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     defaultConfig {
 
         applicationId 'com.yuanyang.xiaohu.door'
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 2
+        versionName "2.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     repositories {
@@ -24,7 +24,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '28.0.3'
     compileOptions {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
@@ -48,11 +47,31 @@ greendao {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    annotationProcessor rootProject.ext.dependencies["butterknife-apt"]
-    implementation rootProject.ext.dependencies["avi-loading"]
-    implementation project(path: ':mvp')
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-annotations:28.0.0'
+
+    implementation 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
     implementation(name: 'serialport-1.0.1', ext: 'aar')
     implementation 'org.greenrobot:greendao:3.2.0'
     implementation files('libs/smdt.jar')
+
+
+    implementation 'com.wang.avi:library:1.0.2'
+    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.2.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.2'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.2'
+    implementation 'com.trello.rxlifecycle2:rxlifecycle:2.0.1'
+    implementation 'com.trello.rxlifecycle2:rxlifecycle-android:2.0.1'
+    implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.0.1'
 
 }

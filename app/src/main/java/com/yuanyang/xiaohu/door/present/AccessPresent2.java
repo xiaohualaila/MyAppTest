@@ -1,17 +1,21 @@
 package com.yuanyang.xiaohu.door.present;
 
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+
 import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
+import com.yuanyang.xiaohu.door.base.BasePresenter;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.bean.CardRecord;
 import com.yuanyang.xiaohu.door.bean.CodeRecord;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
-import com.yuanyang.xiaohu.door.net.BillboardApi;
-import com.yuanyang.xiaohu.door.net.UserInfoKey;
+import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
+import com.yuanyang.xiaohu.door.retrofitdemo.Request_Interface;
+import com.yuanyang.xiaohu.door.retrofitdemo.RetrofitManager;
 import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.ServiceA20;
@@ -23,47 +27,48 @@ import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 import java.util.ArrayList;
 import java.util.List;
-import cn.com.library.kit.ToastManager;
-import cn.com.library.log.XLog;
-import cn.com.library.mvp.XPresent;
-import cn.com.library.net.ApiSubscriber;
-import cn.com.library.net.NetError;
-import cn.com.library.net.XApi;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 
-public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
+public class AccessPresent2  extends BasePresenter implements AccessContract.Presenter {
 
+    private AccessContract.View view;
+
+    public AccessPresent2(AccessContract.View view) {
+        this.view = view;
+        this.view.setPresenter(this);
+    }
     /**
      * 上传门禁日志 --扫描
      */
-    public void uploadLog(String[] strings, String mac, AccessModel model) {
-//        if (NetStateUtil.isNetworkConnected(getV())) {
-//            Log.i("sss", "++++++++++++++++++++++++++++++");
-//        } else {
-//            Log.i("sss", "------------------------------");
-//        }
-        String directionDoor = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
-        BillboardApi.getDataService().uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
-                "", "", "", "", mac, "1")
-                .compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+    public void uploadLog(Context context, String[] strings, String mac, AccessModel model) {
+        String directionDoor = SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.uploadLog(strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
+                "", "", "","",mac,"1")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        ToastManager.showShort(getV(), "上传日志失败！");
-                        XLog.e("上传日志失败！");
-                        // saveCodeRecord(strings, directionDoor, model);
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("sss","上传日志失败！");
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            XLog.e("上传日志成功！");
-                            ToastManager.showShort(getV(), "上传日志成功！");
+                            Log.i("sss","上传日志成功！");
+
                         } else {
-                            ToastManager.showShort(getV(), model.getDescribe());
+                            Log.i("sss","上传日志失败！");
                         }
+
                     }
                 });
     }
@@ -71,30 +76,35 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
     /**
      * 上传门禁日志 --刷卡
      */
-    public void uploadCardLog(String cardNo, String mac, AccessModel model) {
-        String directionDoor = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
-        BillboardApi.getDataService().uploadLog("", "", "", "", "",
+    public void uploadCardLog(Context context,String cardNo, String mac, AccessModel model) {
+        String directionDoor = SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.uploadLog("", "", "", "", "",
                 directionDoor, model.getAccessible(),
                 "", "", "", cardNo, mac, "2")
-                .compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        ToastManager.showShort(getV(), "上传日志失败！");
-                        //  saveCard(cardNo, directionDoor, model);
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("sss","上传日志失败！");
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            ToastManager.showShort(getV(), "上传日志成功！");
+                            Log.i("sss","上传日志成功！");
+
                         } else {
-                            ToastManager.showShort(getV(), model.getDescribe());
+                            Log.i("sss","上传日志失败！");
                         }
+
                     }
                 });
+
     }
 
 
@@ -102,27 +112,31 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * 心跳
      */
     public void sendState(String mac, String ip) {
-        BillboardApi.getDataService().sendState(mac, ip)
-                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
 
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.sendState(mac, ip)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
+                    @Override
+                    public void onComplete() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError(e.getMessage() + " 发送心跳失败！");
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
                             MessageBodyBean bean = (MessageBodyBean) model.getMessageBody();
                             String s_ver = bean.getBuild();
-                            int v_no = APKVersionCodeUtils.getVersionCode(getV());
+                            int v_no = APKVersionCodeUtils.getVersionCode(AccessDoorActivity2.instance());
                             if (s_ver != null) {
                                 int a = Integer.parseInt(s_ver);
                                 if (a > v_no) {
                                     //更新app
-                                    getV().updateVersion(bean.getApkurl(), s_ver);
+                                    view.updateVersion(bean.getApkurl(), s_ver);
                                     return;
                                 }
                             }
@@ -194,37 +208,41 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                                 sendDataBaseSize(mac, ls.size());
                             }
                         } else {
-                            getV().showToast(model.getDescribe());
+                            view.showError(model.getDescribe());
                         }
                     }
-                });
 
+
+                });
     }
 
     /**
      * 发送重置后的数据
      */
     public void sendDataBaseSize(String mac, int size) {
-        BillboardApi.getDataService().sendDataBaseSize(mac, size)
-                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.sendDataBaseSize(mac, size)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError(e.getMessage());
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
 
                         } else {
-                            getV().showToast(model.getDescribe());
+                            view.showError(model.getDescribe());
                         }
+
                     }
                 });
-
     }
 
     /**
@@ -234,18 +252,21 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * @param box
      * @param accessModel
      */
-    public void queryServer(String mac, String cardNo,int box,AccessModel accessModel) {
-        String village_id = SharedPreferencesUtil.getString(getV(), UserInfoKey.OPEN_DOOR_VILLAGE_ID, "");
-        BillboardApi.getDataService().queryCard(mac,village_id, cardNo)
-                .compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+    public void queryServer(Context context,String mac, String cardNo,int box,AccessModel accessModel) {
+        String village_id = SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_VILLAGE_ID, "");
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.queryCard(mac,village_id, cardNo)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        ToastManager.showShort(getV(), "从服务器查询卡号失败！");
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError(e.getMessage());
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
@@ -272,6 +293,7 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
                             SoundPoolUtil.play(4);
                             Log.i("sss",model.getDescribe());
                         }
+
                     }
                 });
     }
@@ -284,20 +306,24 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
      * @param objects
      */
     private void sendFindResult(String mac, String cards, String objects) {
-        BillboardApi.getDataService().sendfindResult(mac, cards, objects)
-                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.sendfindResult(mac, cards, objects)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError(e.getMessage());
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
                         }
+
                     }
                 });
 
@@ -330,5 +356,8 @@ public class AccessPresent2 extends XPresent<AccessDoorActivity2> {
     }
 
 
+    @Override
+    public void start() {
 
+    }
 }

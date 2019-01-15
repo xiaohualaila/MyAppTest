@@ -47,12 +47,6 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".broadcastReceiver.NetWorkStateReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.yuanyang.xiaohu.door.fileprovider"

@@ -1,6 +1,7 @@
 package com.yuanyang.xiaohu.door.model;
 
-import cn.com.library.event.IBus;
+
+import com.yuanyang.xiaohu.door.event.IBus;
 
 public class UploadModel implements IBus.IEvent{
 

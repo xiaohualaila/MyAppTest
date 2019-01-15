@@ -8,7 +8,7 @@ import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.DoorModel;
 import com.yuanyang.xiaohu.door.net.BillboardApi;
-import com.yuanyang.xiaohu.door.net.UserInfoKey;
+import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import java.util.ArrayList;

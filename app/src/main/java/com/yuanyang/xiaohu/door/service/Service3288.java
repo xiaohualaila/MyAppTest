@@ -14,7 +14,7 @@ import com.yuanyang.xiaohu.door.model.CardModel;
 import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
-import com.yuanyang.xiaohu.door.net.UserInfoKey;
+import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.ChangeTool;
 import com.yuanyang.xiaohu.door.util.Constants;
