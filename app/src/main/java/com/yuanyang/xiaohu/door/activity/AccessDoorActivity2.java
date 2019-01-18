@@ -94,6 +94,8 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         SoundPoolUtil.play(1);
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        mac = smdt.smdtGetEthMacAddress();
+        ip = smdt.smdtGetEthIPAddress();
         heartinterval();
         getBus();
         startService();
@@ -147,8 +149,6 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
          Observable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
-                    mac = smdt.smdtGetEthMacAddress();
-                    ip = smdt.smdtGetEthIPAddress();
                     if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ip)){
                         Toast.makeText(this,"Mac地址或IP地址不能为空，请检查网络！",Toast.LENGTH_LONG).show();
                         return;

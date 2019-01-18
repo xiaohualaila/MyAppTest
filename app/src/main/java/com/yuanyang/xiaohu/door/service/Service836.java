@@ -1,5 +1,6 @@
 package com.yuanyang.xiaohu.door.service;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -74,6 +75,12 @@ public class Service836 extends android.app.Service {
         super.onCreate();
         instance =this;
         init();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("TAG","Services onStartCommand");
+       return START_REDELIVER_INTENT;
     }
 
     /**

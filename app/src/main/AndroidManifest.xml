@@ -30,13 +30,16 @@
              android:windowSoftInputMode="stateHidden"
              android:screenOrientation="landscape">
         </activity>
-        <activity android:name=".activity.AccessDoorActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="landscape">
-        </activity>
-        <service android:name=".service.Service836"/>
-        <service android:name=".service.Service3288"/>
-        <service android:name=".service.ServiceA20"/>
+        <!--<activity android:name=".activity.AccessDoorActivity"-->
+            <!--android:windowSoftInputMode="stateHidden"-->
+            <!--android:screenOrientation="landscape">-->
+        <!--</activity>-->
+        <service android:name=".service.Service836"
+                android:priority="1000"/>
+        <service android:name=".service.Service3288"
+                 android:priority="1000"/>
+        <service android:name=".service.ServiceA20"
+                 android:priority="1000"/>
         <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
