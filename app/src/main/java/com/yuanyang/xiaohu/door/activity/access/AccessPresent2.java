@@ -1,11 +1,10 @@
-package com.yuanyang.xiaohu.door.present;
+package com.yuanyang.xiaohu.door.activity.access;
 
 
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import com.yuanyang.xiaohu.door.activity.AccessDoorActivity2;
 import com.yuanyang.xiaohu.door.base.BasePresenter;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.bean.CardRecord;

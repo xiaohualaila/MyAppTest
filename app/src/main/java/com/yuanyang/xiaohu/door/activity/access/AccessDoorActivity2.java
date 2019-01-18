@@ -1,4 +1,4 @@
-package com.yuanyang.xiaohu.door.activity;
+package com.yuanyang.xiaohu.door.activity.access;
 
 import android.app.smdt.SmdtManager;
 import android.content.Intent;
@@ -28,8 +28,6 @@ import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
-import com.yuanyang.xiaohu.door.present.AccessContract;
-import com.yuanyang.xiaohu.door.present.AccessPresent2;
 import com.yuanyang.xiaohu.door.service.Service3288;
 import com.yuanyang.xiaohu.door.service.Service836;
 import com.yuanyang.xiaohu.door.service.ServiceA20;
