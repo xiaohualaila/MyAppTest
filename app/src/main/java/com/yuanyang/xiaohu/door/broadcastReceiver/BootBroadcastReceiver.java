@@ -3,8 +3,9 @@ package com.yuanyang.xiaohu.door.broadcastReceiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
+
 import com.yuanyang.xiaohu.door.activity.start.StartActivity;
-import cn.com.library.kit.ToastManager;
 
 
 /**
@@ -21,6 +22,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(in);
         }
-        ToastManager.showShort(context, "开机启动成功");
+        Toast.makeText(context,"开机启动成功",Toast.LENGTH_LONG).show();
     }
 }
