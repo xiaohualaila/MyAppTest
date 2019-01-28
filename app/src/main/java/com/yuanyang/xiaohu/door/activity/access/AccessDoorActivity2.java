@@ -80,6 +80,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
     AccessDoorAdapter adapter;
     private Handler handler = new Handler();
     private static AccessDoorActivity2 instance;
+    private int time = 10;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,10 +95,11 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac = smdt.smdtGetEthMacAddress();
         ip = smdt.smdtGetEthIPAddress();
-        heartinterval();
+
         getBus();
         startService();
         initViewData();
+        heartinterval();
         new Timer().schedule(timerTask, 0, 5000);
         instance = this;
     }
@@ -143,7 +145,6 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
      * 发送心跳数据
      */
     private void heartinterval() {
-        int time =  SharedPreferencesUtil.getInt(this, UserInfoKey.HEARTINTERVAL, 10);
          Observable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
@@ -215,6 +216,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
 
 
     public void initViewData() {
+        time =  SharedPreferencesUtil.getInt(this, UserInfoKey.HEARTINTERVAL, 10);
         if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(this, UserInfoKey.VILLAGE_NAME, "")))
             village_name.setText(SharedPreferencesUtil.getString(this, UserInfoKey.VILLAGE_NAME, ""));
         else
