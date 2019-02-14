@@ -12,7 +12,7 @@ public class StartContract {
     }
 
     interface Presenter extends IBasePresenter {
-        void initDate(String mac,String banzi,Context context);
+        void initDate(String mac,Context context);
 
     }
 }

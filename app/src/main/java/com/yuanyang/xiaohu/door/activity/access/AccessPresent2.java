@@ -15,9 +15,7 @@ import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
 import com.yuanyang.xiaohu.door.retrofitdemo.Request_Interface;
 import com.yuanyang.xiaohu.door.retrofitdemo.RetrofitManager;
-import com.yuanyang.xiaohu.door.service.Service3288;
-import com.yuanyang.xiaohu.door.service.Service836;
-import com.yuanyang.xiaohu.door.service.ServiceA20;
+import com.yuanyang.xiaohu.door.service.Service;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
@@ -272,15 +270,7 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                             String save = (String) model.getMessageBody();
                             if(save.equals("Y")){
                                 Log.i("sss","请求的服务器Y");
-                                String banzi = Build.MODEL;
-                                if (banzi.equals("3280")) {
-                                    Service3288.getInstance().openCardDoor(cardNo,accessModel);
-                                } else if (banzi.equals("SoftwinerEvb")) {
-                                    ServiceA20.getInstance().openCardDoor(cardNo,accessModel);
-                                } else {
-                                    Service836.getInstance().openCardDoor(cardNo,accessModel);
-                                }
-
+                                Service.getInstance().openCardDoor(cardNo,accessModel);
                                 CardBeanDao cardDao = GreenDaoManager.getInstance().getSession().getCardBeanDao();
                                 CardBean cardBean = new CardBean(null,cardNo);
                                 cardDao.insert(cardBean);

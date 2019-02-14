@@ -1,6 +1,5 @@
 package com.yuanyang.xiaohu.door.activity.access;
 
-import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -11,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,20 +28,17 @@ import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
-import com.yuanyang.xiaohu.door.service.Service3288;
-import com.yuanyang.xiaohu.door.service.Service836;
-import com.yuanyang.xiaohu.door.service.ServiceA20;
+import com.yuanyang.xiaohu.door.service.Service;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.AppDownload;
 import com.yuanyang.xiaohu.door.util.Kits;
+import com.yuanyang.xiaohu.door.util.NetUtil;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
 import com.yuanyang.xiaohu.door.util.GsonProvider;
 import com.yuanyang.xiaohu.door.util.SimpleRecAdapter;
 import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import java.io.File;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,7 +68,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
     TextView tipContent;
     @BindView(R.id.tv_ver)
     TextView tv_ver;
-    private SmdtManager smdt;
+
     private String mac = "";
     private String ip = "";
     public DownloadAPKDialog dialog_app;
@@ -91,16 +88,16 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         initAdapter();
         setAppendContent("门禁终端启动\n");
         SoundPoolUtil.play(1);
-        smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        mac = smdt.smdtGetEthMacAddress();
-        ip = smdt.smdtGetEthIPAddress();
+        mac = NetUtil.smdtGetEthMacAddress();
+        mac="1C:CA:E3:35:8B:98";
+        ip = NetUtil.smdtGetEthIPAddress();
 
+        Log.i("sss","mac "+ mac);
+        Log.i("sss","ip "+ ip);
         getBus();
         startService();
         initViewData();
         heartinterval();
-        new Timer().schedule(timerTask, 0, 5000);
         instance = this;
     }
 
@@ -128,17 +125,8 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
      * 根据不同的板子开启不同的Service
      */
     private void startService() {
-        String banzi = Build.MODEL;
-        if (banzi.equals("3280")) {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    Service3288.class)), 10000);
-        } else if (banzi.equals("SoftwinerEvb")) {
-            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    ServiceA20.class)), 10000);
-        } else {
-            handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
-                    Service836.class)), 5000);
-        }
+                    Service.class)), 5000);
     }
 
     /**
@@ -156,12 +144,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
                 });
     }
 
-    TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            smdt.smdtWatchDogFeed();//喂狗
-        }
-    };
+
 
     /**
      * 设置title
@@ -268,20 +251,12 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
      */
     public void onDestroy() {
         super.onDestroy();
-        smdt.smdtWatchDogEnable((char) 0);
         stopService();
 
     }
 
     private void stopService() {
-        String model = Build.MODEL;
-        if (model.equals("3280")) {
-            stopService(new Intent(this, Service3288.class));
-        } else if (model.equals("SoftwinerEvb")) {
-            stopService(new Intent(this, ServiceA20.class));
-        } else {
-            stopService(new Intent(this, Service836.class));
-        }
+            stopService(new Intent(this, Service.class));
     }
 
 

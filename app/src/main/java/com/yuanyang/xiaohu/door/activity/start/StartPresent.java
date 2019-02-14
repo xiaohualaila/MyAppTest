@@ -26,7 +26,7 @@ public class StartPresent extends BasePresenter implements StartContract.Present
         this.view.setPresenter(this);
     }
 
-    public  void initDate(String mac, String banzi, Context context) {
+    public  void initDate(String mac, Context context) {
         Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
         request.initData(mac)
                 .subscribeOn(Schedulers.io())
@@ -59,20 +59,21 @@ public class StartPresent extends BasePresenter implements StartContract.Present
                             model2.setAccessible("出");
                             list.add(model);
                             list.add(model2);
-                            if(banzi.equals("3280")||banzi.equals("SoftwinerEvb")){
-                                AccessModel model3 = new AccessModel();
-                                model3.setErCode(3);
-                                model3.setRelay(3);
-                                model3.setDoorNum("3");
-                                model3.setAccessible("进");
-                                AccessModel model4 = new AccessModel();
-                                model4.setErCode(4);
-                                model4.setRelay(4);
-                                model4.setDoorNum("4");
-                                model4.setAccessible("出");
-                                list.add(model3);
-                                list.add(model4);
-                            }
+
+
+                            AccessModel model3 = new AccessModel();
+                            model3.setErCode(3);
+                            model3.setRelay(3);
+                            model3.setDoorNum("3");
+                            model3.setAccessible("进");
+                            AccessModel model4 = new AccessModel();
+                            model4.setErCode(4);
+                            model4.setRelay(4);
+                            model4.setDoorNum("4");
+                            model4.setAccessible("出");
+                            list.add(model3);
+                            list.add(model4);
+
 
                             SharedPreferencesUtil.putInt(context, UserInfoKey.OPEN_DOOR_NUM, list.size());
                             SharedPreferencesUtil.putString(context, UserInfoKey.VILLAGE_NAME,doorModel.getCommname());

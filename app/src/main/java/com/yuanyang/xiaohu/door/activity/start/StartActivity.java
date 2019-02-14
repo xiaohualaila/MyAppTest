@@ -1,8 +1,6 @@
 package com.yuanyang.xiaohu.door.activity.start;
 
-import android.app.smdt.SmdtManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -10,14 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 import com.yuanyang.xiaohu.door.R;
 import com.yuanyang.xiaohu.door.activity.access.AccessDoorActivity2;
+import com.yuanyang.xiaohu.door.util.NetUtil;
+
 import butterknife.ButterKnife;
 
 
 public class StartActivity  extends AppCompatActivity implements StartContract.View {
     private StartContract.Presenter presenter;
     private Handler handler = new Handler();
-    private SmdtManager smdt;
-    private String mac = "";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,12 +24,12 @@ public class StartActivity  extends AppCompatActivity implements StartContract.V
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         new StartPresent(this);
-        smdt = SmdtManager.create(this);
-        mac = smdt.smdtGetEthMacAddress();
-        String banzi = Build.MODEL;
-        String ip = smdt.smdtGetEthIPAddress();
+
+        String mac = NetUtil.smdtGetEthMacAddress();
+        mac="1C:CA:E3:35:8B:98";
+        String ip = NetUtil.smdtGetEthIPAddress();
         if(mac != null && ip != null){
-            presenter.initDate(mac,banzi,this);
+            presenter.initDate(mac,this);
         }else {
             showError("网络异常,请检查网络！");
             toAccessDoorAct();
