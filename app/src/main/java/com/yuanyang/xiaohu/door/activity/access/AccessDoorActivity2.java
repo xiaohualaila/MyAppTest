@@ -46,7 +46,7 @@ import cn.droidlover.xrecyclerview.XRecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.Observable;
 /**
- * 当前版本小区编号等信息从服务端设置通过MAC地址获取配置参数，采用自己写的MVP
+ * 当前版本为Orange Pi Zero 开发版上的门禁程序
  */
 public class AccessDoorActivity2 extends AppCompatActivity implements AppDownload.Callback,AccessContract.View {
     private AccessContract.Presenter presenter;
