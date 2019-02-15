@@ -3,8 +3,10 @@ package com.yuanyang.xiaohu.door.model;
 public class AccessModel {
 
     private int erCode; // 扫码盒号码
+    private int relay;
+    private String relayOpen;
 
-    private int relay; // 第几个继电器
+    private String relayClose;
 
     private String doorNum; // 第几个门
 
@@ -24,6 +26,22 @@ public class AccessModel {
 
     public void setRelay(int relay) {
         this.relay = relay;
+    }
+
+    public String getRelayOpen() {
+        return relayOpen;
+    }
+
+    public void setRelayOpen(String relayOpen) {
+        this.relayOpen = relayOpen;
+    }
+
+    public String getRelayClose() {
+        return relayClose;
+    }
+
+    public void setRelayClose(String relayClose) {
+        this.relayClose = relayClose;
     }
 
     public String getDoorNum() {

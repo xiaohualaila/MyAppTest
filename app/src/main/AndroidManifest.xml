@@ -21,19 +21,22 @@
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="landscape">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".activity.access.AccessDoorActivity2"
              android:windowSoftInputMode="stateHidden"
              android:screenOrientation="landscape">
         </activity>
-        <!--<activity android:name=".activity.AccessDoorActivity"-->
-            <!--android:windowSoftInputMode="stateHidden"-->
-            <!--android:screenOrientation="landscape">-->
-        <!--</activity>-->
+        <activity android:name=".activity.access.MainActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="landscape">
+
+
+
+        </activity>
         <service android:name=".service.Service"
                 android:priority="1000"/>
         <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"

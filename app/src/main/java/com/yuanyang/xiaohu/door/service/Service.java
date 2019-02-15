@@ -34,7 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 /**
- * 836板子的
+ * orangePiZero
  */
 public class Service extends android.app.Service {
 
@@ -100,6 +100,7 @@ public class Service extends android.app.Service {
 
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer ) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
+        Log.i("xxx",">>>>>>>>"+ str );
         String str1 = str;
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
@@ -118,7 +119,6 @@ public class Service extends android.app.Service {
                 Log.i("sss","读卡>>>>>>>>"+ content);
                 int box = Integer.parseInt(content.substring(content.length()-2, content.length()-1));
                 String code = content1.substring(1, content1.length()-2);
-
                 if(code.length() > 13){//长度小于等于13位判断是刷卡否则是刷二维码
                     if (!code.equals(openDoorLastData)) {
                         openDoorLastData = code;
@@ -241,13 +241,14 @@ public class Service extends android.app.Service {
     private void openDoor(final String[] strings, final AccessModel model) {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(model.getRelay()));
+//            serialHelper.sendHex(model.getRelayOpen());
             Log.i("sss","门已打开！");
         } else {
             BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
             return;
         }
 
-        Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.timer(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
                 //XLog.e("对继电器复位");
@@ -257,6 +258,7 @@ public class Service extends android.app.Service {
             public void onNext(Long value) {
                 if (serialHelper.isOpen()) {
                     serialHelper.send(getArrCloseDoor(model.getRelay()));
+          //          serialHelper.sendHex(model.getRelayClose());
                 } else {
                     BusProvider.getBus().post(new EventModel("串口都没打开"));
                 }
@@ -282,12 +284,12 @@ public class Service extends android.app.Service {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(model.getRelay()));
         } else {
-//            Log.i("sss","门禁串口都没打开");
+            Log.i("sss","门禁串口都没打开");
             BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
             return;
         }
 
-        Observable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.timer(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
                 //XLog.e("对继电器复位");

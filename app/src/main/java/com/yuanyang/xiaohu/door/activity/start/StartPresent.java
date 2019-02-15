@@ -49,12 +49,16 @@ public class StartPresent extends BasePresenter implements StartContract.Present
                             List<AccessModel> list = new ArrayList<>();
                             AccessModel model = new AccessModel();
                             model.setErCode(1);//扫码盒
-                            model.setRelay(1);//设置继电器
+                            model.setRelay(1);
+                            model.setRelayOpen("11");
+                            model.setRelayClose("10");
                             model.setDoorNum("1");//设置门
                             model.setAccessible("进");
                             AccessModel model2 = new AccessModel();
                             model2.setErCode(2);
                             model2.setRelay(2);
+                            model2.setRelayOpen("21");
+                            model2.setRelayClose("20");
                             model2.setDoorNum("2");
                             model2.setAccessible("出");
                             list.add(model);
@@ -64,11 +68,15 @@ public class StartPresent extends BasePresenter implements StartContract.Present
                             AccessModel model3 = new AccessModel();
                             model3.setErCode(3);
                             model3.setRelay(3);
+                            model3.setRelayOpen("31");
+                            model3.setRelayClose("30");
                             model3.setDoorNum("3");
                             model3.setAccessible("进");
                             AccessModel model4 = new AccessModel();
                             model4.setErCode(4);
                             model4.setRelay(4);
+                            model4.setRelayOpen("41");
+                            model4.setRelayClose("40");
                             model4.setDoorNum("4");
                             model4.setAccessible("出");
                             list.add(model3);
