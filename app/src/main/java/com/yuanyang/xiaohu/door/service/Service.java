@@ -101,7 +101,6 @@ public class Service extends android.app.Service {
     private void dealMsg(ComBean comBean, StringBuffer stringBuffer ) {
         String str = ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
         String str1 = str;
-
         if (str.contains("&")) {
             stringBuffer.delete(0, stringBuffer.length());
             if(str.contains("&")&& str.contains("#")){
@@ -120,7 +119,7 @@ public class Service extends android.app.Service {
                 int box = Integer.parseInt(content.substring(content.length()-2, content.length()-1));
                 String code = content1.substring(1, content1.length()-2);
 
-                if(code.length() > 13){//小于等于13判断为卡，大于判断是二维码
+                if(code.length() > 13){//长度小于等于13位判断是刷卡否则是刷二维码
                     if (!code.equals(openDoorLastData)) {
                         openDoorLastData = code;
                         decryptData(code,box);//解密
