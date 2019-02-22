@@ -248,7 +248,7 @@ public class Service extends android.app.Service {
             return;
         }
 
-        Observable.timer(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.timer(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
                 //XLog.e("对继电器复位");
