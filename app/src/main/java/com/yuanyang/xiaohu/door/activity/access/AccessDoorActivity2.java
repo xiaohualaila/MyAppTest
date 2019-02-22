@@ -95,9 +95,8 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac = smdt.smdtGetEthMacAddress();
         ip = smdt.smdtGetEthIPAddress();
-
         getBus();
-        startService();
+      //  startService();
         initViewData();
         heartinterval();
         new Timer().schedule(timerTask, 0, 5000);
@@ -269,7 +268,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
     public void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);
-        stopService();
+   //     stopService();
 
     }
 
