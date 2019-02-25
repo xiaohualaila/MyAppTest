@@ -25,5 +25,7 @@ public interface AccessContract {
         void queryServer(Context context,String mac, String cardNo,int box,AccessModel accessModel);
 
         void sendState(String mac, String ip);
+
+        void uploadRecordLog();
     }
 }

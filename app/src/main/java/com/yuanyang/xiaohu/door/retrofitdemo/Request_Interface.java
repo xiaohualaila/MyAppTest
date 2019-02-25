@@ -4,6 +4,8 @@ import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.DoorModel;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -90,5 +92,13 @@ public interface Request_Interface {
     Observable<BaseBean<MessageBodyBean>> sendfindResult(@Query("devicemac") String mac,
                                                        @Query("cardnos") String cardnos,
                                                        @Query("results") String results);
+
+    /**
+     * 上传因断网没有上传的开门记录数据
+     * @param record
+     * @return
+     */
+    @POST("")
+    Observable<BaseBean<MessageBodyBean>> sendRecordLog(@Body RequestBody record);
 }
 

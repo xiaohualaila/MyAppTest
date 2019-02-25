@@ -26,6 +26,7 @@ import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.CardModel;
 import com.yuanyang.xiaohu.door.model.CardNoModel;
 import com.yuanyang.xiaohu.door.model.EventModel;
+import com.yuanyang.xiaohu.door.model.NetStateModel;
 import com.yuanyang.xiaohu.door.model.UploadModel;
 import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
 import com.yuanyang.xiaohu.door.service.Service3288;
@@ -120,6 +121,10 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         //查询卡号
         BusProvider.getBus().toFlowable(CardNoModel.class).subscribe(
                 cardModel -> presenter.queryServer(this, mac,cardModel.value,cardModel.scanBox,cardModel.accessModel)
+        );
+
+        BusProvider.getBus().toFlowable(NetStateModel.class).subscribe(
+                cardModel -> presenter.uploadRecordLog()
         );
     }
 

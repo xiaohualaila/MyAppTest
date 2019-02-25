@@ -24,6 +24,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CardBeanDao.createTable(db, ifNotExists);
         CardRecordDao.createTable(db, ifNotExists);
         CodeRecordDao.createTable(db, ifNotExists);
+        RecordLogModelDao.createTable(db, ifNotExists);
         SharepreferenceBeanDao.createTable(db, ifNotExists);
     }
 
@@ -32,6 +33,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CardBeanDao.dropTable(db, ifExists);
         CardRecordDao.dropTable(db, ifExists);
         CodeRecordDao.dropTable(db, ifExists);
+        RecordLogModelDao.dropTable(db, ifExists);
         SharepreferenceBeanDao.dropTable(db, ifExists);
     }
 
@@ -54,6 +56,7 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(CardBeanDao.class);
         registerDaoClass(CardRecordDao.class);
         registerDaoClass(CodeRecordDao.class);
+        registerDaoClass(RecordLogModelDao.class);
         registerDaoClass(SharepreferenceBeanDao.class);
     }
 

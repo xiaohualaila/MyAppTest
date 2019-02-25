@@ -5,10 +5,12 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.yuanyang.xiaohu.door.base.BasePresenter;
 import com.yuanyang.xiaohu.door.bean.CardBean;
 import com.yuanyang.xiaohu.door.bean.CardRecord;
 import com.yuanyang.xiaohu.door.bean.CodeRecord;
+import com.yuanyang.xiaohu.door.bean.RecordLogModel;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
@@ -24,12 +26,21 @@ import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
+import com.yuanyang.xiaohu.greendaodemo.greendao.gen.RecordLogModelDao;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 
 public class AccessPresent2  extends BasePresenter implements AccessContract.Presenter {
@@ -58,6 +69,13 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                     @Override
                     public void onError(Throwable e) {
                         Log.i("sss","上传日志失败！");
+                        Date currentTime = new Date();
+                        SimpleDateFormat formatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss");
+                        String dateString = formatter.format(currentTime);
+                        RecordLogModel recordLogModel = new RecordLogModel(null,strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
+                                "", "", "","",mac,"1",dateString);
+                        RecordLogModelDao dao = GreenDaoManager.getInstance().getSession().getRecordLogModelDao();
+                        dao.insert(recordLogModel);
                     }
                     @Override
                     public void onNext(BaseBean model) {
@@ -79,8 +97,7 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
         String directionDoor = SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
         Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
         request.uploadLog("", "", "", "", "",
-                directionDoor, model.getAccessible(),
-                "", "", "", cardNo, mac, "2")
+                directionDoor, model.getAccessible(), "", "", "", cardNo, mac, "2")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableObserver<BaseBean>() {
@@ -91,6 +108,13 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                     @Override
                     public void onError(Throwable e) {
                         Log.i("sss","上传日志失败！");
+                        Date currentTime = new Date();
+                        SimpleDateFormat formatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss");
+                        String dateString = formatter.format(currentTime);
+                        RecordLogModel recordLogModel = new RecordLogModel(null,"", "", "", "", "",
+                                directionDoor, model.getAccessible(), "", "", "", cardNo, mac, "2",dateString);
+                        RecordLogModelDao dao = GreenDaoManager.getInstance().getSession().getRecordLogModelDao();
+                        dao.insert(recordLogModel);
                     }
                     @Override
                     public void onNext(BaseBean model) {
@@ -211,6 +235,39 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                     }
 
 
+                });
+    }
+
+    @Override
+    public void uploadRecordLog() {
+        List<RecordLogModel> ls = GreenDaoManager.getInstance().getSession().getRecordLogModelDao().queryBuilder().list();
+        if (ls.size()== 0) {
+            return;
+        }
+        Gson gsons = new Gson();
+        String postInfoStr = gsons.toJson(ls);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),postInfoStr);
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.sendRecordLog(body)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
+                    @Override
+                    public void onComplete() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError(e.getMessage());
+                    }
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                           GreenDaoManager.getInstance().getSession().getRecordLogModelDao().deleteAll();//上传成功删除数据库所有数据
+                        } else {
+                            view.showError(model.getDescribe());
+                        }
+                    }
                 });
     }
 

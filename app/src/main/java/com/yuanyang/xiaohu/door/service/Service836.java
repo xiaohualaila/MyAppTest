@@ -1,6 +1,5 @@
 package com.yuanyang.xiaohu.door.service;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;

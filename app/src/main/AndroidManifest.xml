@@ -50,6 +50,12 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".broadcastReceiver.ConnectReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.yuanyang.xiaohu.door.fileprovider"
@@ -59,6 +65,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+
     </application>
 
 </manifest>
