@@ -375,6 +375,7 @@ public class Service836 extends android.app.Service {
         return sendArr_;
     }
 
+//***如果没有转接板子用一下方法开门
 
 //    //开门指令
 //    private byte[]  getArrOpenDoor(int num){

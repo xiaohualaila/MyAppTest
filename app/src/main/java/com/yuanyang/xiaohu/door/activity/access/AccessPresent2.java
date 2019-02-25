@@ -41,7 +41,7 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
         this.view.setPresenter(this);
     }
     /**
-     * 上传门禁日志 --扫描
+     * 上传门禁日志 --扫描二维码开门
      */
     public void uploadLog(Context context, String[] strings, String mac, AccessModel model) {
         String directionDoor = SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
@@ -73,7 +73,7 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
     }
 
     /**
-     * 上传门禁日志 --刷卡
+     * 上传门禁日志 --刷卡开门
      */
     public void uploadCardLog(Context context,String cardNo, String mac, AccessModel model) {
         String directionDoor = SharedPreferencesUtil.getString(context, UserInfoKey.OPEN_DOOR_DIRECTION_ID, "");
@@ -103,7 +103,6 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
 
                     }
                 });
-
     }
 
 
