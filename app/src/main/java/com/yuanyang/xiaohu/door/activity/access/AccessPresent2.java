@@ -4,7 +4,6 @@ package com.yuanyang.xiaohu.door.activity.access;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-
 import com.google.gson.Gson;
 import com.yuanyang.xiaohu.door.base.BasePresenter;
 import com.yuanyang.xiaohu.door.bean.CardBean;
@@ -27,15 +26,10 @@ import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.RecordLogModelDao;
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
