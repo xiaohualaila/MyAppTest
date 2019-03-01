@@ -28,15 +28,12 @@
         </activity>
         <activity android:name=".activity.access.AccessDoorActivity2"
              android:windowSoftInputMode="stateHidden"
-             android:screenOrientation="landscape">
-        </activity>
+             android:screenOrientation="landscape"/>
+
         <activity android:name=".activity.access.MainActivity"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"/>
 
-
-
-        </activity>
         <service android:name=".service.Service"
                 android:priority="1000"/>
         <receiver android:name=".broadcastReceiver.BootBroadcastReceiver"
