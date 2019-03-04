@@ -241,7 +241,6 @@ public class Service extends android.app.Service {
     private void openDoor(final String[] strings, final AccessModel model) {
         if (serialHelper.isOpen()) {
             serialHelper.send(getArrOpenDoor(model.getRelay()));
-//            serialHelper.sendHex(model.getRelayOpen());
             Log.i("sss","门已打开！");
         } else {
             BusProvider.getBus().post(new EventModel("门禁串口都没打开"));
@@ -258,7 +257,6 @@ public class Service extends android.app.Service {
             public void onNext(Long value) {
                 if (serialHelper.isOpen()) {
                     serialHelper.send(getArrCloseDoor(model.getRelay()));
-          //          serialHelper.sendHex(model.getRelayClose());
                 } else {
                     BusProvider.getBus().post(new EventModel("串口都没打开"));
                 }
