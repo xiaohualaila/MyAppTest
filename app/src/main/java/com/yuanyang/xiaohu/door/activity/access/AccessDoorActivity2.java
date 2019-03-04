@@ -122,7 +122,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         BusProvider.getBus().toFlowable(CardNoModel.class).subscribe(
                 cardModel -> presenter.queryServer(this, mac,cardModel.value,cardModel.scanBox,cardModel.accessModel)
         );
-
+        //网络正常查询未上传的开门记录并上传到服务器
         BusProvider.getBus().toFlowable(NetStateModel.class).subscribe(
                 cardModel -> presenter.uploadRecordLog()
         );

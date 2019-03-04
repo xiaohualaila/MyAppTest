@@ -63,13 +63,13 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                     @Override
                     public void onError(Throwable e) {
                         Log.i("sss","上传日志失败！");
-                        Date currentTime = new Date();
-                        SimpleDateFormat formatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss");
-                        String dateString = formatter.format(currentTime);
-                        RecordLogModel recordLogModel = new RecordLogModel(null,strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
-                                "", "", "","",mac,"1",dateString);
-                        RecordLogModelDao dao = GreenDaoManager.getInstance().getSession().getRecordLogModelDao();
-                        dao.insert(recordLogModel);
+//                        Date currentTime = new Date();
+//                        SimpleDateFormat formatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss");
+//                        String dateString = formatter.format(currentTime);
+//                        RecordLogModel recordLogModel = new RecordLogModel(null,strings[4], strings[5], strings[1], strings[2], strings[3], directionDoor, model.getAccessible(),
+//                                "", "", "","",mac,"1",dateString);
+//                        RecordLogModelDao dao = GreenDaoManager.getInstance().getSession().getRecordLogModelDao();
+//                        dao.insert(recordLogModel);
                     }
                     @Override
                     public void onNext(BaseBean model) {
@@ -102,13 +102,13 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                     @Override
                     public void onError(Throwable e) {
                         Log.i("sss","上传日志失败！");
-                        Date currentTime = new Date();
-                        SimpleDateFormat formatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss");
-                        String dateString = formatter.format(currentTime);
-                        RecordLogModel recordLogModel = new RecordLogModel(null,"", "", "", "", "",
-                                directionDoor, model.getAccessible(), "", "", "", cardNo, mac, "2",dateString);
-                        RecordLogModelDao dao = GreenDaoManager.getInstance().getSession().getRecordLogModelDao();
-                        dao.insert(recordLogModel);
+//                        Date currentTime = new Date();
+//                        SimpleDateFormat formatter = new SimpleDateFormat("yy:MM:dd HH:mm:ss");
+//                        String dateString = formatter.format(currentTime);
+//                        RecordLogModel recordLogModel = new RecordLogModel(null,"", "", "", "", "",
+//                                directionDoor, model.getAccessible(), "", "", "", cardNo, mac, "2",dateString);
+//                        RecordLogModelDao dao = GreenDaoManager.getInstance().getSession().getRecordLogModelDao();
+//                        dao.insert(recordLogModel);
                     }
                     @Override
                     public void onNext(BaseBean model) {
