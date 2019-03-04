@@ -26,6 +26,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CodeRecordDao.createTable(db, ifNotExists);
         RecordLogModelDao.createTable(db, ifNotExists);
         SharepreferenceBeanDao.createTable(db, ifNotExists);
+        TestBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -35,6 +36,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CodeRecordDao.dropTable(db, ifExists);
         RecordLogModelDao.dropTable(db, ifExists);
         SharepreferenceBeanDao.dropTable(db, ifExists);
+        TestBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -58,6 +60,7 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(CodeRecordDao.class);
         registerDaoClass(RecordLogModelDao.class);
         registerDaoClass(SharepreferenceBeanDao.class);
+        registerDaoClass(TestBeanDao.class);
     }
 
     public DaoSession newSession() {
