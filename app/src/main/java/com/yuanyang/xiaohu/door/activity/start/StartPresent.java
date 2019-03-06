@@ -47,17 +47,19 @@ public class StartPresent extends BasePresenter implements StartContract.Present
                         if(bean.isSuccess()){
                             DoorModel doorModel= (DoorModel) bean.getMessageBody();
                             List<AccessModel> list = new ArrayList<>();
+
                             AccessModel model = new AccessModel();
                             model.setErCode(1);//扫码盒
                             model.setRelay(1);
                             model.setDoorNum("1");//设置门
                             model.setAccessible("进");
+                            list.add(model);
+
                             AccessModel model2 = new AccessModel();
                             model2.setErCode(2);
                             model2.setRelay(2);
                             model2.setDoorNum("2");
                             model2.setAccessible("出");
-                            list.add(model);
                             list.add(model2);
 
 
@@ -66,12 +68,13 @@ public class StartPresent extends BasePresenter implements StartContract.Present
                             model3.setRelay(3);
                             model3.setDoorNum("3");
                             model3.setAccessible("进");
+                            list.add(model3);
+
                             AccessModel model4 = new AccessModel();
                             model4.setErCode(4);
                             model4.setRelay(4);
                             model4.setDoorNum("4");
                             model4.setAccessible("出");
-                            list.add(model3);
                             list.add(model4);
 
 

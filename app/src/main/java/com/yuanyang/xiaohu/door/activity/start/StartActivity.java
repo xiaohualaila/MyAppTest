@@ -28,6 +28,7 @@ public class StartActivity  extends AppCompatActivity implements StartContract.V
         String mac = NetUtil.smdtGetEthMacAddress();
         mac="1C:CA:E3:35:8B:98";
         String ip = NetUtil.smdtGetEthIPAddress();
+
         if(mac != null && ip != null){
             presenter.initDate(mac,this);
         }else {

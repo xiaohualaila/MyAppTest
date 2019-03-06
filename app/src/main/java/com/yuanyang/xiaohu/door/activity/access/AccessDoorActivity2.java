@@ -121,9 +121,7 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
         );
     }
 
-    /**
-     * 根据不同的板子开启不同的Service
-     */
+
     private void startService() {
             handler.postDelayed(() -> startService(new Intent(AccessDoorActivity2.this,
                     Service.class)), 5000);
@@ -252,7 +250,6 @@ public class AccessDoorActivity2 extends AppCompatActivity implements AppDownloa
     public void onDestroy() {
         super.onDestroy();
         stopService();
-
     }
 
     private void stopService() {

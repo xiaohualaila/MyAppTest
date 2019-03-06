@@ -2,7 +2,6 @@ package com.yuanyang.xiaohu.door.activity.access;
 
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
 import com.yuanyang.xiaohu.door.base.BasePresenter;
@@ -12,9 +11,9 @@ import com.yuanyang.xiaohu.door.bean.CodeRecord;
 import com.yuanyang.xiaohu.door.model.AccessModel;
 import com.yuanyang.xiaohu.door.model.BaseBean;
 import com.yuanyang.xiaohu.door.model.MessageBodyBean;
-import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
 import com.yuanyang.xiaohu.door.retrofitdemo.Request_Interface;
 import com.yuanyang.xiaohu.door.retrofitdemo.RetrofitManager;
+import com.yuanyang.xiaohu.door.retrofitdemo.UserInfoKey;
 import com.yuanyang.xiaohu.door.service.Service;
 import com.yuanyang.xiaohu.door.util.APKVersionCodeUtils;
 import com.yuanyang.xiaohu.door.util.SharedPreferencesUtil;
@@ -22,6 +21,7 @@ import com.yuanyang.xiaohu.door.util.SoundPoolUtil;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CardBeanDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.CodeRecordDao;
 import com.yuanyang.xiaohu.greendaodemo.greendao.gen.GreenDaoManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -311,6 +311,7 @@ public class AccessPresent2  extends BasePresenter implements AccessContract.Pre
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
+                            //todo 这里什么都没有
                         }
 
                     }
